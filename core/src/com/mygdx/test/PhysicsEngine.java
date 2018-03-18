@@ -26,8 +26,8 @@ public class PhysicsEngine {
 
     public void moveBallVector(double direction, double initialSpeed){
 
-        float xLocation = (float) (Math.cos(Math.toDegrees(direction)) * initialSpeed * Math.pow(Gdx.graphics.getDeltaTime(),1.2));
-        float yLocation = (float) (Math.sin(Math.toDegrees(direction)) * initialSpeed * Math.pow(Gdx.graphics.getDeltaTime(),1.2));
+        float xLocation = (float) (Math.cos(Math.toRadians(direction)) * initialSpeed * Math.pow(Gdx.graphics.getDeltaTime(),1.2));
+        float yLocation = (float) (Math.sin(Math.toRadians(direction)) * initialSpeed * Math.pow(Gdx.graphics.getDeltaTime(),1.2));
 
         //float xLocation = (float) (golfBall.x * Math.cos(Math.toDegrees(direction)) * initialSpeed * Gdx.graphics.getDeltaTime());
         //float yLocation = (float) (golfBall.y * Math.sin(Math.toDegrees(direction)) * initialSpeed * Gdx.graphics.getDeltaTime());
