@@ -16,9 +16,6 @@ public class PhysicsEngine {
 
     public float moveBall(double direction, double initialSpeed)
     {
-        //Main m = new Main();
-        //Rectangle golfBall = m.getGolfBall();
-
         float xLocation = (float) (golfBall.x * Math.cos(Math.toDegrees(direction)) * initialSpeed);
 
         //golfball.x = (float) (golfBall.x * Math.cos(Math.toDegrees(direction)) * initialSpeed);

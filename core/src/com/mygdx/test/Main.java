@@ -85,7 +85,4 @@ public class Main extends ApplicationAdapter{
 		img.dispose();
 	}
 
-	public Rectangle getGolfBall(){
-	    return golfBall;
-    }
 }
