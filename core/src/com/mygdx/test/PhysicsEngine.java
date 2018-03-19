@@ -5,16 +5,22 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class PhysicsEngine {
 
-    private Rectangle golfBall;
+    Rectangle golfBall;
+    boolean ballStopped = false;
 
     static boolean initialCall = true;
     static double startTime = 0;
+    static double previousGolfballX = 0;
+    static double previousGolfballY = 0;
+
 
     public PhysicsEngine(Rectangle golfBall){
         this.golfBall = golfBall;
     }
 
     public void moveBall(double direction, double initialSpeed){
+
+        ballStopped = false;
 
         if(initialCall) startTime = System.nanoTime() / 1000000000.0; //defining the value for which t = 0
         initialCall = false;
@@ -30,16 +36,29 @@ public class PhysicsEngine {
         float xChange = (float) (directionCoefficientX * (initialSpeed - (frictionConstant  * elapsedTime)));
         float yChange = (float) (directionCoefficientY * (initialSpeed - (frictionConstant  * elapsedTime)));
 
-        //System.out.println("xLoc: " + xLocation);
-        //System.out.println("yLoc: " + yLocation);
+        System.out.println("xLoc: " + xChange);
+        System.out.println("yLoc: " + yChange);
 
         //if the change in direction becomes negative we no longer update the ball's location so that it comes to a stop
         if(initialSpeed - (frictionConstant * elapsedTime) > 0) {
+            previousGolfballX = golfBall.x;
+            previousGolfballY = golfBall.y;
             golfBall.x += xChange;
             golfBall.y += yChange;
+
+            //System.out.println("check");
+
+        }
+        else {
+            ballStopped = true;
+            initialCall = true;
         }
 
-        //System.out.println("ballLoc: " + golfBall.x);
-        //System.out.println("ballLoc: " + golfBall.y);
+        System.out.println("ballLoc: " + golfBall.x);
+        System.out.println("ballLoc: " + golfBall.y);
+    }
+
+    public boolean getBallStopped(){
+        return ballStopped;
     }
 }
