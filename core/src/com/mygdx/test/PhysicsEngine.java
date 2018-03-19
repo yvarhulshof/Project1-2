@@ -32,8 +32,14 @@ public class PhysicsEngine {
         if(initialCall) startTime = System.nanoTime() / 1000000000.0;
         initialCall = false;
 
-        float xLocation = (float) (Math.cos(Math.toRadians(direction)) * initialSpeed * Math.pow(System.nanoTime() / 1000000000.0 - startTime,1.2));
-        float yLocation = (float) (Math.sin(Math.toRadians(direction)) * initialSpeed * Math.pow(System.nanoTime() / 1000000000.0 - startTime,1.2));
+        double elapsedTime = System.nanoTime() / 1000000000.0 - startTime;
+        final double accelerationConstant = -8;
+
+        float xLocation = (float) (Math.cos(Math.toRadians(direction)) * (initialSpeed + accelerationConstant * elapsedTime));
+        float yLocation = (float) (Math.sin(Math.toRadians(direction)) * (initialSpeed + accelerationConstant * elapsedTime));
+
+        //float xLocation = (float) (Math.cos(Math.toRadians(direction)) * initialSpeed * Math.pow(System.nanoTime() / 1000000000.0 - startTime,1.2));
+        //float yLocation = (float) (Math.sin(Math.toRadians(direction)) * initialSpeed * Math.pow(System.nanoTime() / 1000000000.0 - startTime,1.2));
 
         //float xLocation = (float) (Math.cos(Math.toRadians(direction)) * initialSpeed * Math.pow(Gdx.graphics.getDeltaTime(),1.2));
         //float yLocation = (float) (Math.sin(Math.toRadians(direction)) * initialSpeed * Math.pow(Gdx.graphics.getDeltaTime(),1.2));
@@ -41,8 +47,11 @@ public class PhysicsEngine {
         //float xLocation = (float) (golfBall.x * Math.cos(Math.toDegrees(direction)) * initialSpeed * Gdx.graphics.getDeltaTime());
         //float yLocation = (float) (golfBall.y * Math.sin(Math.toDegrees(direction)) * initialSpeed * Gdx.graphics.getDeltaTime());
 
-        golfBall.x += xLocation;
-        golfBall.y += yLocation;
+        if(initialSpeed + accelerationConstant * elapsedTime > 0){
+            golfBall.x += xLocation;
+            golfBall.y += yLocation;
+        }
+
 
         //ballCoordinates.add(xLocation,yLocation);
         //golfBall.x = ballCoordinates.x;

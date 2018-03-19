@@ -55,7 +55,7 @@ public class Main extends ApplicationAdapter{
         	//golfBall.x += p.moveBall(90,5);
         	//ballCoordinates.add(p.moveBallVector(90,5));
 
-			p.moveBallVector(135,50);
+			p.moveBallVector(135,10);
 		//}
 		//else p.initialCall = true;
 
