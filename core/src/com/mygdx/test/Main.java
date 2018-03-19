@@ -19,8 +19,8 @@ public class Main extends ApplicationAdapter{
 	static Vector2 ballCoordinates;
     PhysicsEngine p;
 
-    boolean firstPress = true;
-	double startTime = 0;
+    //static boolean startOfPress = true;
+	//static double startTime = 0;
 
 	@Override
 	public void create () {
@@ -49,12 +49,20 @@ public class Main extends ApplicationAdapter{
 		batch.draw(img, golfBall.x,golfBall.y);
 		batch.end();
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+        //if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
+        //if(p.initialCall == true){
+            System.out.println("check");
         	//golfBall.x += p.moveBall(90,5);
         	//ballCoordinates.add(p.moveBallVector(90,5));
-			p.moveBallVector(45,200);
-		}
 
+			p.moveBallVector(135,50);
+		//}
+		//else p.initialCall = true;
+
+        //make the initial call, set startTime to time during initial call
+        //
+
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) golfBall.y += 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) golfBall.y -= 200 * Gdx.graphics.getDeltaTime();
@@ -86,3 +94,14 @@ public class Main extends ApplicationAdapter{
 	}
 
 }
+
+/*
+//if(p.initialCall == true){
+            System.out.println("check");
+        	//golfBall.x += p.moveBall(90,5);
+        	//ballCoordinates.add(p.moveBallVector(90,5));
+
+			p.moveBallVector(135,50);
+		//}
+		//else p.initialCall = true;
+ */
