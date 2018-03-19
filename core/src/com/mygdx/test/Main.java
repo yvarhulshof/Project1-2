@@ -8,19 +8,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-
 
 public class Main extends ApplicationAdapter{
 	OrthographicCamera camera;
 	SpriteBatch batch;
 	Texture img;
 	static Rectangle golfBall;
-	static Vector2 ballCoordinates;
     PhysicsEngine p;
-
-    //static boolean startOfPress = true;
-	//static double startTime = 0;
 
 	@Override
 	public void create () {
@@ -36,9 +30,7 @@ public class Main extends ApplicationAdapter{
 		golfBall.width = 64;
 		golfBall.height = 64;
 
-		ballCoordinates = new Vector2(golfBall.x, golfBall.y);
-		p = new PhysicsEngine(golfBall, ballCoordinates);
-
+		p = new PhysicsEngine(golfBall);
 	}
 
 	@Override
@@ -49,41 +41,14 @@ public class Main extends ApplicationAdapter{
 		batch.draw(img, golfBall.x,golfBall.y);
 		batch.end();
 
-        //if(Gdx.input.isKeyPressed(Input.Keys.ENTER)){
-        //if(p.initialCall == true){
-            System.out.println("check");
-        	//golfBall.x += p.moveBall(90,5);
-        	//ballCoordinates.add(p.moveBallVector(90,5));
 
-			p.moveBallVector(135,10);
-		//}
-		//else p.initialCall = true;
+		p.moveBall(135,3); //method that moves the ball, starting with initial speed and then deaccelerating
 
-        //make the initial call, set startTime to time during initial call
-        //
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) golfBall.y += 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) golfBall.y -= 200 * Gdx.graphics.getDeltaTime();
-
-
-		/*
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
-		{
-
-			if(firstPress) startTime = System.nanoTime() / 1000000000.0;
-			firstPress = false;
-
-			golfBall.x -= 5*Math.pow(System.nanoTime() / 1000000000.0 - startTime,1.2);
-			System.out.println("speed: " + (int) (5*Math.pow(System.nanoTime() / 1000000000.0 - startTime,1.2)));
-
-			//golfBall.x -= 100*Math.pow(Gdx.graphics.getDeltaTime(),2);
-		}
-		else firstPress = true;
-
-		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
-		*/
 
 	}
 
@@ -94,14 +59,3 @@ public class Main extends ApplicationAdapter{
 	}
 
 }
-
-/*
-//if(p.initialCall == true){
-            System.out.println("check");
-        	//golfBall.x += p.moveBall(90,5);
-        	//ballCoordinates.add(p.moveBallVector(90,5));
-
-			p.moveBallVector(135,50);
-		//}
-		//else p.initialCall = true;
- */
