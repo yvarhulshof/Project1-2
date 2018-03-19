@@ -52,17 +52,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		Gdx.input.setInputProcessor(this);
 	}
 
-	public boolean keyDown (int keycode) {
-		return false;
-	}
-
-	public boolean keyUp (int keycode) {
-		return false;
-	}
-
-	public boolean keyTyped (char character) {
-		return false;
-	}
 
 	public boolean touchDown (int x, int y, int pointer, int button) {
 		if (button == Input.Buttons.LEFT) {
@@ -76,21 +65,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		return false;
 	}
 
-	public boolean touchUp (int x, int y, int pointer, int button) {
-		return false;
-	}
 
-	public boolean touchDragged (int x, int y, int pointer) {
-		return false;
-	}
-
-	public boolean mouseMoved (int x, int y) {
-		return false;
-	}
-
-	public boolean scrolled (int amount) {
-		return false;
-	}
 
 
 	@Override
@@ -145,14 +120,14 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		return false;
 	}
-
+/*
 	@Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		Vector3 clickCoordinates = new Vector3(screenX,screenY,0);
 		Vector3 position = camera.unproject(clickCoordinates);
 		golfBall.setPosition(position.x, position.y);
 		return true;
 	}
-
+*/
 	@Override public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		return false;
 	}
