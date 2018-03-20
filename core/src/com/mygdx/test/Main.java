@@ -80,6 +80,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		//golfBall.width = 64;
 		//golfBall.height = 64;
 
+		double golfBallHeight = Math.sin(golfBall.x) + Math.pow(golfBall.y,2);
+
+
+
 		p = new PhysicsEngine(golfBall);
 
 		Gdx.input.setInputProcessor(this);
@@ -202,11 +206,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		return false;
 	}
 
-
-	/*@Override
+/*
+	@Override
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
 	}
- */
+*/
 }

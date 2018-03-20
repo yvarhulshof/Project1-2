@@ -33,11 +33,13 @@ public class PhysicsEngine {
         final double frictionConstant = 0.6;
         double elapsedTime = System.nanoTime() / 1000000000.0 - startTime; //defining the value of t for the current call of render()
 
-        double gravitationalPull = 9.81 / Math.pow(elapsedTime, 2); //not used yet, only comes in to play when the ball is on a slope
+        //double gravitationalAcc = Math.pow(elapsedTime,2) * 0.981 / Math.pow(elapsedTime, 2); //not used yet, only comes in to play when the ball is on a slope
+
+        //double gravitiationForce = (-Math.cos(golfBall.x) * gravitationalAcc) - (2*golfBall.y * gravitationalAcc);
 
         //change in x and y during the elapsed time
-        float xChange = (float) (directionCoefficientX * (initialSpeed - (frictionConstant  * elapsedTime)));
-        float yChange = (float) (directionCoefficientY * (initialSpeed - (frictionConstant  * elapsedTime)));
+        float xChange = (float) ((directionCoefficientX * (initialSpeed - (frictionConstant  * elapsedTime))) /*+ gravitiationForce*/);
+        float yChange = (float) ((directionCoefficientY * (initialSpeed - (frictionConstant  * elapsedTime))) /*+ gravitiationForce*/);
 
         //System.out.println("xLoc: " + xChange);
         //System.out.println("yLoc: " + yChange);

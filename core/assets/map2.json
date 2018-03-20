@@ -31,7 +31,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":29,
+                 "width":100,
                  "x":289,
                  "y":1346
                 }, 
@@ -41,7 +41,7 @@
                  "name":"",
                  "properties":
                     {
-                     "Solid":false
+                     "Solid":true
                     },
                  "propertytypes":
                     {
@@ -50,7 +50,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":31,
+                 "width":100,
                  "x":450,
                  "y":1346
                 }],
