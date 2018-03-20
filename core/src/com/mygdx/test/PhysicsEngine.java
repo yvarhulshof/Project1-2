@@ -1,11 +1,14 @@
 package com.mygdx.test;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
 public class PhysicsEngine {
 
-    Rectangle golfBall;
+
+    //Rectangle golfBall;
+    Circle golfBall;
     boolean ballStopped = false;
 
     static boolean initialCall = true;
@@ -14,7 +17,7 @@ public class PhysicsEngine {
     static double previousGolfballY = 0;
 
 
-    public PhysicsEngine(Rectangle golfBall){
+    public PhysicsEngine(Circle golfBall){
         this.golfBall = golfBall;
     }
 

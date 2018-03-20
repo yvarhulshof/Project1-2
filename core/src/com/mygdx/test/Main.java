@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -15,11 +16,13 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 
+
 public class Main extends ApplicationAdapter implements InputProcessor{
 	OrthographicCamera camera;
 	SpriteBatch batch;
 	Texture img;
-	static Rectangle golfBall;
+	//static Rectangle golfBall;
+	static Circle golfBall;
     PhysicsEngine p;
 	TiledMap tiledMap;
 	TiledMapRenderer tiledMapRenderer;
@@ -40,11 +43,13 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 		Gdx.input.setInputProcessor(this);
 
-		golfBall = new Rectangle();
+		//golfBall = new Rectangle();
+        golfBall = new Circle();
+        golfBall.radius = 16;
 		golfBall.x = 800 / 2 - 64 / 2;
 		golfBall.y = 20;
-		golfBall.width = 64;
-		golfBall.height = 64;
+		//golfBall.width = 64;
+		//golfBall.height = 64;
 
 		p = new PhysicsEngine(golfBall);
 
