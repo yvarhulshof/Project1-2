@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -15,6 +18,11 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+import org.w3c.dom.css.Rect;
+
+import java.util.ArrayList;
+
+import static com.badlogic.gdx.graphics.Color.CYAN;
 
 
 public class Main extends ApplicationAdapter implements InputProcessor{
@@ -28,7 +36,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	TiledMapRenderer tiledMapRenderer;
     static boolean pressed;
     SwingInput SI;
-    final double epsilon = 0.0001;
+    ArrayList<Rectangle> obstacles;
+
+    private ShapeRenderer sr;
 
 	@Override
 	public void create () {
@@ -39,12 +49,28 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, w, h);
 		camera.update();
-		tiledMap = new TmxMapLoader().load("map.tmx");
+
+		//tiledMap = new TmxMapLoader().load("map.tmx");
+		tiledMap = new TmxMapLoader().load("map2.tmx");
+
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 		Gdx.input.setInputProcessor(this);
 		SI = new SwingInput();
 
 		SI.createGUI();
+
+		sr = new ShapeRenderer();
+
+		for(MapObject object : tiledMap.getLayers().get("Obstacles").getObjects()){
+		    Rectangle rect = ((RectangleMapObject) object).getRectangle();
+		    sr.begin(ShapeRenderer.ShapeType.Filled);
+		    sr.rect(rect.x,rect.y,rect.width,rect.height);
+		    sr.end();
+        }
+
+        obstacles = new ArrayList<Rectangle>();
+
+        sr.setColor(CYAN);
 
 		//golfBall = new Rectangle();
         golfBall = new Circle();
@@ -56,25 +82,17 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		p = new PhysicsEngine(golfBall);
 
-		//MyInputProcessor i = new MyInputProcessor();
 		Gdx.input.setInputProcessor(this);
 	}
 
 
 	public boolean touchDown (int x, int y, int pointer, int button) {
 		if (button == Input.Buttons.LEFT) {
-			//while(Math.abs(p.previousGolfballX - p.golfBall.x) > epsilon && Math.abs(p.previousGolfballY - p.golfBall.y) > epsilon)
-			//{
-			//	p.moveBall(135, 1);
-			//}
 			pressed = true;
 			return true;
 		}
 		return false;
 	}
-
-
-
 
 	@Override
 	public void render () {
@@ -88,6 +106,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		batch.begin();
 		batch.draw(img, golfBall.x,golfBall.y);
 		batch.end();
+
+		sr.setProjectionMatrix(camera.combined);
 
 		//if(i.touchDown(0,0,0,0)) p.moveBall(135,3); //method that moves the ball, starting with initial speed and then deaccelerating
 		if(pressed)
@@ -104,7 +124,29 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		    pressed = false;
             SI.setButtonClicked(false);
         }
-		//if(Math.abs(p.previousGolfballX - p.golfBall.x) > epsilon && Math.abs(p.previousGolfballY - p.golfBall.y) > epsilon) pressed = false;
+
+        double golfBallEdgeXpos = golfBall.x + golfBall.radius;
+        double golfBallEdgeXneg = golfBall.x - golfBall.radius;
+        double golfBallEdgeYpos = golfBall.y + golfBall.radius;
+        double golfBallEdgeYneg = golfBall.y - golfBall.radius;
+
+        for(Rectangle obst : obstacles){
+		    if(     golfBallEdgeXpos > obst.x && golfBallEdgeXpos < obst.x + obst.width ||
+                    golfBallEdgeXneg > obst.x && golfBallEdgeXneg < obst.x + obst.width ||
+                    golfBallEdgeYpos > obst.x && golfBallEdgeYpos < obst.x + obst.width ||
+                    golfBallEdgeXneg > obst.x && golfBallEdgeYneg < obst.x + obst.width)
+            {
+                System.out.println("collision");
+            }
+            System.out.println("obst x: " + obst.x);
+
+
+		    //if(golfBall.x == obst.x && golfBall.y == obst.y) //should checking all of their coordinates, not just their center
+            //{
+            //    System.out.println("collision");
+            //}
+
+        }
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
@@ -117,13 +159,13 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	}
 
 	@Override public boolean keyUp(int keycode) {
-		if(keycode == Input.Keys.LEFT)
+		if(keycode == Input.Keys.A)
 			camera.translate(-32,0);
-		if(keycode == Input.Keys.RIGHT)
+		if(keycode == Input.Keys.D)
 			camera.translate(32,0);
-		if(keycode == Input.Keys.UP)
+		if(keycode == Input.Keys.W)
 			camera.translate(0,32);
-		if(keycode == Input.Keys.DOWN)
+		if(keycode == Input.Keys.S)
 			camera.translate(0,-32);
 		if(keycode == Input.Keys.NUM_1)
 			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
