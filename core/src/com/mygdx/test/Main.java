@@ -27,7 +27,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	TiledMap tiledMap;
 	TiledMapRenderer tiledMapRenderer;
     static boolean pressed;
-    //MyInputProcessor i;
+    SwingInput SI;
     final double epsilon = 0.0001;
 
 	@Override
@@ -42,6 +42,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMap = new TmxMapLoader().load("map.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 		Gdx.input.setInputProcessor(this);
+		SI = new SwingInput();
+
+		SI.createGUI();
 
 		//golfBall = new Rectangle();
         golfBall = new Circle();
@@ -92,7 +95,15 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			p.moveBall(135,1.5);
 		}
 
-		if(p.getBallStopped()) pressed = false;
+		if(SI.getButtonClicked())
+        {
+            p.moveBall(SI.getDir(), SI.getSpd());
+        }
+
+		if(p.getBallStopped()){
+		    pressed = false;
+            SI.setButtonClicked(false);
+        }
 		//if(Math.abs(p.previousGolfballX - p.golfBall.x) > epsilon && Math.abs(p.previousGolfballY - p.golfBall.y) > epsilon) pressed = false;
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();

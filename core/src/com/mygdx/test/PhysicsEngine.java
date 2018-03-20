@@ -48,9 +48,7 @@ public class PhysicsEngine {
             previousGolfballY = golfBall.y;
             golfBall.x += xChange;
             golfBall.y += yChange;
-
             //System.out.println("check");
-
         }
         else {
             ballStopped = true;

@@ -24,10 +24,11 @@ import java.util.Scanner;
 
 public class SwingInput {
 
-    public static void main(String[] args) {
+    private static double dir;
+    private static double spd;
+    private static boolean buttonClicked;
 
-
-
+    public void createGUI() {
 
         JTextArea nameArea = new JTextArea(10, 30);
         //JLabel label = new JLabel("wololoooo");
@@ -51,28 +52,34 @@ public class SwingInput {
         controlFrame.setSize(200, 200);
         controlFrame.setVisible(true);
 
-
-
-
-
-
         class InputListener implements ActionListener{
             public void actionPerformed(ActionEvent event){
 
-                double dir = 0;
-                double spd = 0;
                 dir = (Double.parseDouble(nameField.getText()));
                 System.out.println(dir);
                 spd = (Double.parseDouble(passField.getText()));
                 System.out.println(spd);
-
-
+                buttonClicked = true;
             }
-
-
         }
 
         ActionListener listener = new InputListener();
         button.addActionListener(listener);
+    }
+
+    public double getDir(){
+        return dir;
+    }
+
+    public double getSpd(){
+        return spd;
+    }
+
+    public boolean getButtonClicked(){
+        return buttonClicked;
+    }
+
+    public void setButtonClicked(boolean clicked){
+        buttonClicked = clicked;
     }
 }
