@@ -2,10 +2,13 @@ package com.mygdx.test;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 
 public class PhysicsEngine {
 
     Circle golfBall;
+    Circle goal;
+    Rectangle water;
     boolean ballStopped = true;
 
     static boolean initialCall = true;

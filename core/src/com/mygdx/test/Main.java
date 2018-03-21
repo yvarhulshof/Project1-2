@@ -35,25 +35,25 @@ import static com.badlogic.gdx.graphics.Color.CYAN;
  */
 public class Main extends ApplicationAdapter implements InputProcessor{
 
-	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
+    private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
-	private SpriteBatch batch; //a collection of image files
-	private Texture golfballImg; //golf ball image file
-	private static Circle golfBall; //golf ball circle object to which the image file is attached
+    private SpriteBatch batch; //a collection of image files
+    private Texture golfballImg; //golf ball image file
+    private static Circle golfBall; //golf ball circle object to which the image file is attached
 
-	private SpriteBatch goalBatch;
-	private Texture goalImg;
-	private static Circle goal;
+    private SpriteBatch goalBatch;
+    private Texture goalImg;
+    private static Circle goal;
 
-	private SpriteBatch waterBatch;
-	private Texture waterImg;
-	private static Rectangle water;
+    private SpriteBatch waterBatch;
+    private Texture waterImg;
+    private static Rectangle water;
 
-	private PhysicsEngine p;
-	private TiledMap tiledMap;
-	private TiledMapRenderer tiledMapRenderer;
-	private static boolean released;
-	private SwingInput SI; //top left GUI in which swing directions and speed can be entered
+    private PhysicsEngine p;
+    private TiledMap tiledMap;
+    private TiledMapRenderer tiledMapRenderer;
+    private static boolean released;
+    private SwingInput SI; //top left GUI in which swing directions and speed can be entered
 
     private int numberOfSwings; //used for Method 3, giving the total number of swings entered in the GolswingInput.txt file
     private int currentSwing; //used for Method 3, giving the current swing number
@@ -68,8 +68,12 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	/**
 	 * Method in which we create the initial game state, load the map, create the file readers and set the physics engine and input processor
 	 */
+    private ShapeRenderer sr;
+	private WinFrame Win;
+
 	@Override
 	public void create () {
+		/** create the sprites */
 		batch = new SpriteBatch();
 		golfballImg = new Texture("golfball3.png");
 		goalBatch = new SpriteBatch();
@@ -83,6 +87,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		camera.update();
 
 
+		/** load the map */
+		//tiledMap = new TmxMapLoader().load("map.tmx");
 		tiledMap = new TmxMapLoader().load("map2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
@@ -112,6 +118,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         speedValues = FI.getSpeedValues();
         numberOfSwings = directionValues.size();
         currentSwing = 0;
+
+        Win = new WinFrame();
 	}
 
 
@@ -128,6 +136,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render();
 		batch.setProjectionMatrix(camera.combined);
+		/** draw the sprite */
 		goalBatch.begin();
 		goalBatch.draw(goalImg,goal.x,goal.y);
 		goalBatch.end();
@@ -183,14 +192,24 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
         if(		goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 &&
 				goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
-        	System.out.println("congrats");
+			System.out.println("congrats");
+			Win.winGUI();
+			golfBall.x = 800/2 - 64/2;
+			golfBall.y = 20;
+
 		}
+
+		/** check collision with the water and make the ball respawn */
+		/**  !!!!!!!!!! need to make it pop at speed 0!!!*/
 		if(		water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 &&
 				water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
-        	System.out.println(" u in water. game over");
-        	golfBall.x = water.x - (golfBall.radius + water.width/2);
-        	golfBall.y = water.y - (golfBall.radius + water.height/2);
+			System.out.println(" u in water. game over");
+
+			golfBall.x = water.x - (golfBall.radius + water.width/2);
+			golfBall.y = water.y - (golfBall.radius + water.height/2);
+
 		}
+
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
@@ -250,6 +269,13 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 	@Override public boolean scrolled(int amount) {
 		return false;
+	}
+
+
+	@Override
+	public void dispose () {
+		batch.dispose();
+		golfballImg.dispose();
 	}
 
 }
