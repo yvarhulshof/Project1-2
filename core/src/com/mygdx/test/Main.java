@@ -57,9 +57,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private ArrayList<String> swingInfo;
 
     private ShapeRenderer sr;
+	WinFrame Win;
 
 	@Override
 	public void create () {
+		/** create the sprites */
 		batch = new SpriteBatch();
 		img = new Texture("golfball3.png");
 		goalBatch = new SpriteBatch();
@@ -72,6 +74,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		camera.setToOrtho(false, w, h);
 		camera.update();
 
+		/** load the map */
 		//tiledMap = new TmxMapLoader().load("map.tmx");
 		tiledMap = new TmxMapLoader().load("map2.tmx");
 
@@ -114,6 +117,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         swingInfo = FI.readSwingInfo();
 
 		Gdx.input.setInputProcessor(this);
+		Win = new WinFrame();
+
+
+
 	}
 
 
@@ -129,6 +136,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			return true;
 		else
 			return false;
+
+
 	}
 
 	@Override
@@ -140,6 +149,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render();
 		batch.setProjectionMatrix(camera.combined);
+		/** draw the sprite */
 		goalBatch.begin();
 		goalBatch.draw(goalImg,goal.x,goal.y);
 		goalBatch.end();
@@ -190,7 +200,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         double golfBallEdgeYpos = golfBall.y + golfBall.radius;
         double golfBallEdgeYneg = golfBall.y - golfBall.radius;
 
-        for(Rectangle obst : obstacles){
+        /*for(Rectangle obst : obstacles){
 		    if(     golfBallEdgeXpos > obst.x && golfBallEdgeXpos < obst.x + obst.width ||
                     golfBallEdgeXneg > obst.x && golfBallEdgeXneg < obst.x + obst.width ||
                     golfBallEdgeYpos > obst.x && golfBallEdgeYpos < obst.x + obst.width ||
@@ -207,16 +217,28 @@ public class Main extends ApplicationAdapter implements InputProcessor{
             //}
 
         }
-        if(		goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 &&
+        */
+        /** if ball in the goal's radius --> win window pops */
+		if(		goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 &&
 				goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
-        	System.out.println("congrats");
+			System.out.println("congrats");
+			Win.winGUI();
+			golfBall.x = 800/2 - 64/2;
+			golfBall.y = 20;
+
 		}
+
+		/** check collision with the water and make the ball respawn */
+		/**  !!!!!!!!!! need to make it pop at speed 0!!!*/
 		if(		water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 &&
 				water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
-        	System.out.println(" u in water. game over");
-        	golfBall.x = water.x - (golfBall.radius + water.width/2);
-        	golfBall.y = water.y - (golfBall.radius + water.height/2);
+			System.out.println(" u in water. game over");
+
+			golfBall.x = water.x - (golfBall.radius + water.width/2);
+			golfBall.y = water.y - (golfBall.radius + water.height/2);
+
 		}
+
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
@@ -270,11 +292,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		return false;
 	}
 
-/*
+
 	@Override
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
 	}
-*/
+
 }

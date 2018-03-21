@@ -2,10 +2,13 @@ package com.mygdx.test;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 
 public class PhysicsEngine {
 
     Circle golfBall;
+    Circle goal;
+    Rectangle water;
     boolean ballStopped = true;
 
     static boolean initialCall = true;
@@ -40,8 +43,8 @@ public class PhysicsEngine {
         float xChange = (float) (directionCoefficientX * (initialSpeed - (frictionConstant  * elapsedTime)));
         float yChange = (float) (directionCoefficientY * (initialSpeed - (frictionConstant  * elapsedTime)));
 
-        System.out.println("xLoc: " + xChange);
-        System.out.println("yLoc: " + yChange);
+      //  System.out.println("xLoc: " + xChange);
+       // System.out.println("yLoc: " + yChange);
 
         //if the change in direction becomes negative we no longer update the ball's location so that it comes to a stop
         if(initialSpeed - (frictionConstant * elapsedTime) > 0) {
@@ -55,8 +58,8 @@ public class PhysicsEngine {
             initialCall = true;
         }
 
-        System.out.println("ballLoc: " + golfBall.x);
-        System.out.println("ballLoc: " + golfBall.y);
+       // System.out.println("ballLoc: " + golfBall.x);
+        //System.out.println("ballLoc: " + golfBall.y);
     }
 
     public boolean getBallStopped(){
@@ -80,6 +83,7 @@ public class PhysicsEngine {
         else
             return 360-angle;
     }
+
 
     public void setGravitationalForce(double gravitationalForce){
         this.gravitationalForce = gravitationalForce;
