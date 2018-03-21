@@ -13,6 +13,10 @@ public class PhysicsEngine {
     static double previousGolfballX = 0;
     static double previousGolfballY = 0;
 
+    private double frictionConstant = 0.6;
+    private double gravitationalForce = 9.81;
+    private double maxSpeed;
+
 
     public PhysicsEngine(Circle golfBall){
         this.golfBall = golfBall;
@@ -75,6 +79,18 @@ public class PhysicsEngine {
             return angle;
         else
             return 360-angle;
+    }
+
+    public void setGravitationalForce(double gravitationalForce){
+        this.gravitationalForce = gravitationalForce;
+    }
+
+    public void setFrictionConstant(double frictionConstant){
+        this.frictionConstant = frictionConstant;
+    }
+
+    public void setMaxSpeed(double maxSpeed) {
+        this.maxSpeed = maxSpeed;
     }
 
 }
