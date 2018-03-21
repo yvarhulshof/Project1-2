@@ -1,0 +1,5 @@
+9.81
+0.5
+3
+Math.sin(x)
+Math.pow(y,2)
