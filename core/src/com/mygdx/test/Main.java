@@ -7,8 +7,10 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Circle;
@@ -31,16 +33,26 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	OrthographicCamera camera;
 	SpriteBatch batch;
 	Texture img;
-	//static Rectangle golfBall;
 	static Circle golfBall;
-    PhysicsEngine p;
+
+	SpriteBatch goalBatch;
+	Texture goalImg;
+	static Circle goal;
+
+	SpriteBatch waterBatch;
+	Texture waterImg;
+	static Rectangle water;
+
+	PhysicsEngine p;
 	TiledMap tiledMap;
 	TiledMapRenderer tiledMapRenderer;
-    static boolean pressed;
+    static boolean released;
     SwingInput SI;
     ArrayList<Rectangle> obstacles;
     private int numberOfSwings;
     private int currentSwing;
+    private float mouseX;
+    private float mouseY;
 
     private FileInput FI;
     private String[] mapInfo;
@@ -53,6 +65,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("golfball3.png");
+		goalBatch = new SpriteBatch();
+		goalImg = new Texture("circle.png");
+		waterBatch = new SpriteBatch();
+		waterImg = new Texture("water.jpg");
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		camera = new OrthographicCamera();
@@ -81,13 +97,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
         sr.setColor(CYAN);
 
-		//golfBall = new Rectangle();
-        golfBall = new Circle();
-        golfBall.radius = 16;
-		golfBall.x = 800 / 2 - 64 / 2;
-		golfBall.y = 20;
-		//golfBall.width = 64;
-		//golfBall.height = 64;
+		water = new Rectangle(1200/2 - 64/2, 70, 120, 80);
+        golfBall = new Circle(800 / 2 - 64 / 2, 20, 25);
+        goal = new Circle(600/2, 40, 30);
+
 
 		double golfBallHeight = Math.sin(golfBall.x) + Math.pow(golfBall.y,2);
 
@@ -95,7 +108,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
         FI = new FileInput();
 
-        mapInfo = FI.readMapInfo();
+	   mapInfo = FI.readMapInfo();
 
         p.setGravitationalForce(Double.parseDouble(mapInfo[0]));
         p.setFrictionConstant(Double.parseDouble(mapInfo[1]));
@@ -122,12 +135,18 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	}
 
 
-	public boolean touchDown (int x, int y, int pointer, int button) {
+	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (button == Input.Buttons.LEFT) {
-			pressed = true;
+			released = true;
 			return true;
 		}
 		return false;
+	}
+	@Override public boolean touchDragged(int screenX, int screenY, int pointer) {
+		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+			return true;
+		else
+			return false;
 	}
 
 	@Override
@@ -139,9 +158,17 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render();
 		batch.setProjectionMatrix(camera.combined);
+		goalBatch.begin();
+		goalBatch.draw(goalImg,goal.x,goal.y);
+		goalBatch.end();
+
 		batch.begin();
 		batch.draw(img, golfBall.x,golfBall.y);
 		batch.end();
+
+		waterBatch.begin();
+		waterBatch.draw(waterImg,water.x,water.y);
+		waterBatch.end();
 
 		sr.setProjectionMatrix(camera.combined);
 
@@ -149,8 +176,24 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
         /*
 		if(pressed)
+		if(released)
 		{
-			p.moveBall(135,1.5);
+			p.moveBall(PhysicsEngine.calcAngle(mouseX-golfBall.x, mouseY-golfBall.y), Math.pow(((Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2)))/500),2));
+		}
+
+		if (touchDragged(0,0,0) && p.getBallStopped())
+		{
+			//leftKeyPressed = true;
+			mouseX = Gdx.input.getX();
+			mouseY = Gdx.input.getY();
+			ShapeRenderer sr = new ShapeRenderer();
+			camera.update();
+			sr.setProjectionMatrix(camera.combined);
+			sr.begin(ShapeType.Line);
+			sr.setColor((float) (Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2))/300),255 - ((float) (Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2))/300)),0,0);
+			sr.line(mouseX, Gdx.graphics.getHeight() - mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
+			sr.end();
+
 		}
 
 		if(SI.getButtonClicked())
@@ -172,7 +215,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 
 		if(p.getBallStopped()){
-		    pressed = false;
+		    released = false;
             SI.setButtonClicked(false);
         }
 
@@ -198,6 +241,16 @@ public class Main extends ApplicationAdapter implements InputProcessor{
             //}
 
         }
+        if(		goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 &&
+				goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
+        	System.out.println("congrats");
+		}
+		if(		water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 &&
+				water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
+        	System.out.println(" u in water. game over");
+        	golfBall.x = water.x - (golfBall.radius + water.width/2);
+        	golfBall.y = water.y - (golfBall.radius + water.height/2);
+		}
 
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
@@ -237,13 +290,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		return true;
 	}
 */
-	@Override public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+	@Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		return false;
 	}
 
-	@Override public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
-	}
+
 
 	@Override public boolean mouseMoved(int screenX, int screenY) {
 		return false;
