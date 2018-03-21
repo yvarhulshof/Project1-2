@@ -7,8 +7,10 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Circle;
@@ -36,9 +38,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     PhysicsEngine p;
 	TiledMap tiledMap;
 	TiledMapRenderer tiledMapRenderer;
-    static boolean pressed;
+    static boolean released;
     SwingInput SI;
     ArrayList<Rectangle> obstacles;
+    private float mouseX;
+    private float mouseY;
 
     private ShapeRenderer sr;
 
@@ -75,12 +79,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         sr.setColor(CYAN);
 
 		//golfBall = new Rectangle();
-        golfBall = new Circle();
-        golfBall.radius = 16;
-		golfBall.x = 800 / 2 - 64 / 2;
-		golfBall.y = 20;
-		//golfBall.width = 64;
-		//golfBall.height = 64;
+        golfBall = new Circle(800 / 2 - 64 / 2, 20, 25);
+
 
 		double golfBallHeight = Math.sin(golfBall.x) + Math.pow(golfBall.y,2);
 
@@ -92,12 +92,18 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	}
 
 
-	public boolean touchDown (int x, int y, int pointer, int button) {
+	public boolean touchUp(int x, int y, int pointer, int button) {
 		if (button == Input.Buttons.LEFT) {
-			pressed = true;
+			released = true;
 			return true;
 		}
 		return false;
+	}
+	@Override public boolean touchDragged(int screenX, int screenY, int pointer) {
+		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+			return true;
+		else
+			return false;
 	}
 
 	@Override
@@ -116,9 +122,24 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		sr.setProjectionMatrix(camera.combined);
 
 		//if(i.touchDown(0,0,0,0)) p.moveBall(135,3); //method that moves the ball, starting with initial speed and then deaccelerating
-		if(pressed)
+		if(released)
 		{
-			p.moveBall(135,1.5);
+			p.moveBall(PhysicsEngine.calcAngle(mouseX-golfBall.x, mouseY-golfBall.y), Math.pow(((Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2)))/500),2));
+		}
+
+		if (touchDragged(0,0,0) && p.getBallStopped())
+		{
+			//leftKeyPressed = true;
+			mouseX = Gdx.input.getX();
+			mouseY = Gdx.input.getY();
+			ShapeRenderer sr = new ShapeRenderer();
+			camera.update();
+			sr.setProjectionMatrix(camera.combined);
+			sr.begin(ShapeType.Line);
+			sr.setColor((float) (Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2))/300),255 - ((float) (Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2))/300)),0,0);
+			sr.line(mouseX, Gdx.graphics.getHeight() - mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
+			sr.end();
+
 		}
 
 		if(SI.getButtonClicked())
@@ -127,7 +148,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         }
 
 		if(p.getBallStopped()){
-		    pressed = false;
+		    released = false;
             SI.setButtonClicked(false);
         }
 
@@ -192,13 +213,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		return true;
 	}
 */
-	@Override public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+	@Override public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		return false;
 	}
 
-	@Override public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
-	}
+
 
 	@Override public boolean mouseMoved(int screenX, int screenY) {
 		return false;

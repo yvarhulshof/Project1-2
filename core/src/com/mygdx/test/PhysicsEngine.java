@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Circle;
 public class PhysicsEngine {
 
     Circle golfBall;
-    boolean ballStopped = false;
+    boolean ballStopped = true;
 
     static boolean initialCall = true;
     static double startTime = 0;
