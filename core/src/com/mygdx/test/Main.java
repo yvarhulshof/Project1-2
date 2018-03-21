@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import static com.badlogic.gdx.graphics.Color.CYAN;
 
 /**
- * Documentation is essential!
+ * Documentation is essential!!!
  */
 public class Main extends ApplicationAdapter implements InputProcessor{
 	OrthographicCamera camera;
