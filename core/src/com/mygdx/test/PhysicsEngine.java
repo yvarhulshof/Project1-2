@@ -2,12 +2,9 @@ package com.mygdx.test;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Rectangle;
 
 public class PhysicsEngine {
 
-
-    //Rectangle golfBall;
     Circle golfBall;
     boolean ballStopped = false;
 
@@ -33,16 +30,14 @@ public class PhysicsEngine {
         final double frictionConstant = 0.6;
         double elapsedTime = System.nanoTime() / 1000000000.0 - startTime; //defining the value of t for the current call of render()
 
-        //double gravitationalAcc = Math.pow(elapsedTime,2) * 0.981 / Math.pow(elapsedTime, 2); //not used yet, only comes in to play when the ball is on a slope
-
-        //double gravitiationForce = (-Math.cos(golfBall.x) * gravitationalAcc) - (2*golfBall.y * gravitationalAcc);
+        double gravitationalPull = 9.81 / Math.pow(elapsedTime, 2); //not used yet, only comes in to play when the ball is on a slope
 
         //change in x and y during the elapsed time
-        float xChange = (float) ((directionCoefficientX * (initialSpeed - (frictionConstant  * elapsedTime))) /*+ gravitiationForce*/);
-        float yChange = (float) ((directionCoefficientY * (initialSpeed - (frictionConstant  * elapsedTime))) /*+ gravitiationForce*/);
+        float xChange = (float) (directionCoefficientX * (initialSpeed - (frictionConstant  * elapsedTime)));
+        float yChange = (float) (directionCoefficientY * (initialSpeed - (frictionConstant  * elapsedTime)));
 
-        //System.out.println("xLoc: " + xChange);
-        //System.out.println("yLoc: " + yChange);
+        System.out.println("xLoc: " + xChange);
+        System.out.println("yLoc: " + yChange);
 
         //if the change in direction becomes negative we no longer update the ball's location so that it comes to a stop
         if(initialSpeed - (frictionConstant * elapsedTime) > 0) {
@@ -50,18 +45,36 @@ public class PhysicsEngine {
             previousGolfballY = golfBall.y;
             golfBall.x += xChange;
             golfBall.y += yChange;
-            //System.out.println("check");
         }
         else {
             ballStopped = true;
             initialCall = true;
         }
 
-        //System.out.println("ballLoc: " + golfBall.x);
-        //System.out.println("ballLoc: " + golfBall.y);
+        System.out.println("ballLoc: " + golfBall.x);
+        System.out.println("ballLoc: " + golfBall.y);
     }
 
     public boolean getBallStopped(){
         return ballStopped;
     }
+
+    public static double[] differentiation(double[] arr) {
+        double[] done = new double[arr.length - 1];
+        for (int i = 0; i < done.length; i++) {
+            done[i] = arr[i]*(arr.length-i-1);
+        }
+        return done;
+    }
+
+    public static double calcAngle(double x, double y){
+        double angle;
+        angle = (Math.acos(-x/(Math.sqrt(x*x + y*y))));
+        angle = angle*180/Math.PI;
+        if (y>=0)
+            return angle;
+        else
+            return 360-angle;
+    }
+
 }
