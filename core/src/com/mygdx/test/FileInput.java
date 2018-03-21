@@ -10,6 +10,10 @@ import java.util.Scanner;
 
 public class FileInput {
 
+    private ArrayList<Double> directionValues;
+    private ArrayList<Double> speedValues;
+
+
     public String[] readMapInfo() {
 
         FileHandle file = Gdx.files.local("MapInput.txt");
@@ -41,10 +45,10 @@ public class FileInput {
 
     }
 
-    public ArrayList<String> readSwingInfo(){
+    public void readSwingInfo(){
 
 
-        FileHandle file = Gdx.files.local("MapInput.txt");
+        FileHandle file = Gdx.files.local("GolfswingInput.txt");
         File convertedFile = file.file();
 
         ArrayList<String> swingInput = new ArrayList<>();
@@ -59,12 +63,25 @@ public class FileInput {
             System.out.println("file not found");
         }
 
-        return swingInput;
+        parseSwingDirections(swingInput);
     }
 
-    public ArrayList<Double> parseSwingDirections(ArrayList<String> swingInfo){
+    public void parseSwingDirections(ArrayList<String> swingInfo){
 
-        //while()
-        return null;
+        directionValues = new ArrayList<>();
+        speedValues = new ArrayList<>();
+
+        for(int i = 0; i < swingInfo.size();i++){
+            if(i % 3 == 0) directionValues.add(Double.parseDouble(swingInfo.get(i)));
+            else if(i % 3 == 1) speedValues.add(Double.parseDouble(swingInfo.get(i)));
+        }
+    }
+
+    public ArrayList<Double> getDirectionValues() {
+        return directionValues;
+    }
+
+    public ArrayList<Double> getSpeedValues() {
+        return speedValues;
     }
 }

@@ -39,10 +39,13 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     static boolean pressed;
     SwingInput SI;
     ArrayList<Rectangle> obstacles;
+    private int numberOfSwings;
+    private int currentSwing;
 
     private FileInput FI;
     private String[] mapInfo;
-    private ArrayList<String> swingInfo;
+    private ArrayList<Double> directionValues;
+    private ArrayList<Double> speedValues;
 
     private ShapeRenderer sr;
 
@@ -98,7 +101,22 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         p.setFrictionConstant(Double.parseDouble(mapInfo[1]));
         p.setMaxSpeed(Double.parseDouble(mapInfo[2]));
 
-        swingInfo = FI.readSwingInfo();
+        FI.readSwingInfo();
+        directionValues = FI.getDirectionValues();
+        speedValues = FI.getSpeedValues();
+        numberOfSwings = directionValues.size();
+        currentSwing = 0;
+
+        for(Double direction : directionValues){
+            System.out.println("dir value: " + direction);
+        }
+
+        for(Double speed : speedValues){
+            System.out.println("speed value: " + speed);
+        }
+
+
+
 
 		Gdx.input.setInputProcessor(this);
 	}
@@ -128,6 +146,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		sr.setProjectionMatrix(camera.combined);
 
 		//if(i.touchDown(0,0,0,0)) p.moveBall(135,3); //method that moves the ball, starting with initial speed and then deaccelerating
+
+        /*
 		if(pressed)
 		{
 			p.moveBall(135,1.5);
@@ -137,6 +157,19 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         {
             p.moveBall(SI.getDir(), SI.getSpd());
         }
+
+
+        for(int i = 0; i < directionValues.size(); i++)
+        {
+            p.moveBall(directionValues.get(i),speedValues.get(i));
+        }
+        */
+
+        //currentSwing = 0;
+        if(currentSwing < numberOfSwings) p.moveBall(directionValues.get(currentSwing),speedValues.get(currentSwing));
+        if(p.ballStopped) currentSwing++;
+        if(currentSwing == numberOfSwings) currentSwing = 0;
+
 
 		if(p.getBallStopped()){
 		    pressed = false;
