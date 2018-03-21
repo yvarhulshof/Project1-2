@@ -44,6 +44,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private float mouseX;
     private float mouseY;
 
+    private FileInput FI;
+    private String[] mapInfo;
+    private ArrayList<String> swingInfo;
+
     private ShapeRenderer sr;
 
 	@Override
@@ -84,9 +88,17 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		double golfBallHeight = Math.sin(golfBall.x) + Math.pow(golfBall.y,2);
 
-
-
 		p = new PhysicsEngine(golfBall);
+
+        FI = new FileInput();
+
+        mapInfo = FI.readMapInfo();
+
+        p.setGravitationalForce(Double.parseDouble(mapInfo[0]));
+        p.setFrictionConstant(Double.parseDouble(mapInfo[1]));
+        p.setMaxSpeed(Double.parseDouble(mapInfo[2]));
+
+        swingInfo = FI.readSwingInfo();
 
 		Gdx.input.setInputProcessor(this);
 	}
