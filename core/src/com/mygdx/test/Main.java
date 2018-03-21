@@ -60,7 +60,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private float mouseX;
     private float mouseY;
 
-    private FileInput FI; //instance of FileInput from which GolfswingInput and MapInput can be read
+    //private FileInput FI; //instance of FileInput from which GolfswingInput and MapInput can be read
     private String[] mapInfo; //the course information read from MapInput.txt
     private ArrayList<Double> directionValues; //the GolfswingInput values
     private ArrayList<Double> speedValues; //the GolfswingInput values
@@ -106,7 +106,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		p = new PhysicsEngine(golfBall); //creating an instance of the physics engine
 
 
-        FI = new FileInput(); //creating an instance of the file reader
+        FileInput FI = new FileInput(); //creating an instance of the file reader
 
 	    mapInfo = FI.readMapInfo(); //receiving information about the map (non-visual, physics related) and then setting these values in the physics engine
         p.setGravitationalForce(Double.parseDouble(mapInfo[0]));
@@ -114,9 +114,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         p.setMaxSpeed(Double.parseDouble(mapInfo[2]));
 
         FI.readSwingInfo(); //used for Method 3, receiving the swingInput information and then assigning these values
-        directionValues = FI.getDirectionValues();
-        speedValues = FI.getSpeedValues();
-        numberOfSwings = directionValues.size();
+        //directionValues = FI.getDirectionValues();
+        //speedValues = FI.getSpeedValues();
+        //numberOfSwings = directionValues.size();
         currentSwing = 0;
 
         Win = new WinFrame();
