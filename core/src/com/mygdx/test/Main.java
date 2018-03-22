@@ -93,9 +93,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMap = new TmxMapLoader().load("map2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
-		water = new Rectangle(1200/2 - 64/2, 70, 120, 80);
-		golfBall = new Circle(800 / 2 - 64 / 2, 20, 25);
-		goal = new Circle(600/2, 40, 30);
+		water = new Rectangle(285, 175, 120, 80);
+		golfBall = new Circle(361, 8, 25);
+		goal = new Circle(83, 386, 30);
 
 
 		Gdx.input.setInputProcessor(this); //setting the inputProccesor which allows the user to use the mouse and keyboard to control aspects of the program
@@ -201,8 +201,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 				goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
 			System.out.println("congrats");
 			Win.winGUI();
-			golfBall.x = 800/2 - 64/2;
-			golfBall.y = 20;
+			golfBall.x =361;
+			golfBall.y = 8;
 
 		}
 
