@@ -37,40 +37,45 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
-	private SpriteBatch batch; //a collection of image files
-	private Texture golfballImg; //golf ball image file
-	private static GolfBall golfBall; //golf ball circle object to which the image file is attached
+	// initialisation of the ball
+    private SpriteBatch batch; //a collection of image files
+    private Texture golfballImg; //golf ball image file
+    private static GolfBall golfBall; //golf ball circle object to which the image file is attached
 
-	private SpriteBatch goalBatch;
-	private Texture goalImg;
-	private static Circle goal;
+	//initialisation of the hole
+    private SpriteBatch goalBatch;
+    private Texture goalImg;
+    private static Circle goal;
 
-	private SpriteBatch waterBatch;
-	private Texture waterImg;
-	private static Rectangle water;
+    //initialisation of the water
+    private SpriteBatch waterBatch;
+    private Texture waterImg;
+    private static Rectangle water;
 
-	private PhysicsEngine p;
-	private TiledMap tiledMap;
-	private TiledMapRenderer tiledMapRenderer;
-	private static boolean released;
-	private SwingInput SI; //top left GUI in which swing directions and speed can be entered
+    private PhysicsEngine p;
+    private TiledMap tiledMap;
+    private TiledMapRenderer tiledMapRenderer;
+    private static boolean released;
+    private SwingInput SI; //top left GUI in which swing directions and speed can be entered
 
-	private int numberOfSwings; //used for Method 3, giving the total number of swings entered in the GolswingInput.txt file
-	private int currentSwing; //used for Method 3, giving the current swing number
-	private float mouseX;
-	private float mouseY;
-	double eucliDistance;//distance between the ball and the mouse
+    private int numberOfSwings; //used for Method 3, giving the total number of swings entered in the GolswingInput.txt file
+    private int currentSwing; //used for Method 3, giving the current swing number
+    private float mouseX;
+    private float mouseY;
+    private float camXTracer;
+    private float camYTracer;
+	double eucliDistance;//absolute distance between the ball and the mouse
 
-	//private FileInput FI; //instance of FileInput from which GolfswingInput and MapInput can be read
-	private String[] mapInfo; //the course information read from MapInput.txt
-	private ArrayList<Double> directionValues; //the GolfswingInput values
-	private ArrayList<Double> speedValues; //the GolfswingInput values
+    //private FileInput FI; //instance of FileInput from which GolfswingInput and MapInput can be read
+    private String[] mapInfo; //the course information read from MapInput.txt
+    private ArrayList<Double> directionValues; //the GolfswingInput values
+    private ArrayList<Double> speedValues; //the GolfswingInput values
 
 	/**
 	 * Method in which we create the initial game state, load the map, create the file readers and set the physics engine and input processor
 	 */
-	private ShapeRenderer sr;
-//	private WinFrame Win;
+    private ShapeRenderer sr;
+	private WinFrame Win;
 
 	@Override
 	public void create () {
@@ -84,8 +89,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		float w = Gdx.graphics.getWidth(); //the width of the screen
 		float h = Gdx.graphics.getHeight(); //the height of the screen
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, w+50, h+50);
+		camera.setToOrtho(false, w, h);
 		camera.update();
+		camXTracer = 0;
+		camYTracer = 0;
 
 
 		/** load the map */
@@ -93,9 +100,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMap = new TmxMapLoader().load("map2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
-		water = new Rectangle(285, 175, w, 80);
+		water = new Rectangle(285, 175, 120, 80);
 		golfBall = new GolfBall(0,0);
-		goal = new Circle(83, 386, 30);
+		goal = new Circle(450, 330, 30);
 
 
 		Gdx.input.setInputProcessor(this); //setting the inputProccesor which allows the user to use the mouse and keyboard to control aspects of the program
@@ -107,20 +114,20 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		p = new PhysicsEngine(golfBall); //creating an instance of the physics engine
 
 
-		FileInput FI = new FileInput(); //creating an instance of the file reader
+        FileInput FI = new FileInput(); //creating an instance of the file reader
 
-		mapInfo = FI.readMapInfo(); //receiving information about the map (non-visual, physics related) and then setting these values in the physics engine
-		p.setGravitationalForce(Double.parseDouble(mapInfo[0]));
-		p.setFrictionConstant(Double.parseDouble(mapInfo[1]));
-		p.setMaxSpeed(Double.parseDouble(mapInfo[2]));
+       /* mapInfo = FI.readMapInfo(); //receiving information about the map (non-visual, physics related) and then setting these values in the physics engine
+        p.setGravitationalForce(Double.parseDouble(mapInfo[0]));
+        p.setFrictionConstant(Double.parseDouble(mapInfo[1]));
+        p.setMaxSpeed(Double.parseDouble(mapInfo[2])); */
 
-		FI.readSwingInfo(); //used for Method 3, receiving the swingInput information and then assigning these values
-		//directionValues = FI.getDirectionValues();
-		//speedValues = FI.getSpeedValues();
-		//numberOfSwings = directionValues.size();
-		currentSwing = 0;
+        FI.readSwingInfo(); //used for Method 3, receiving the swingInput information and then assigning these values
+        //directionValues = FI.getDirectionValues();
+        //speedValues = FI.getSpeedValues();
+        //numberOfSwings = directionValues.size();
+        currentSwing = 0;
 
-	//	Win = new WinFrame();
+        Win = new WinFrame();
 	}
 
 
@@ -153,30 +160,35 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		//Method 1 of moving the ball
 		if(released)
 		{
-			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x +golfBall.radius), mouseY-(golfBall.y+ golfBall.radius), eucliDistance/150));
+			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)), eucliDistance);
 		}
 
 		if (touchDragged(0,0,0) && p.getBallStopped())
 		{
 			//leftKeyPressed = true;
-			mouseX = Gdx.input.getX();
-			mouseY = Gdx.input.getY();
-			ShapeRenderer sr = new ShapeRenderer();
+			mouseX = Gdx.input.getX() + camXTracer;
+			mouseY = Gdx.graphics.getHeight() - Gdx.input.getY() + camYTracer;
+			sr = new ShapeRenderer();
 			camera.update();
-			eucliDistance = Math.sqrt(Math.pow((mouseX -(golfBall.x + golfBall.radius)), 2) + Math.pow((mouseY -(golfBall.y + golfBall.radius)), 2));
 			sr.setProjectionMatrix(camera.combined);
 			sr.begin(ShapeType.Line);
-			sr.setColor((float) (Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2))/300),255 - ((float) (Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2))/300)),0,0);
-			sr.line(mouseX, Gdx.graphics.getHeight() - mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
+			eucliDistance = Math.sqrt(Math.pow((mouseX -(golfBall.x + golfBall.radius)), 2) + Math.pow((mouseY -(golfBall.y + golfBall.radius)), 2));
+			float red = (float) (eucliDistance/1.5 - 50);
+			float green = (float) (255 - eucliDistance/1.5);
+			sr.setColor(red,green,0,0);
+			//System.out.println("green: " + green + "red : " + red);
+			sr.line(mouseX, mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
 			sr.end();
+			System.out.println("x = " + (mouseX -(golfBall.x + golfBall.radius)) + " 	y =" + (mouseY -(golfBall.y + golfBall.radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)));
+
 		}
 
 
 		//Method 2 of moving the ball
 		if(SI.getButtonClicked())
-		{
-			p.moveBall(SI.getDir(), SI.getSpd());
-		}
+        {
+            p.moveBall(SI.getDir(), SI.getSpd());
+        }
 
 
 		//Method 3 of moving the ball, uncomment and comment Method 1 to use
@@ -192,24 +204,23 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			SI.setButtonClicked(false);
 		}
 
-		if(		goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 &&
-				goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
+        if(goal.x - golfBall.x <= 10 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
 			System.out.println("congrats");
-			//Win.winGUI();
-			golfBall.x = 800/2 - 64/2;
-			golfBall.y = 20;
+			Win.winGUI();
+			golfBall.x =80;
+			golfBall.y = 0;
 
 		}
 
 		/** check collision with the water and make the ball respawn */
 		/**  !!!!!!!!!! need to make it pop at speed 0!!!*/
-		if(		water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 &&
-				water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
+		if(water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 && water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
+
 			System.out.println(" u in water. game over");
-
-			golfBall.x = water.x - (golfBall.radius + water.width/2);
-			golfBall.y = water.y - (golfBall.radius + water.height/2);
-
+			p.golfBall.setVX2(0);
+			p.golfBall.setVY2(0);
+			golfBall.x = p.positionX();
+			golfBall.y = p.positionY();
 		}
 
 
@@ -241,14 +252,30 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	}
 
 	@Override public boolean keyUp(int keycode) {
-		if(keycode == Input.Keys.A)
-			camera.translate(-32,0);
-		if(keycode == Input.Keys.D)
-			camera.translate(32,0);
-		if(keycode == Input.Keys.W)
-			camera.translate(0,32);
-		if(keycode == Input.Keys.S)
-			camera.translate(0,-32);
+		if (keycode == Input.Keys.A) {
+			camera.translate(-32, 0);
+			goal.x += 32;
+			water.x += 32;
+			camXTracer -= 32;
+		}
+		if (keycode == Input.Keys.D) {
+			camera.translate(32, 0);
+			goal.x -= 32;
+			water.x -= 32;
+			camXTracer += 32;
+		}
+		if (keycode == Input.Keys.W){
+			camera.translate(0, 32);
+			goal.y -= 32;
+			water.y -= 32;
+			camYTracer += 32;
+		}
+		if(keycode == Input.Keys.S) {
+			camera.translate(0, -32);
+			goal.y += 32;
+			water.y += 32;
+			camYTracer -= 32;
+		}
 		if(keycode == Input.Keys.NUM_1)
 			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
 		if(keycode == Input.Keys.NUM_2)

@@ -25,7 +25,10 @@ public class PhysicsEngine {
     private float vy1;
     private double slopey;
     private double slopex;
-
+    float xChange;
+    float yChange;
+    float lastShotX;
+    float lastShotY;
 
     public PhysicsEngine(GolfBall golfBall){
         this.golfBall = golfBall;
@@ -44,6 +47,8 @@ public class PhysicsEngine {
             golfBall.setVX2((float) (directionCoefficientX*initialSpeed));
             System.out.println("initial vx2 " + golfBall.getVx2());
             golfBall.setVY2((float) (directionCoefficientY*initialSpeed));
+            lastShotX = golfBall.x;
+            lastShotY = golfBall.y;
 
         }
 
@@ -51,7 +56,7 @@ public class PhysicsEngine {
 
 
         vx1 = golfBall.getVx2();
-        System.out.println("initial vx1 " + vx1);
+        //System.out.println("initial vx1 " + vx1);
         vy1 = golfBall.getVy2();
 
         golfBall.setVX2(vx1 + (float) findfx());
@@ -64,11 +69,19 @@ public class PhysicsEngine {
         double gravitationalPull = 9.81 / Math.pow(elapsedTime, 2); //not used yet, only comes in to play when the ball is on a slope
 
         //change in x and y during the elapsed time
-        float xChange = (float) ((1.0/60.0)*vx1);
-        float yChange = (float) ((1.0/60.0)*vy1);
+         xChange = (float) ((1.0/60.0)*vx1);
+         yChange = (float) ((1.0/60.0)*vy1);
+        if(     vx1 <=0.1 && vy1  <=0.1 ||
+                vx1 <= -0.1 && vy1 <= -0.1){
+            golfBall.setVX2(0);
+            golfBall.setVX2(0);
+            ballStopped = true;
+            initialCall= true;
 
-        System.out.println("xChange: " + xChange);
-        System.out.println("yChange: " + yChange);
+        }
+
+        //  System.out.println( " vx1 = " + vx1);
+          //System.out.println("vy1 = " + vy1);
 
         //if the change in direction becomes negative we no longer update the ball's location so that it comes to a stop
         //if(initialSpeed - (frictionConstant * elapsedTime) > 0) {
@@ -80,10 +93,22 @@ public class PhysicsEngine {
         //    ballStopped = true;
         //    initialCall = true;
         //}
-
-        System.out.println("ballLoc: " + golfBall.x);
-        System.out.println("ballLoc: " + golfBall.y);
+        System.out.println("speedX " + golfBall.getVx2());
+        System.out.println("speedY : " + golfBall.getVy2());
+        System.out.println("balloccX : " + golfBall.x );
+        System.out.println("possssX " +positionX());
+        System.out.println("balloccY : " + golfBall.y );
+        System.out.println("posssY " + positionY());
     }
+    public float positionX(){
+
+        return lastShotX;
+    }
+    public float positionY(){
+
+        return lastShotY;
+    }
+
 
     public double findfx(){
         double G; //= 0; //for now, DO NOT APPLY
@@ -108,11 +133,11 @@ public class PhysicsEngine {
         return fy;
     }
     public double dx(){
-        double d = 1; //for now, DO NOT APPLY
+        double d = 0; //for now, DO NOT APPLY
         return d;
     }
     public double dy(){
-        double d = 1; //for now, DO NOT APPLY
+        double d = 0; //for now, DO NOT APPLY
         return d;
     }
 
@@ -129,8 +154,10 @@ public class PhysicsEngine {
     } */
 
     public static double calcAngle(double x, double y){
+        y = -y;
+        x = -x;
         double angle;
-        angle = (Math.acos(-x/(Math.sqrt(x*x + y*y))));
+        angle = (Math.acos(x/(Math.sqrt(x*x + y*y))));
         angle = angle*180/Math.PI;
         if (y>=0)
             return angle;
