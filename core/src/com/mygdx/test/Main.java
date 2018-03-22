@@ -59,6 +59,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private int currentSwing; //used for Method 3, giving the current swing number
     private float mouseX;
     private float mouseY;
+	double eucliDistance;//distance between the ball and the mouse
 
     //private FileInput FI; //instance of FileInput from which GolfswingInput and MapInput can be read
     private String[] mapInfo; //the course information read from MapInput.txt
@@ -152,21 +153,27 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		//Method 1 of moving the ball
 		if(released)
 		{
-			p.moveBall(PhysicsEngine.calcAngle(mouseX-golfBall.x, mouseY-golfBall.y), Math.pow(((Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2)))/500),2));
+			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)), eucliDistance/150);
 		}
 
 		if (touchDragged(0,0,0) && p.getBallStopped())
 		{
 			//leftKeyPressed = true;
 			mouseX = Gdx.input.getX();
-			mouseY = Gdx.input.getY();
-			ShapeRenderer sr = new ShapeRenderer();
+			mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
+			sr = new ShapeRenderer();
 			camera.update();
 			sr.setProjectionMatrix(camera.combined);
 			sr.begin(ShapeType.Line);
-			sr.setColor((float) (Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2))/300),255 - ((float) (Math.sqrt(Math.pow((mouseX - golfBall.x), 2) + Math.pow((mouseY - golfBall.y), 2))/300)),0,0);
-			sr.line(mouseX, Gdx.graphics.getHeight() - mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
+			eucliDistance = Math.sqrt(Math.pow((mouseX -(golfBall.x + golfBall.radius)), 2) + Math.pow((mouseY -(golfBall.y + golfBall.radius)), 2));
+			float red = (float) (eucliDistance/1.5 - 50);
+			float green = (float) (255 - eucliDistance/1.5);
+			sr.setColor(red,green,0,0);
+			//System.out.println("green: " + green + "red : " + red);
+			sr.line(mouseX, mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
 			sr.end();
+			System.out.println("x = " + (mouseX -(golfBall.x + golfBall.radius)) + " 	y =" + (mouseY -(golfBall.y + golfBall.radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)));
+
 		}
 
 
