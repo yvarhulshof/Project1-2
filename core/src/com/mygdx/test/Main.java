@@ -100,7 +100,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMap = new TmxMapLoader().load("map2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
-		water = new Rectangle(285, 175, 120, 80);
+		water = new Rectangle(285, 175, 160, 80);
 		golfBall = new GolfBall(0,0);
 		goal = new Circle(450, 330, 30);
 
