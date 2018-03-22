@@ -37,33 +37,39 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
-	private SpriteBatch batch; //a collection of image files
-	private Texture golfballImg; //golf ball image file
-	private static GolfBall golfBall; //golf ball circle object to which the image file is attached
+	// initialisation of the ball
+    private SpriteBatch batch; //a collection of image files
+    private Texture golfballImg; //golf ball image file
+    private static GolfBall golfBall; //golf ball circle object to which the image file is attached
 
-	private SpriteBatch goalBatch;
-	private Texture goalImg;
-	private static Circle goal;
+	//initialisation of the hole
+    private SpriteBatch goalBatch;
+    private Texture goalImg;
+    private static Circle goal;
 
-	private SpriteBatch waterBatch;
-	private Texture waterImg;
-	private static Rectangle water;
+    //initialisation of the water
+    private SpriteBatch waterBatch;
+    private Texture waterImg;
+    private static Rectangle water;
 
-	private PhysicsEngine p;
-	private TiledMap tiledMap;
-	private TiledMapRenderer tiledMapRenderer;
-	private static boolean released;
-	private SwingInput SI; //top left GUI in which swing directions and speed can be entered
+    private PhysicsEngine p;
+    private TiledMap tiledMap;
+    private TiledMapRenderer tiledMapRenderer;
+    private static boolean released;
+    private SwingInput SI; //top left GUI in which swing directions and speed can be entered
 
-	private int numberOfSwings; //used for Method 3, giving the total number of swings entered in the GolswingInput.txt file
-	private int currentSwing; //used for Method 3, giving the current swing number
-	private float mouseX;
-	private float mouseY;
+    private int numberOfSwings; //used for Method 3, giving the total number of swings entered in the GolswingInput.txt file
+    private int currentSwing; //used for Method 3, giving the current swing number
+    private float mouseX;
+    private float mouseY;
+    private float camXTracer;
+    private float camYTracer;
+	double eucliDistance;//absolute distance between the ball and the mouse
 
-	//private FileInput FI; //instance of FileInput from which GolfswingInput and MapInput can be read
-	private String[] mapInfo; //the course information read from MapInput.txt
-	private ArrayList<Double> directionValues; //the GolfswingInput values
-	private ArrayList<Double> speedValues; //the GolfswingInput values
+    //private FileInput FI; //instance of FileInput from which GolfswingInput and MapInput can be read
+    private String[] mapInfo; //the course information read from MapInput.txt
+    private ArrayList<Double> directionValues; //the GolfswingInput values
+    private ArrayList<Double> speedValues; //the GolfswingInput values
 
 	/**
 	 * Method in which we create the initial game state, load the map, create the file readers and set the physics engine and input processor

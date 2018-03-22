@@ -35,12 +35,12 @@ import static com.badlogic.gdx.graphics.Color.CYAN;
  */
 public class Main extends ApplicationAdapter implements InputProcessor{
 
-    private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
+	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
 	// initialisation of the ball
     private SpriteBatch batch; //a collection of image files
     private Texture golfballImg; //golf ball image file
-    private static Circle golfBall; //golf ball circle object to which the image file is attached
+    private static GolfBall golfBall; //golf ball circle object to which the image file is attached
 
 	//initialisation of the hole
     private SpriteBatch goalBatch;
@@ -101,7 +101,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
 		water = new Rectangle(285, 175, 120, 80);
-		golfBall = new Circle(361, 8, 25);
+		golfBall = new GolfBall(0,0);
 		goal = new Circle(83, 386, 30);
 
 
@@ -116,7 +116,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
         FileInput FI = new FileInput(); //creating an instance of the file reader
 
-	    mapInfo = FI.readMapInfo(); //receiving information about the map (non-visual, physics related) and then setting these values in the physics engine
+        mapInfo = FI.readMapInfo(); //receiving information about the map (non-visual, physics related) and then setting these values in the physics engine
         p.setGravitationalForce(Double.parseDouble(mapInfo[0]));
         p.setFrictionConstant(Double.parseDouble(mapInfo[1]));
         p.setMaxSpeed(Double.parseDouble(mapInfo[2]));
@@ -160,7 +160,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		//Method 1 of moving the ball
 		if(released)
 		{
-			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)), eucliDistance/150);
+			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)), eucliDistance);
 		}
 
 		if (touchDragged(0,0,0) && p.getBallStopped())
@@ -200,9 +200,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		//We update these booleans if the ball is stopped so that we know if we can make another swing
 		if(p.getBallStopped()){
-		    released = false;
-            SI.setButtonClicked(false);
-        }
+			released = false;
+			SI.setButtonClicked(false);
+		}
 
         if(goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
 			System.out.println("congrats");
@@ -222,12 +222,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 //			p.moveBall(0,0);
 			golfBall.x = water.x - (golfBall.radius + water.width/2);
 			golfBall.y = water.y - (golfBall.radius + water.height/2);
-
-
 		}
 
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
+		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) golfBall.y += 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) golfBall.y -= 200 * Gdx.graphics.getDeltaTime();
