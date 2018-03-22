@@ -37,14 +37,17 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
     private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
+	// initialisation of the ball
     private SpriteBatch batch; //a collection of image files
     private Texture golfballImg; //golf ball image file
     private static Circle golfBall; //golf ball circle object to which the image file is attached
 
+	//initialisation of the hole
     private SpriteBatch goalBatch;
     private Texture goalImg;
     private static Circle goal;
 
+    //initialisation of the water
     private SpriteBatch waterBatch;
     private Texture waterImg;
     private static Rectangle water;
@@ -59,7 +62,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private int currentSwing; //used for Method 3, giving the current swing number
     private float mouseX;
     private float mouseY;
-	double eucliDistance;//distance between the ball and the mouse
+    private float camXTracer;
+    private float camYTracer;
+	double eucliDistance;//absolute distance between the ball and the mouse
 
     //private FileInput FI; //instance of FileInput from which GolfswingInput and MapInput can be read
     private String[] mapInfo; //the course information read from MapInput.txt
@@ -86,6 +91,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, w, h);
 		camera.update();
+		camXTracer = 0;
+		camYTracer = 0;
 
 
 		/** load the map */
@@ -159,8 +166,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		if (touchDragged(0,0,0) && p.getBallStopped())
 		{
 			//leftKeyPressed = true;
-			mouseX = Gdx.input.getX();
-			mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
+			mouseX = Gdx.input.getX() + camXTracer;
+			mouseY = Gdx.graphics.getHeight() - Gdx.input.getY() + camYTracer;
 			sr = new ShapeRenderer();
 			camera.update();
 			sr.setProjectionMatrix(camera.combined);
@@ -197,8 +204,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
             SI.setButtonClicked(false);
         }
 
-        if(		goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 &&
-				goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
+        if(goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
 			System.out.println("congrats");
 			Win.winGUI();
 			golfBall.x =361;
@@ -208,12 +214,15 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		/** check collision with the water and make the ball respawn */
 		/**  !!!!!!!!!! need to make it pop at speed 0!!!*/
-		if(		water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 &&
-				water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
-			System.out.println(" u in water. game over");
+		if(water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 && water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
 
+			System.out.println(" u in water. game over");
+//			p.ballStopped = true;
+//			p.initialCall = true;
+//			p.moveBall(0,0);
 			golfBall.x = water.x - (golfBall.radius + water.width/2);
 			golfBall.y = water.y - (golfBall.radius + water.height/2);
+
 
 		}
 
@@ -246,14 +255,30 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	}
 
 	@Override public boolean keyUp(int keycode) {
-		if(keycode == Input.Keys.A)
-			camera.translate(-32,0);
-		if(keycode == Input.Keys.D)
-			camera.translate(32,0);
-		if(keycode == Input.Keys.W)
-			camera.translate(0,32);
-		if(keycode == Input.Keys.S)
-			camera.translate(0,-32);
+		if (keycode == Input.Keys.A) {
+			camera.translate(-32, 0);
+			goal.x += 32;
+			water.x += 32;
+			camXTracer -= 32;
+		}
+		if (keycode == Input.Keys.D) {
+			camera.translate(32, 0);
+			goal.x -= 32;
+			water.x -= 32;
+			camXTracer += 32;
+		}
+		if (keycode == Input.Keys.W){
+			camera.translate(0, 32);
+			goal.y -= 32;
+			water.y -= 32;
+			camYTracer += 32;
+		}
+		if(keycode == Input.Keys.S) {
+			camera.translate(0, -32);
+			goal.y += 32;
+			water.y += 32;
+			camYTracer -= 32;
+		}
 		if(keycode == Input.Keys.NUM_1)
 			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
 		if(keycode == Input.Keys.NUM_2)
