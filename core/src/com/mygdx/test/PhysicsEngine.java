@@ -26,6 +26,7 @@ public class PhysicsEngine {
     private double slopey;
     private double slopex;
 
+
     public PhysicsEngine(GolfBall golfBall){
         this.golfBall = golfBall;
     }
@@ -107,11 +108,11 @@ public class PhysicsEngine {
         return fy;
     }
     public double dx(){
-        double d = 0; //for now, DO NOT APPLY
+        double d = 1; //for now, DO NOT APPLY
         return d;
     }
     public double dy(){
-        double d = 0; //for now, DO NOT APPLY
+        double d = 1; //for now, DO NOT APPLY
         return d;
     }
 
@@ -128,10 +129,8 @@ public class PhysicsEngine {
     } */
 
     public static double calcAngle(double x, double y){
-        y = -y;
-        x = -x;
         double angle;
-        angle = (Math.acos(x/(Math.sqrt(x*x + y*y))));
+        angle = (Math.acos(-x/(Math.sqrt(x*x + y*y))));
         angle = angle*180/Math.PI;
         if (y>=0)
             return angle;
