@@ -52,8 +52,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private Texture waterImg;
     private static Rectangle water;
 
-    private static Rectangle terrainBound;
-
     private PhysicsEngine p;
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
@@ -103,9 +101,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
 		water = new Rectangle(285, 175, 120, 80);
-		terrainBound = new Rectangle(500,500,1000,1000);
 		golfBall = new GolfBall(0,0);
-		goal = new Circle(83, 386, 30);
+		goal = new Circle(450, 330, 30);
 
 
 		Gdx.input.setInputProcessor(this); //setting the inputProccesor which allows the user to use the mouse and keyboard to control aspects of the program
@@ -119,10 +116,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
         FileInput FI = new FileInput(); //creating an instance of the file reader
 
-        mapInfo = FI.readMapInfo(); //receiving information about the map (non-visual, physics related) and then setting these values in the physics engine
+       /* mapInfo = FI.readMapInfo(); //receiving information about the map (non-visual, physics related) and then setting these values in the physics engine
         p.setGravitationalForce(Double.parseDouble(mapInfo[0]));
         p.setFrictionConstant(Double.parseDouble(mapInfo[1]));
-        p.setMaxSpeed(Double.parseDouble(mapInfo[2]));
+        p.setMaxSpeed(Double.parseDouble(mapInfo[2])); */
 
         FI.readSwingInfo(); //used for Method 3, receiving the swingInput information and then assigning these values
         //directionValues = FI.getDirectionValues();
@@ -207,11 +204,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			SI.setButtonClicked(false);
 		}
 
-        if(goal.x - golfBall.x <= 0 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
+        if(goal.x - golfBall.x <= 10 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
 			System.out.println("congrats");
 			Win.winGUI();
-			golfBall.x =361;
-			golfBall.y = 8;
+			golfBall.x =80;
+			golfBall.y = 0;
 
 		}
 
@@ -220,22 +217,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		if(water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 && water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
 
 			System.out.println(" u in water. game over");
-			golfBall.setVX2(0);
-			golfBall.setVY2(0);
-			golfBall.x = water.x - (golfBall.radius + water.width/2);
-			golfBall.y = water.y - (golfBall.radius + water.height/2);
+			p.golfBall.setVX2(0);
+			p.golfBall.setVY2(0);
+			golfBall.x = p.positionX();
+			golfBall.y = p.positionY();
 		}
-
-
-		if(terrainBound.x - golfBall.x <= 33 && terrainBound.x - golfBall.x >= -110 && terrainBound.y - golfBall.y <= 33 && terrainBound.y - golfBall.y >= -70){
-
-			System.out.println(" u in water. game over");
-			golfBall.setVX2(0);
-			golfBall.setVY2(0);
-			golfBall.x = water.x - (golfBall.radius + water.width/2);
-			golfBall.y = water.y - (golfBall.radius + water.height/2);
-		}
-
 
 
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) golfBall.x -= 200 * Gdx.graphics.getDeltaTime();
