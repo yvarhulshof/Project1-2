@@ -217,10 +217,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		if(water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 && water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
 
 			System.out.println(" u in water. game over");
-			p.golfBall.setVX2(0);
-			p.golfBall.setVY2(0);
 			golfBall.x = p.positionX();
 			golfBall.y = p.positionY();
+			p.golfBall.setVX2(0);
+			p.golfBall.setVY2(0);
 		}
 
 

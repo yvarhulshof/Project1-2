@@ -43,13 +43,20 @@ public class PhysicsEngine {
             initialCall = false;
 
             double directionCoefficientX = (Math.cos(Math.toRadians(direction)));
+//            System.out.println("directionCoefficientX = " + directionCoefficientX);
             double directionCoefficientY = (Math.sin(Math.toRadians(direction)));
+//            System.out.println("directionCoefficienty = " + directionCoefficientY);
+//            System.out.println("total direction = " + Math.sqrt(Math.pow(directionCoefficientX, 2) + Math.pow(directionCoefficientY, 2)));
+
+
+
             golfBall.setVX2((float) (directionCoefficientX*initialSpeed));
             System.out.println("initial vx2 " + golfBall.getVx2());
             golfBall.setVY2((float) (directionCoefficientY*initialSpeed));
+            System.out.println("initial vy2 " + golfBall.getVy2());
+
             lastShotX = golfBall.x;
             lastShotY = golfBall.y;
-
         }
 
         initialCall = false;
@@ -59,26 +66,33 @@ public class PhysicsEngine {
         //System.out.println("initial vx1 " + vx1);
         vy1 = golfBall.getVy2();
 
-        golfBall.setVX2(vx1 + (float) findfx());
-        //vx2 = vx1 + findfx();
-        golfBall.setVY2(vy1 + (float) findfy());
+        System.out.println();
+        if ((Math.abs(vx1 + (float) findfx()) <= 20) && (-mass * g * dx() == 0) && (-mass * g * dy() == 0) && (Math.abs(vy1 + (float) findfy())) <= 20){
+            golfBall.setVX2(0);
+            golfBall.setVY2(0);
+            ballStopped = true;
+            initialCall= true;
+        }
+        else{
+            golfBall.setVX2(vx1 + (float) findfx());
+            golfBall.setVY2(vy1 + (float) findfy());
+        }
 
-        final double frictionConstant = 0.6;
+        //vx2 = vx1 + findfx();
         double elapsedTime = System.nanoTime() / 1000000000.0 - startTime; //defining the value of t for the current call of render()
 
-        double gravitationalPull = 9.81 / Math.pow(elapsedTime, 2); //not used yet, only comes in to play when the ball is on a slope
+//        double gravitationalPull = 9.81 / Math.pow(elapsedTime, 2); //not used yet, only comes in to play when the ball is on a slope
 
         //change in x and y during the elapsed time
          xChange = (float) ((1.0/60.0)*vx1);
          yChange = (float) ((1.0/60.0)*vy1);
-        if(     vx1 <=0.1 && vy1  <=0.1 ||
-                vx1 <= -0.1 && vy1 <= -0.1){
-            golfBall.setVX2(0);
-            golfBall.setVX2(0);
-            ballStopped = true;
-            initialCall= true;
 
-        }
+
+//        if(vx1 <=0.1 && (vy1  <=0.1 || vx1 <= -0.1) && vy1 <= -0.1){
+//            golfBall.setVX2(0);
+//            golfBall.setVX2(0);
+//
+//        }
 
         //  System.out.println( " vx1 = " + vx1);
           //System.out.println("vy1 = " + vy1);
@@ -93,13 +107,14 @@ public class PhysicsEngine {
         //    ballStopped = true;
         //    initialCall = true;
         //}
-        System.out.println("speedX " + golfBall.getVx2());
-        System.out.println("speedY : " + golfBall.getVy2());
-        System.out.println("balloccX : " + golfBall.x );
-        System.out.println("possssX " +positionX());
-        System.out.println("balloccY : " + golfBall.y );
-        System.out.println("posssY " + positionY());
+//        System.out.println("speedX " + golfBall.getVx2());
+//        System.out.println("speedY : " + golfBall.getVy2());
+//        System.out.println("balloccX : " + golfBall.x );
+//        System.out.println("possssX " +positionX());
+//        System.out.println("balloccY : " + golfBall.y );
+//        System.out.println("posssY " + positionY());
     }
+
     public float positionX(){
 
         return lastShotX;
