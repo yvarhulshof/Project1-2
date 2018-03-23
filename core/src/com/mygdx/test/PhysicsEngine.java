@@ -66,8 +66,7 @@ public class PhysicsEngine {
         //System.out.println("initial vx1 " + vx1);
         vy1 = golfBall.getVy2();
 
-        System.out.println();
-        if ((Math.abs(vx1 + (float) findfx()) <= 20) && (-mass * g * dx() == 0) && (-mass * g * dy() == 0) && (Math.abs(vy1 + (float) findfy())) <= 20){
+        if ((Math.abs(vx1 + (float) findfx()) <= 20) && (-mass * g * dx() >= -3) && (-mass * g * dy() >= -3) && (Math.abs(vy1 + (float) findfy())) <= 20){
             golfBall.setVX2(0);
             golfBall.setVY2(0);
             ballStopped = true;
@@ -148,12 +147,16 @@ public class PhysicsEngine {
         return fy;
     }
     public double dx(){
-        double d = 0; //for now, DO NOT APPLY
-        return d;
+        double d = 0.1 + 0.06*(golfBall.x); //for now, DO NOT APPLY
+        double e = 0;
+        double f = - 2*Math.cos(golfBall.x);
+        return e;
     }
     public double dy(){
-        double d = 0; //for now, DO NOT APPLY
-        return d;
+        double d = 0.2; //for now, DO NOT APPLY
+        double e = 0;
+        double f = - 2*Math.cos(golfBall.y);
+        return e;
     }
 
     public boolean getBallStopped(){
