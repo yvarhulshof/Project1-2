@@ -204,7 +204,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			SI.setButtonClicked(false);
 		}
 
-        if(goal.x - golfBall.x <= 10 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
+        if(goal.x - golfBall.x <= 10 - camXTracer && goal.x - golfBall.x >= -80 - camXTracer && goal.y - golfBall.y <= 0 - camYTracer && goal.y - golfBall.y >= -80 - camYTracer){
 			System.out.println("congrats");
 			Win.winGUI();
 			golfBall.x =80;
@@ -214,7 +214,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		/** check collision with the water and make the ball respawn */
 		/**  !!!!!!!!!! need to make it pop at speed 0!!!*/
-		if(water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 && water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
+		if(water.x - golfBall.x <= 33  - camXTracer && water.x - golfBall.x >= -110  - camXTracer && water.y - golfBall.y <= 33 - camYTracer  && water.y - golfBall.y >= -70 - camYTracer ){
 
 			System.out.println(" u in water. game over");
 			golfBall.x = p.positionX();
