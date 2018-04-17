@@ -220,6 +220,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			released = false;
 			SI.setButtonClicked(false);
 			firstFrameOfSwing = true;
+			p.inWater = false;
 		}
 
         if(goal.x - golfBall.x <= 10 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
@@ -240,6 +241,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			golfBall.y = p.positionY();
 			p.golfBall.setVX2(0);
 			p.golfBall.setVY2(0);
+			p.ballStopped = true;
+			p.initialCall = true;
+			p.inWater = true;
 		}
 
 
@@ -259,7 +263,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		return false;
 	}
 	@Override public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !p.inWater)
 			return true;
 		else
 			return false;

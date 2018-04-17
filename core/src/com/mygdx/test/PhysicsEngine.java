@@ -12,6 +12,7 @@ public class PhysicsEngine {
     Rectangle water;
     boolean ballStopped = true;
     boolean ballBlocked = false;
+    boolean inWater;
 
     boolean ballBlockedX = false;
     boolean ballBlockedY = false;
@@ -66,9 +67,11 @@ public class PhysicsEngine {
             double directionCoefficientY = (Math.sin(Math.toRadians(direction)));
 
 
-            golfBall.setVX2((float) (directionCoefficientX*initialSpeed));
+            if(!inWater){ golfBall.setVX2((float) (directionCoefficientX*initialSpeed));}
+            else{ golfBall.setVX2((float) (directionCoefficientX*initialSpeed));}
             System.out.println("initial vx2 " + golfBall.getVx2());
-            golfBall.setVY2((float) (directionCoefficientY*initialSpeed));
+            if(!inWater){ golfBall.setVY2((float) (directionCoefficientY*initialSpeed));}
+            else{ golfBall.setVY2((float) (directionCoefficientY*initialSpeed));}
             System.out.println("initial vy2 " + golfBall.getVy2());
 
             lastShotX = golfBall.x;
@@ -107,8 +110,8 @@ public class PhysicsEngine {
 
         if(!usingMethod3)
         {
-            if      (((Math.abs(vx1 + (float) findfx()) <= 20) && ((Math.abs(vy1 + (float) findfy())) <= 20)) &&
-                    ((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY))
+            if      ((((Math.abs(vx1 + (float) findfx()) <= 20) && ((Math.abs(vy1 + (float) findfy())) <= 20)) &&
+                    ((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY)) || inWater)
             {
                 ballStopped = true;
                 initialCall = true;
@@ -231,14 +234,14 @@ public class PhysicsEngine {
             ballBlockedY = true;
         }
 
-        /*if(!ballBlockedX)*/ golfBall.x += xChange;
-        /*if(!ballBlockedY)*/ golfBall.y += yChange;
+        /*if(!ballBlockedX)*/ if(!inWater) golfBall.x += xChange;
+        /*if(!ballBlockedY)*/if(!inWater) golfBall.y += yChange;
             //z = x+y;
         //}
-        //else {
-        //    ballStopped = true;
-        //    initialCall = true;
-        //}
+        else {
+            ballStopped = true;
+            initialCall = true;
+        }
         System.out.println("speedX " + golfBall.getVx2());
         System.out.println("speedY : " + golfBall.getVy2());
         System.out.println("balloccX : " + golfBall.x );
