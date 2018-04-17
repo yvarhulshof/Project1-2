@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -58,6 +59,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private static boolean released;
     private SwingInput SI; //top left GUI in which swing directions and speed can be entered
 
+    private TiledMapTileLayer collisionLayer;
+    private boolean firstFrameOfSwing = true;
+
     private int numberOfSwings; //used for Method 3, giving the total number of swings entered in the GolswingInput.txt file
     private int currentSwing; //used for Method 3, giving the current swing number
     private float mouseX;
@@ -100,9 +104,13 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMap = new TmxMapLoader().load("map2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
-		water = new Rectangle(285, 175, 120, 80);
+		water = new Rectangle(285, 175, 160, 80);
+        goal = new Circle(450, 330, 30);
+
 		golfBall = new GolfBall(0,0);
-		goal = new Circle(450, 330, 30);
+        collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
+
+
 
 
 		Gdx.input.setInputProcessor(this); //setting the inputProccesor which allows the user to use the mouse and keyboard to control aspects of the program
@@ -111,20 +119,21 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		SI.createGUI();
 
 
-		p = new PhysicsEngine(golfBall); //creating an instance of the physics engine
+		p = new PhysicsEngine(golfBall,collisionLayer); //creating an instance of the physics engine
 
 
         FileInput FI = new FileInput(); //creating an instance of the file reader
 
+        //uncomment to read from Map.Input.txt
        /* mapInfo = FI.readMapInfo(); //receiving information about the map (non-visual, physics related) and then setting these values in the physics engine
         p.setGravitationalForce(Double.parseDouble(mapInfo[0]));
         p.setFrictionConstant(Double.parseDouble(mapInfo[1]));
         p.setMaxSpeed(Double.parseDouble(mapInfo[2])); */
 
         FI.readSwingInfo(); //used for Method 3, receiving the swingInput information and then assigning these values
-        //directionValues = FI.getDirectionValues();
-        //speedValues = FI.getSpeedValues();
-        //numberOfSwings = directionValues.size();
+        directionValues = FI.getDirectionValues();
+        speedValues = FI.getSpeedValues();
+        numberOfSwings = directionValues.size();
         currentSwing = 0;
 
         Win = new WinFrame();
@@ -158,10 +167,12 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		waterBatch.end();
 
 		//Method 1 of moving the ball
-		if(released)
+        /*
+        if(released)
 		{
 			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)), eucliDistance);
 		}
+
 
 		if (touchDragged(0,0,0) && p.getBallStopped())
 		{
@@ -180,28 +191,35 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			sr.line(mouseX, mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
 			sr.end();
 			System.out.println("x = " + (mouseX -(golfBall.x + golfBall.radius)) + " 	y =" + (mouseY -(golfBall.y + golfBall.radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)));
-
 		}
-
+        */
 
 		//Method 2 of moving the ball
 		if(SI.getButtonClicked())
         {
+            if(firstFrameOfSwing){
+                p.setBallBlockedX(false);
+                p.setBallBlockedY(false);
+            }
+            firstFrameOfSwing = false;
             p.moveBall(SI.getDir(), SI.getSpd());
         }
 
-
 		//Method 3 of moving the ball, uncomment and comment Method 1 to use
-		/*
+
+        /*
         if(currentSwing < numberOfSwings) p.moveBall(directionValues.get(currentSwing),speedValues.get(currentSwing));
-        if(p.ballStopped) currentSwing++;
+        if(p.getBallStopped()) currentSwing++;
         if(currentSwing == numberOfSwings) currentSwing = 0;
-		*/
+        */
+
+
 
 		//We update these booleans if the ball is stopped so that we know if we can make another swing
-		if(p.getBallStopped()){
+		if( p.getBallStopped()){
 			released = false;
 			SI.setButtonClicked(false);
+			firstFrameOfSwing = true;
 		}
 
         if(goal.x - golfBall.x <= 10 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
@@ -209,18 +227,19 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			Win.winGUI();
 			golfBall.x =80;
 			golfBall.y = 0;
-
 		}
+
+
 
 		/** check collision with the water and make the ball respawn */
 		/**  !!!!!!!!!! need to make it pop at speed 0!!!*/
 		if(water.x - golfBall.x <= 33 && water.x - golfBall.x >= -110 && water.y - golfBall.y <= 33 && water.y - golfBall.y >= -70){
 
 			System.out.println(" u in water. game over");
-			p.golfBall.setVX2(0);
-			p.golfBall.setVY2(0);
 			golfBall.x = p.positionX();
 			golfBall.y = p.positionY();
+			p.golfBall.setVX2(0);
+			p.golfBall.setVY2(0);
 		}
 
 
