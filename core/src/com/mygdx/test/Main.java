@@ -167,7 +167,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		waterBatch.end();
 
 		//Method 1 of moving the ball
-        /*
+
         if(released)
 		{
 			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)), eucliDistance);
@@ -176,6 +176,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		if (touchDragged(0,0,0) && p.getBallStopped())
 		{
+            if(firstFrameOfSwing){
+                p.setBallBlockedX(false);
+                p.setBallBlockedY(false);
+            }
+            firstFrameOfSwing = false;
 			//leftKeyPressed = true;
 			mouseX = Gdx.input.getX() + camXTracer;
 			mouseY = Gdx.graphics.getHeight() - Gdx.input.getY() + camYTracer;
@@ -192,7 +197,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			sr.end();
 			System.out.println("x = " + (mouseX -(golfBall.x + golfBall.radius)) + " 	y =" + (mouseY -(golfBall.y + golfBall.radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)));
 		}
-        */
+
 
 		//Method 2 of moving the ball
 		if(SI.getButtonClicked())
@@ -220,7 +225,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			released = false;
 			SI.setButtonClicked(false);
 			firstFrameOfSwing = true;
-			p.inWater = false;
 		}
 
         if(goal.x - golfBall.x <= 10 && goal.x - golfBall.x >= -80 && goal.y - golfBall.y <= 0 && goal.y - golfBall.y >= -80){
@@ -241,9 +245,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			golfBall.y = p.positionY();
 			p.golfBall.setVX2(0);
 			p.golfBall.setVY2(0);
-			p.ballStopped = true;
-			p.initialCall = true;
-			p.inWater = true;
 		}
 
 
@@ -263,7 +264,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		return false;
 	}
 	@Override public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !p.inWater)
+		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 			return true;
 		else
 			return false;

@@ -12,7 +12,6 @@ public class PhysicsEngine {
     Rectangle water;
     boolean ballStopped = true;
     boolean ballBlocked = false;
-    boolean inWater;
 
     boolean ballBlockedX = false;
     boolean ballBlockedY = false;
@@ -57,7 +56,10 @@ public class PhysicsEngine {
         boolean collisionX = false;
         boolean collisionY = false;
 
+
         ballStopped = false;
+
+
 
         if(initialCall) {
             startTime = System.nanoTime() / 1000000000.0; //defining the value for which t = 0
@@ -67,11 +69,9 @@ public class PhysicsEngine {
             double directionCoefficientY = (Math.sin(Math.toRadians(direction)));
 
 
-            if(!inWater){ golfBall.setVX2((float) (directionCoefficientX*initialSpeed));}
-            else{ golfBall.setVX2((float) (directionCoefficientX*initialSpeed));}
+            golfBall.setVX2((float) (directionCoefficientX*initialSpeed));
             System.out.println("initial vx2 " + golfBall.getVx2());
-            if(!inWater){ golfBall.setVY2((float) (directionCoefficientY*initialSpeed));}
-            else{ golfBall.setVY2((float) (directionCoefficientY*initialSpeed));}
+            golfBall.setVY2((float) (directionCoefficientY*initialSpeed));
             System.out.println("initial vy2 " + golfBall.getVy2());
 
             lastShotX = golfBall.x;
@@ -104,14 +104,14 @@ public class PhysicsEngine {
         }
 */
 
-        //the ball is stopped if: its abs. speed is less than 20
+        //the ball is stopped if: itw abs. speed is less than 20
         //and either the gravity inflicted on the ball is 0
         //or the ball is blocked in both x and y directions
 
         if(!usingMethod3)
         {
-            if      ((((Math.abs(vx1 + (float) findfx()) <= 20) && ((Math.abs(vy1 + (float) findfy())) <= 20)) &&
-                    ((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY)) || inWater)
+            if      (((Math.abs(vx1 + (float) findfx()) <= 20) && ((Math.abs(vy1 + (float) findfy())) <= 20)) &&
+                    ((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY))
             {
                 ballStopped = true;
                 initialCall = true;
@@ -135,9 +135,6 @@ public class PhysicsEngine {
 
         //checking if the ball collides with the squares surrounding it
 
-        int xOffset = 0;
-        int yOffset = 0;
-
         if(golfBall.getVx2() < 0){
             //top left
             TiledMapTileLayer.Cell collisionCellTopLeft =  collisionLayer.getCell((int) (golfBall.x / tileWidth), (int) ((golfBall.y + 2*golfBall.radius) / tileHeight));
@@ -157,8 +154,6 @@ public class PhysicsEngine {
                 collisionX = collisionCellTopLeft.getTile().getProperties().containsKey("solid");
             }
 
-            if(collisionX) xOffset = 10;
-
         }
         else if(golfBall.getVx2() > 0){
             //top right
@@ -176,13 +171,11 @@ public class PhysicsEngine {
                 TiledMapTileLayer.Cell collisionCellBottomRight = collisionLayer.getCell((int) (golfBall.x / tileWidth), (int) ((golfBall.y) / tileHeight));
                 collisionX = collisionCellTopRight.getTile().getProperties().containsKey("solid");
             }
-
-            if(collisionX) xOffset = -10;
         }
 
         //if we have a collision on X, we set the balls xCoords to those of the previous frame and set its speed in x direction to 0
         if(collisionX){
-            golfBall.x = oldXCoords+xOffset;
+            golfBall.x = oldXCoords+10;
             golfBall.setVX2(0);
             ballBlockedX = true;
         }
@@ -204,8 +197,6 @@ public class PhysicsEngine {
                 TiledMapTileLayer.Cell collisionCellBottomRight = collisionLayer.getCell((int) ((golfBall.x + 2 * golfBall.radius) / tileWidth), (int) ((golfBall.y) / tileHeight));
                 collisionY = collisionCellBottomRight.getTile().getProperties().containsKey("solid");
             }
-
-            if(collisionY) yOffset = 10;
         }
         else if(golfBall.getVy2() > 0) {
                 //top left
@@ -223,25 +214,23 @@ public class PhysicsEngine {
                     TiledMapTileLayer.Cell collisionCellTopRight = collisionLayer.getCell((int) ((golfBall.x + 2 * golfBall.radius) / tileWidth), (int) ((golfBall.y + 2 * golfBall.radius) / tileHeight));
                     collisionY = collisionCellTopRight.getTile().getProperties().containsKey("solid");
                 }
-
-            if(collisionY) yOffset = -10;
             }
 
 
         if (collisionY){
-            golfBall.y = oldYCoords+yOffset;
+            golfBall.y = oldYCoords+10;
             golfBall.setVY2(0);
             ballBlockedY = true;
         }
 
-        /*if(!ballBlockedX)*/ if(!inWater) golfBall.x += xChange;
-        /*if(!ballBlockedY)*/if(!inWater) golfBall.y += yChange;
+        /*if(!ballBlockedX)*/ golfBall.x += xChange;
+        /*if(!ballBlockedY)*/ golfBall.y += yChange;
             //z = x+y;
         //}
-        else {
-            ballStopped = true;
-            initialCall = true;
-        }
+        //else {
+        //    ballStopped = true;
+        //    initialCall = true;
+        //}
         System.out.println("speedX " + golfBall.getVx2());
         System.out.println("speedY : " + golfBall.getVy2());
         System.out.println("balloccX : " + golfBall.x );
@@ -265,6 +254,8 @@ public class PhysicsEngine {
         double H;
         double fx;
         slopex = dx();
+        //if(ballBlockedX) G = 0;
+        //else
         G = -mass * g * slopex;
 
         H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
@@ -276,6 +267,8 @@ public class PhysicsEngine {
         double H;
         double fy;
         slopey = dy();
+        //if(ballBlockedY) G = 0;
+        //else
         G = -mass * g * slopey;
 
         H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
@@ -283,11 +276,11 @@ public class PhysicsEngine {
         return fy;
     }
     public double dx(){
-        double d = 1;
+        double d = 0; //for now, DO NOT APPLY
         return d;
     }
     public double dy(){
-        double d = 1;
+        double d = 0; //for now, DO NOT APPLY
         return d;
     }
 
