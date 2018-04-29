@@ -40,9 +40,32 @@ public class PhysicsEngine {
     private float collisionCoordsX;
     private float collisionCoordsY;
 
+    FileInput FI;
+    String[] mapInfo;
+    double[] splineDerivates;
+    int nrOfKnots;
+    final int courseSizeX = 640;
+    final int courseSizeY = 480;
+    final double splineIntervalSizeX;
+    final double splineIntervalSizeY;
+
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer){
         this.golfBall = golfBall;
         this.collisionLayer = collisionLayer;
+
+        //reading spline information from a file
+        this.FI = new FileInput();
+        mapInfo = new String[FI.getNrOfLines()];
+        System.out.println(mapInfo[5]);
+        mapInfo = FI.readMapInfo();
+        nrOfKnots = Integer.parseInt(mapInfo[4]);
+        splineDerivates = new double[nrOfKnots - 1];
+        for(int i = 5; i < mapInfo.length; i++){ //starts reading from i = 5 because the first 5 lines in the file is other map information
+            splineDerivates[i-5] = Double.parseDouble(mapInfo[i]);
+            System.out.println(mapInfo[i]);
+        }
+        splineIntervalSizeX = courseSizeX / nrOfKnots;
+        splineIntervalSizeY = courseSizeY / nrOfKnots;
     }
 
     public void moveBall(double direction, double initialSpeed){
@@ -135,8 +158,12 @@ public class PhysicsEngine {
 
         //checking if the ball collides with the squares surrounding it
 
+        boolean colRight = false;
+        boolean colTop = false;
+
         if(golfBall.getVx2() < 0){
             //top left
+
             TiledMapTileLayer.Cell collisionCellTopLeft =  collisionLayer.getCell((int) (golfBall.x / tileWidth), (int) ((golfBall.y + 2*golfBall.radius) / tileHeight));
             collisionX = collisionCellTopLeft.getTile().getProperties().containsKey("solid");
 
@@ -157,6 +184,8 @@ public class PhysicsEngine {
         }
         else if(golfBall.getVx2() > 0){
             //top right
+            colRight = true;
+
             TiledMapTileLayer.Cell collisionCellTopRight =  collisionLayer.getCell((int) ((golfBall.x + 2*golfBall.radius) / tileWidth), (int) ((golfBall.y + golfBall.radius) / tileHeight));
             collisionX = collisionCellTopRight.getTile().getProperties().containsKey("solid");
 
@@ -173,9 +202,16 @@ public class PhysicsEngine {
             }
         }
 
-        //if we have a collision on X, we set the balls xCoords to those of the previous frame and set its speed in x direction to 0
+        //if we have a collision on X, we set the balls xCoords to those of the previous frame plus or minus 10 depending
+        //on which side the ball collided on (to move it "outside" of the wall), and then set its speed in x direction to 0
         if(collisionX){
-            golfBall.x = oldXCoords+10;
+            if(colRight){
+                golfBall.x = oldXCoords-10;
+            }
+            else{
+                golfBall.x = oldXCoords+10;
+            }
+            //colRight = false;
             golfBall.setVX2(0);
             ballBlockedX = true;
         }
@@ -183,6 +219,7 @@ public class PhysicsEngine {
 
         if(golfBall.getVy2() < 0) {
             //bottom left
+
             TiledMapTileLayer.Cell collisionCellBottomLeft = collisionLayer.getCell((int) ((golfBall.x) / tileWidth), (int) ((golfBall.y / tileHeight)));
             collisionY = collisionCellBottomLeft.getTile().getProperties().containsKey("solid");
 
@@ -200,6 +237,8 @@ public class PhysicsEngine {
         }
         else if(golfBall.getVy2() > 0) {
                 //top left
+                colTop = true;
+
                 TiledMapTileLayer.Cell collisionCellTopLeft = collisionLayer.getCell((int) ((golfBall.x) / tileWidth), (int) ((golfBall.y + 2 * golfBall.radius) / tileHeight));
                 collisionY = collisionCellTopLeft.getTile().getProperties().containsKey("solid");
 
@@ -218,7 +257,12 @@ public class PhysicsEngine {
 
 
         if (collisionY){
-            golfBall.y = oldYCoords+10;
+            if(colTop) {
+                golfBall.y = oldYCoords-10;
+            }
+            else{
+                golfBall.y = oldYCoords+10;
+            }
             golfBall.setVY2(0);
             ballBlockedY = true;
         }
@@ -250,7 +294,7 @@ public class PhysicsEngine {
 
 
     public double findfx(){
-        double G; //= 0; //for now, DO NOT APPLY
+        double G;
         double H;
         double fx;
         slopex = dx();
@@ -263,7 +307,7 @@ public class PhysicsEngine {
         return fx;
     }
     public double findfy(){
-        double G; //= 0; // = 0; for now, DO NOT APPLY
+        double G;
         double H;
         double fy;
         slopey = dy();
@@ -276,11 +320,21 @@ public class PhysicsEngine {
         return fy;
     }
     public double dx(){
-        double d = 0; //for now, DO NOT APPLY
+        double d = 0;
+        for(int i = 0; i < nrOfKnots-1; i++){
+            if(golfBall.x > i * splineIntervalSizeX && golfBall.x < (i+1) * splineIntervalSizeX){
+                d = splineDerivates[i];
+            }
+        }
         return d;
     }
     public double dy(){
-        double d = 0; //for now, DO NOT APPLY
+        double d = 0;
+        for(int i = 0; i < nrOfKnots-1; i++){
+            if(golfBall.y > i * splineIntervalSizeY && golfBall.y < (i+1) * splineIntervalSizeY){
+                d = splineDerivates[i];
+            }
+        }
         return d;
     }
 

@@ -2,3 +2,7 @@
 0.5
 3
 Math.sin(x) + Math.pow(y,2)
+4
+1
+0
+-1

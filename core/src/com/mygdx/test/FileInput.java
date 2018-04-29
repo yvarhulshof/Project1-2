@@ -13,6 +13,35 @@ public class FileInput {
     private ArrayList<Double> directionValues;
     private ArrayList<Double> speedValues;
 
+    public int getNrOfLines() {
+        FileHandle file = Gdx.files.local("MapInput.txt");
+
+        boolean exists = Gdx.files.local("MapInput.txt").exists();
+        System.out.println(exists);
+
+        //String text = file.readString();
+        //System.out.println(text);
+
+        File convertedFile = file.file();
+
+        String[] fileInfo;
+
+        int nrOfLines = 0;
+
+        try {
+            Scanner lineScanner = new Scanner(convertedFile);
+            while (lineScanner.hasNext()) {
+                if (lineScanner.next() == "") break;
+                nrOfLines++;
+            }
+        }
+            catch(IOException exception)
+            {
+                System.out.println("file not found");
+            }
+            return nrOfLines;
+    }
+
 
     public String[] readMapInfo() {
 
@@ -26,23 +55,32 @@ public class FileInput {
 
         File convertedFile = file.file();
 
-        String[] fileInfo = new String[4];
+        String[] fileInfo;
 
         try {
-            Scanner lineScanner = new Scanner(convertedFile);
-            for(int i = 0;lineScanner.hasNext(); i++){
-                fileInfo[i] = lineScanner.nextLine();
+            int nrOfLines = 0;
+            Scanner lineCounter = new Scanner(convertedFile);
+            while(lineCounter.hasNextLine()){
+                if(lineCounter.nextLine() == "") break;
+                    nrOfLines++;
             }
+            fileInfo = new String[nrOfLines];
+
+            Scanner lineReader = new Scanner(convertedFile);
+
+            for(int i = 0; i < nrOfLines; i++){
+                fileInfo[i] = lineReader.nextLine();
+            }
+            return fileInfo;
         }
         catch (IOException exception)
         {
             System.out.println("file not found");
         }
 
-        System.out.println(fileInfo[3]);
+        //System.out.println(fileInfo[3]);
 
-        return fileInfo;
-
+        return null;
     }
 
     public void readSwingInfo(){
