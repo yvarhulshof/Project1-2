@@ -5,27 +5,28 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector3;
-import org.w3c.dom.css.Rect;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 
-import static com.badlogic.gdx.graphics.Color.CYAN;
+//import com.badlogic.gdx.tests.utils.GdxTest;
 
 /**
  * Main class which creates the visual representation of the game and updates the game states in its render method
@@ -34,9 +35,9 @@ import static com.badlogic.gdx.graphics.Color.CYAN;
  * Method 2: Velocity input in GUI, using a small GUI the user can input the direction and speed of each swing
  * Method 3: Reading from a file, using the GolfswingInput.txt file velocity values are read and the ball moves autonomously
  */
-public class Main extends ApplicationAdapter implements InputProcessor{
+public class Main extends ApplicationAdapter implements InputProcessor {
 
-	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
+	//private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
 	// initialisation of the ball
     private SpriteBatch batch; //a collection of image files
@@ -81,6 +82,19 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private ShapeRenderer sr;
 	private WinFrame Win;
 
+
+
+
+
+
+
+	public Environment lights;
+	public PerspectiveCamera cam;
+	public CameraInputController camController;
+	public ModelBatch modelBatch;
+    public Array<ModelInstance> instances = new Array<ModelInstance>();
+
+
 	@Override
 	public void create () {
 		/** create the sprites */
@@ -92,9 +106,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		waterImg = new Texture("water.jpg");
 		float w = Gdx.graphics.getWidth(); //the width of the screen
 		float h = Gdx.graphics.getHeight(); //the height of the screen
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, w, h);
-		camera.update();
+//		camera = new OrthographicCamera();
+//		camera.setToOrtho(false, w, h);
+//		camera.update();
 		camXTracer = 0;
 		camYTracer = 0;
 
@@ -137,6 +151,36 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         currentSwing = 0;
 
         Win = new WinFrame();
+
+
+
+
+		camController = new CamControllerGolf(cam);
+		Gdx.input.setInputProcessor(camController);
+
+		lights = new Environment();
+		lights.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+		lights.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+
+
+
+
+		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.position.set(10f, 10f, 10f);
+		cam.lookAt(0,0,0);
+		cam.near = 1f;
+		cam.far = 300f;
+		cam.update();
+
+		modelBatch = new ModelBatch();
+		TerrainInstance terrainGetter = new TerrainInstance();
+
+
+		instances.add(terrainGetter.getTerrain());
+
+
+
+
 	}
 
 
@@ -146,57 +190,57 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	 */
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0.5f, 0, 0);
+		Gdx.gl.glClearColor(0.8f, 0.8f, 0.8f, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		camera.update();
-		tiledMapRenderer.setView(camera);
-		tiledMapRenderer.render();
-		batch.setProjectionMatrix(camera.combined);
-		/** draw the sprite */
-		goalBatch.begin();
-		goalBatch.draw(goalImg,goal.x,goal.y);
-		goalBatch.end();
-
-		batch.begin();
-		batch.draw(golfballImg, golfBall.x,golfBall.y); //draws the golfBall image at the location where the golfBall Circle object is at that point in time
-		batch.end();
-
-		waterBatch.begin();
-		waterBatch.draw(waterImg,water.x,water.y);
-		waterBatch.end();
-
-		//Method 1 of moving the ball
-
-        if(released)
-		{
-			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)), eucliDistance);
-		}
-
-
-		if (touchDragged(0,0,0) && p.getBallStopped())
-		{
-            if(firstFrameOfSwing){
-                p.setBallBlockedX(false);
-                p.setBallBlockedY(false);
-            }
-            firstFrameOfSwing = false;
-			//leftKeyPressed = true;
-			mouseX = Gdx.input.getX() + camXTracer;
-			mouseY = Gdx.graphics.getHeight() - Gdx.input.getY() + camYTracer;
-			sr = new ShapeRenderer();
-			camera.update();
-			sr.setProjectionMatrix(camera.combined);
-			sr.begin(ShapeType.Line);
-			eucliDistance = Math.sqrt(Math.pow((mouseX -(golfBall.x + golfBall.radius)), 2) + Math.pow((mouseY -(golfBall.y + golfBall.radius)), 2));
-			float red = (float) (eucliDistance/1.5 - 50);
-			float green = (float) (255 - eucliDistance/1.5);
-			sr.setColor(red,green,0,0);
-			//System.out.println("green: " + green + "red : " + red);
-			sr.line(mouseX, mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
-			sr.end();
-			System.out.println("x = " + (mouseX -(golfBall.x + golfBall.radius)) + " 	y =" + (mouseY -(golfBall.y + golfBall.radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)));
-		}
+//		camera.update();
+//		tiledMapRenderer.setView(camera);
+//		tiledMapRenderer.render();
+//		batch.setProjectionMatrix(camera.combined);
+//		/** draw the sprite */
+//		goalBatch.begin();
+//		goalBatch.draw(goalImg,goal.x,goal.y);
+//		goalBatch.end();
+//
+//		batch.begin();
+//		batch.draw(golfballImg, golfBall.x,golfBall.y); //draws the golfBall image at the location where the golfBall Circle object is at that point in time
+//		batch.end();
+//
+//		waterBatch.begin();
+//		waterBatch.draw(waterImg,water.x,water.y);
+//		waterBatch.end();
+//
+//		//Method 1 of moving the ball
+//
+//        if(released)
+//		{
+//			p.moveBall(PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)), eucliDistance);
+//		}
+//
+//
+//		if (touchDragged(0,0,0) && p.getBallStopped())
+//		{
+//            if(firstFrameOfSwing){
+//                p.setBallBlockedX(false);
+//                p.setBallBlockedY(false);
+//            }
+//            firstFrameOfSwing = false;
+//			//leftKeyPressed = true;
+//			mouseX = Gdx.input.getX() + camXTracer;
+//			mouseY = Gdx.graphics.getHeight() - Gdx.input.getY() + camYTracer;
+//			sr = new ShapeRenderer();
+//			camera.update();
+//			sr.setProjectionMatrix(camera.combined);
+//			sr.begin(ShapeType.Line);
+//			eucliDistance = Math.sqrt(Math.pow((mouseX -(golfBall.x + golfBall.radius)), 2) + Math.pow((mouseY -(golfBall.y + golfBall.radius)), 2));
+//			float red = (float) (eucliDistance/1.5 - 50);
+//			float green = (float) (255 - eucliDistance/1.5);
+//			sr.setColor(red,green,0,0);
+//			//System.out.println("green: " + green + "red : " + red);
+//			sr.line(mouseX, mouseY, golfBall.x + golfBall.radius, golfBall.y + golfBall.radius);
+//			sr.end();
+//			System.out.println("x = " + (mouseX -(golfBall.x + golfBall.radius)) + " 	y =" + (mouseY -(golfBall.y + golfBall.radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBall.x + golfBall.radius), (mouseY)-(golfBall.y + golfBall.radius)));
+//		}
 
 
 		//Method 2 of moving the ball
@@ -232,6 +276,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			Win.winGUI();
 			golfBall.x =80;
 			golfBall.y = 0;
+
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
 		}
 
 
@@ -252,6 +300,15 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) golfBall.x += 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) golfBall.y += 200 * Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) golfBall.y -= 200 * Gdx.graphics.getDeltaTime();
+
+
+
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		camController.update();
+		modelBatch.begin(cam);
+		modelBatch.render(instances, lights);
+		modelBatch.end();
 	}
 
 
@@ -264,10 +321,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		return false;
 	}
 	@Override public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT))
-			return true;
-		else
-			return false;
+//        return Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+        return false;
 	}
 
 
@@ -276,34 +331,34 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	}
 
 	@Override public boolean keyUp(int keycode) {
-		if (keycode == Input.Keys.A) {
-			camera.translate(-32, 0);
-			goal.x += 32;
-			water.x += 32;
-			camXTracer -= 32;
-		}
-		if (keycode == Input.Keys.D) {
-			camera.translate(32, 0);
-			goal.x -= 32;
-			water.x -= 32;
-			camXTracer += 32;
-		}
-		if (keycode == Input.Keys.W){
-			camera.translate(0, 32);
-			goal.y -= 32;
-			water.y -= 32;
-			camYTracer += 32;
-		}
-		if(keycode == Input.Keys.S) {
-			camera.translate(0, -32);
-			goal.y += 32;
-			water.y += 32;
-			camYTracer -= 32;
-		}
-		if(keycode == Input.Keys.NUM_1)
-			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
-		if(keycode == Input.Keys.NUM_2)
-			tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
+//		if (keycode == Input.Keys.A) {
+//			camera.translate(-32, 0);
+//			goal.x += 32;
+//			water.x += 32;
+//			camXTracer -= 32;
+//		}
+//		if (keycode == Input.Keys.D) {
+//			camera.translate(32, 0);
+//			goal.x -= 32;
+//			water.x -= 32;
+//			camXTracer += 32;
+//		}
+//		if (keycode == Input.Keys.W){
+//			camera.translate(0, 32);
+//			goal.y -= 32;
+//			water.y -= 32;
+//			camYTracer += 32;
+//		}
+//		if(keycode == Input.Keys.S) {
+//			camera.translate(0, -32);
+//			goal.y += 32;
+//			water.y += 32;
+//			camYTracer -= 32;
+//		}
+//		if(keycode == Input.Keys.NUM_1)
+//			tiledMap.getLayers().get(0).setVisible(!tiledMap.getLayers().get(0).isVisible());
+//		if(keycode == Input.Keys.NUM_2)
+//			tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
 		return false;
 	}
 
@@ -329,6 +384,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	public void dispose () {
 		batch.dispose();
 		golfballImg.dispose();
+		modelBatch.dispose();
 	}
 
 }
