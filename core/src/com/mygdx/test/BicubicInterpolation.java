@@ -7,27 +7,28 @@ package com.mygdx.test;
 
 
 
-
 public class BicubicInterpolation {
 
     private double[][] hs; //array containing specified height values for the points [x][y]
+    private double[] h_of_xs;
 
-    public BicubicInterpolation(double[][] hs){
+    public BicubicInterpolation(double[][] hs) {
         this.hs = hs;
+        this.h_of_xs = hs[0];
     }
 
-    public double findHeightYDimension(double[][] hs, int x){
-        return Math.pow(x,3) * (-0.5 * hs[x][0] + 1.5 * hs[x][1] - 1.5 * hs[x][2] + 0.5 * hs[x][3])
-                + Math.pow(x,2) * (hs[x][0] - 2.5 * hs[x][1] + 2 * hs[x][2] - 0.5 * hs[x][3])
-                + x * (-0.5 * hs[x][0] + 0.5*hs[x][2]) + hs[x][1];
+    public double findHeightYDimension(double[] h_of_xs, double x){
+        return Math.pow(x,3) * (-0.5 * h_of_xs[0] + 1.5 * h_of_xs[1] - 1.5 * h_of_xs[2] + 0.5 * h_of_xs[3])
+                + Math.pow(x,2) * (h_of_xs[0] - 2.5 * h_of_xs[1] + 2 * h_of_xs[2] - 0.5 * h_of_xs[3])
+                + x * (-0.5 * h_of_xs[0] + 0.5*h_of_xs[2]) + h_of_xs[1];
     }
 
-    public double findHeightXandYDimensions(double[][] hs, int y){
+    public double findHeightXandYDimensions(double x, double y){
         double[] xs = new double[4];
-        xs[0] = findHeightYDimension(hs[0][y]);
-        xs[0] = findHeightYDimension(hs[0][y]);
-        xs[0] = findHeightYDimension(hs[0][y]);
-        xs[0] = findHeightYDimension(hs[0][y]);
-
+        xs[0] = findHeightYDimension(hs[0],y);
+        xs[1] = findHeightYDimension(hs[1],y);
+        xs[2] = findHeightYDimension(hs[2],y);
+        xs[3] = findHeightYDimension(hs[3],y);
+        return findHeightYDimension(xs,x);
     }
 }

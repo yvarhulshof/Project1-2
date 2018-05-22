@@ -46,9 +46,21 @@ public class PhysicsEngine {
     int nrOfKnots;
     final int courseSizeX = 640;
     final int courseSizeY = 480;
-    final double splineIntervalSizeX;
-    final double splineIntervalSizeY;
+    //final double splineIntervalSizeX;
+    //final double splineIntervalSizeY;
 
+    private BicubicInterpolation interpolator;
+    private double heightNew;
+    private double heightOld;
+    private double xNormalized;
+    private double yNormalized;
+
+    private double xNew;
+    private double xOld;
+    private double yNew;
+    private double yOld;
+
+    /*
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer){
         this.golfBall = golfBall;
         this.collisionLayer = collisionLayer;
@@ -67,6 +79,13 @@ public class PhysicsEngine {
         splineIntervalSizeX = courseSizeX / nrOfKnots;
         splineIntervalSizeY = courseSizeY / nrOfKnots;
     }
+    */
+    public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer, BicubicInterpolation interpolator) {
+        this.golfBall = golfBall;
+        this.collisionLayer = collisionLayer;
+        this.interpolator = interpolator;
+        //double splineNormalizeXCoeff = courseSizeX
+    }
 
     public void moveBall(double direction, double initialSpeed){
 
@@ -82,7 +101,16 @@ public class PhysicsEngine {
 
         ballStopped = false;
 
+        xOld = xNew;
+        yOld = yNew;
+        heightOld = heightNew;
 
+        xNormalized = golfBall.x * (4.0/courseSizeX);
+        yNormalized = golfBall.y * (4.0/courseSizeY);
+
+        xNew = golfBall.x;
+        yNew = golfBall.y;
+        heightNew = interpolator.findHeightXandYDimensions(xNormalized,yNormalized);
 
         if(initialCall) {
             startTime = System.nanoTime() / 1000000000.0; //defining the value for which t = 0
@@ -134,7 +162,7 @@ public class PhysicsEngine {
         if(!usingMethod3)
         {
             if      (((Math.abs(vx1 + (float) findfx()) <= 20) && ((Math.abs(vy1 + (float) findfy())) <= 20)) &&
-                    ((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY))
+                    (((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY)))
             {
                 ballStopped = true;
                 initialCall = true;
@@ -319,6 +347,7 @@ public class PhysicsEngine {
         fy = G + H;
         return fy;
     }
+    /*
     public double dx(){
         double d = 0;
         for(int i = 0; i < nrOfKnots-1; i++){
@@ -336,6 +365,16 @@ public class PhysicsEngine {
             }
         }
         return d;
+    }
+    */
+    public double dx(){
+        double slopex = (heightNew - heightOld) / (xNew - xOld);
+        return slopex;
+    }
+
+    public double dy(){
+        double slopey = (heightNew - heightOld) / (yNew - yOld);
+        return slopey;
     }
 
     public boolean getBallStopped(){
