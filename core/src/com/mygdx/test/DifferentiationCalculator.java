@@ -22,7 +22,7 @@ public class DifferentiationCalculator {
             i++;
             t += h;
             w = c4rk(h, w, t);
-            result.add(w)
+            result.add(w);
 
         }
 
