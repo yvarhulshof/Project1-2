@@ -67,8 +67,13 @@ public class DifferentiationCalculator {
 
 
 
-    public static double f(double t, double y){
+    public double f(double t, double y){
         // i need your help here :)
+        ArrayList<String> parts = DerivativeCalculator.findCoefErasePlus(f);
+        System.out.println("-------------parts ");
+        print(parts);
+
+
     }
 
 
