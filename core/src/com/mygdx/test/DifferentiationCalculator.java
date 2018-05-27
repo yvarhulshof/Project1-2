@@ -5,32 +5,31 @@ import java.util.ArrayList;
 public class DifferentiationCalculator {
 
     public String f;
-    public ArrayList<Double> result = new ArrayList<Double>();
-    double y;
+    public ArrayList<Double> coefs = new ArrayList<Double>();
     double t;
     double y0;
     double h;
 //constructor to get all info from above
     public void calculate(){
-
+        h = 0.5;
+        t = 10;
+        y0 = 2;
         double w = y0;
         double g = t;
-        result.add(w);
+        double count = 0.0;
+        coefs.add(w);
 
-        int i = 1;
-        for(int j = 1; j < 3; j++){
-            i++;
-            t += h;
-            w = c4rk(h, w, t);
-            result.add(w);
+        for(int j = 1; j <= 2; j++){
+            count += h;
+            w = c4rk(h, w, count);
+            coefs.add(w);
 
         }
 
-        while (t < g-h){
-            t += h;
-            w = AB3SandAM3Smethod(t, h, i);
-            i ++;
-            result.add(w);
+        while (count < g-h){
+            count += h;
+            w = AB3SandAM3Smethod(t, h);
+            coefs.add(w);
         }
 
 
@@ -51,11 +50,11 @@ public class DifferentiationCalculator {
         return w + k;
     }
 
-    public double AB3SandAM3Smethod(double t, double h, int i){
+    public double AB3SandAM3Smethod(double t, double h){
 
-        double w = result.get(i);
-        double wmin1 = result.get(i-1);
-        double wmin2 = result.get(i-2);
+        double w = coefs.get(coefs.size()-1);
+        double wmin1 = coefs.get(coefs.size()-2);
+        double wmin2 = coefs.get(coefs.size()-3);
 
         double temp = w + 1/12*h*(23*f(t, w) - 16*f(t-h, wmin1) + 5*f(t-2*h, wmin2));
 
