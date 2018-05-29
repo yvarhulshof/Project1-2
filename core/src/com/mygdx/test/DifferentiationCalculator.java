@@ -23,9 +23,9 @@ public class DifferentiationCalculator {
         double g = t;
         double count = 0.0;
         coefs.add(w);
-        f = "3x^2+16sinx-54x";
+        f = "-3x^2+16sin(y+x-4)-54x";
         //test
-        f(54, 69);
+        f(f, 54, 69);
 
 //
 //        for(int j = 1; j <= 2; j++){
@@ -71,32 +71,149 @@ public class DifferentiationCalculator {
 
 
 
-    public double f(double t, double y){
-        // i need your help here :)
-        ArrayList<String> parts = DerivativeCalculator.findCoefErasePlus(f);
+
+
+    public double f(String s, double t, double y){
+        ArrayList<String> parts = findParts(s);
+        ArrayList<Boolean> partSign = searchSign(s);
         System.out.println("-------------parts ");
         print(parts);
-
-
-//        int findPow = DerivativeCalculator.findPow(f);
-//        System.out.println("power: " + findPow);
-
-//        int findcoef = DerivativeCalculator.findOuterCoeff(f);
-//        String findCoefStr = Integer.toString(findcoef);
-//        System.out.println("First coefficient: " + findCoefStr);
-
-        ArrayList<Integer> allNumbers;
-        allNumbers = DerivativeCalculator.findNumbers(f);
-        System.out.println("-------------allNumbers:");
-        for (int i : allNumbers)
+        for (int i = 0; i < partSign.size(); i++)
         {
-            System.out.print(" " + i);
+            if (partSign.get(i))
+                System.out.print("-");
+            else
+                System.out.print("+");
+        }
+        System.out.println("");
+
+
+        double result = 0;
+        for(int i = 0; i < parts.size(); i++){
+            if (partSign.get(i) == false)
+                result += calcPart(parts.get(i));
+            else
+                result -= calcPart(parts.get(i));
         }
 
-        System.out.println("");
+        System.out.println(result);
+
+
+//        int findPow = DerivativeCalculator.findPow(s);
+//        System.out.println("power: " + findPow);
+//
+//        int findcoef = DerivativeCalculator.findOuterCoeff(s);
+//        String findCoefStr = Integer.toString(findcoef);
+//        System.out.println("First coefficient: " + findCoefStr);
+//
+//        ArrayList<Integer> allNumbers;
+//        allNumbers = DerivativeCalculator.findNumbers(s);
+//        System.out.println("-------------allNumbers:");
+//        for (int i : allNumbers)
+//        {
+//            System.out.print(" " + i);
+//        }
+//
+//        System.out.println("");
 
         return 1;
     }
+
+    public ArrayList<Boolean> searchSign(String s){
+        ArrayList<Boolean> signs = new ArrayList<>();
+
+        if (s.charAt(0) == 45)
+            signs.add(true);
+        else
+            signs.add(false);
+
+        for (int i = 1; i < s.length(); i++){
+
+            if (s.charAt(i) == 40)
+                while (s.charAt(i) != 41)
+                    i++;
+            else{
+                if (s.charAt(i) == 43)
+                    signs.add(false);
+                if (s.charAt(i) == 45)
+                    signs.add(true);
+            }
+
+
+        }
+        return signs;
+    }
+
+
+    public ArrayList<String> findParts(String s) {
+        //ArrayList<Character> partsOfEquation = new ArrayList<Character>();
+        ArrayList<String> result = new ArrayList<String>();
+
+        StringBuilder partsOfEquation = new StringBuilder();
+
+        String partOfEq;
+
+        for (int i = 0; i < s.length(); i++) {
+
+            if (s.charAt(i) == 40) {
+                while (s.charAt(i) != 41) {
+                    partsOfEquation.append(s.charAt(i));
+                    i++;
+                }
+                partsOfEquation.append(s.charAt(i));
+            }
+
+            else{
+                if (s.charAt(i) != 45 && s.charAt(i) != 43)
+                    partsOfEquation.append(s.charAt(i)); //filling in the first part
+
+                else {
+                    // we have the first "node" here then we work on it until it's derived, then we erase everything and work on other, after+
+                    //String builder
+                    if (partsOfEquation.length() != 0){
+                        partOfEq = partsOfEquation.toString();
+
+                        result.add(partOfEq);
+                    }
+
+                    partsOfEquation.setLength(0);
+                }
+
+            }
+
+
+        }
+
+        partOfEq = partsOfEquation.toString();
+
+        result.add(partOfEq);
+
+        return result;
+    }
+
+
+    public double calcPart(String s){
+        double result = 0;
+
+        result = 1;
+
+
+        return result;
+    }
+//
+//    public double calcPower(String string){
+//
+//    }
+
+
+
+
+
+
+
+
+
+
 
 
 
