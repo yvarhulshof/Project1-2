@@ -23,9 +23,9 @@ public class DifferentiationCalculator {
         double g = t;
         double count = 0.0;
         coefs.add(w);
-        f = "-3x^2+16sin(y+x-4)-54x";
+        f = "sin2*pi";
         //test
-        f(f, 54, 69);
+        f(f, 5, 6);
 
 //
 //        for(int j = 1; j <= 2; j++){
@@ -91,9 +91,9 @@ public class DifferentiationCalculator {
         double result = 0;
         for(int i = 0; i < parts.size(); i++){
             if (partSign.get(i) == false)
-                result += calcPart(parts.get(i));
+                result += calcPart(parts.get(i), t, y);
             else
-                result -= calcPart(parts.get(i));
+                result -= calcPart(parts.get(i), t, y);
         }
 
         System.out.println(result);
@@ -116,7 +116,7 @@ public class DifferentiationCalculator {
 //
 //        System.out.println("");
 
-        return 1;
+        return result;
     }
 
     public ArrayList<Boolean> searchSign(String s){
@@ -154,7 +154,6 @@ public class DifferentiationCalculator {
         String partOfEq;
 
         for (int i = 0; i < s.length(); i++) {
-
             if (s.charAt(i) == 40) {
                 while (s.charAt(i) != 41) {
                     partsOfEquation.append(s.charAt(i));
@@ -192,22 +191,86 @@ public class DifferentiationCalculator {
     }
 
 
-    public double calcPart(String s){
-        double result = 0;
+    public double calcPart(String s, double t, double y){
+        ArrayList<String> pieces = new ArrayList<>();
+        StringBuilder partsOfEquation = new StringBuilder();
 
-        result = 1;
+        String uniquePiece;
 
+        for (int i = 0; i < s.length(); i++) {
+
+            uniquePiece = "";
+            int c = s.charAt(i);
+
+
+            if (c != 42) {
+                //filling in the first part
+                partsOfEquation.append(s.charAt(i));
+            } else {
+                // we have the first "node" here then we work on it until it's derrived, then we erase everything and work on other, after+
+                //String builder
+                uniquePiece = partsOfEquation.toString();
+
+                pieces.add(uniquePiece);
+                partsOfEquation.setLength(0);
+            }
+
+
+        }
+        uniquePiece = partsOfEquation.toString();
+
+        pieces.add(uniquePiece);
+
+        print(pieces);
+
+        double result = 1;
+        for (int i = 0; i < pieces.size(); i++)
+            result *= mult(pieces.get(i), t, y);
 
         return result;
     }
-//
-//    public double calcPower(String string){
-//
-//    }
 
 
+    public double mult(String s, double t, double y)
+    {
+        double result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) > 47 && s.charAt(i) < 58){
+                if (i == s.length()-1)
+                    result += ((int) s.charAt(i)-48);
 
+                else
+                    result += ((int) s.charAt(i)-48)*(10^(s.length()-i-2));
+            }
+            else if (s.charAt(i) == 116)
+                return t;
+            else if (s.charAt(i) == 121)
+                return y;
+            else if (s.length() > 3 && s.charAt(i) == 115 && s.charAt(i+1) == 105 && s.charAt(i+2) == 110){
+                String subStr = "";
+                for (int j = i+3; j < s.length(); j++) {
+                    subStr += s.charAt(j);
+                }
+                return Math.sin(calcPart(subStr, t, y));
+            }
+            else if (s.length() > 3 && s.charAt(i) == 99 && s.charAt(i+1) == 111 && s.charAt(i+2) == 115){
+                String subStr = "";
+                for (int j = 0; j < s.length(); j++) {
+                    subStr += s.charAt(j);
+                }
+                return Math.cos(calcPart(subStr, t, y));
+            }
+            else if (s.length() > 2 && s.charAt(i) == 99 && s.charAt(i+1) == 111 && s.charAt(i+2) == 115){
+                return Math.PI;
 
+//            else if (s.length() > 2 && s.charAt(i+1) == 115 && s.charAt(i+1) == 105 && s.charAt(i+2) == 115)
+//                return t;
+            else
+                result += 1;
+        }
+
+        return result;
+    }
 
 
 
