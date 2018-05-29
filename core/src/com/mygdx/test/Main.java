@@ -114,9 +114,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		golfBall = new GolfBall(0,0);
         collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
 
-
-
-
 		Gdx.input.setInputProcessor(this); //setting the inputProccesor which allows the user to use the mouse and keyboard to control aspects of the program
 
 		SI = new SwingInput(); //creating an instance of the GUI used in Method 2 to enter the velocity of the ball
