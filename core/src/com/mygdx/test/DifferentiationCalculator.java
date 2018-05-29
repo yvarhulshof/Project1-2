@@ -23,7 +23,7 @@ public class DifferentiationCalculator {
         double g = t;
         double count = 0.0;
         coefs.add(w);
-        f = "sin2*pi";
+        f = "cos0";
         //test
         f(f, 5, 6);
 
@@ -221,6 +221,7 @@ public class DifferentiationCalculator {
 
         pieces.add(uniquePiece);
 
+        System.out.print("pieces : ");
         print(pieces);
 
         double result = 1;
@@ -255,14 +256,15 @@ public class DifferentiationCalculator {
             }
             else if (s.length() > 3 && s.charAt(i) == 99 && s.charAt(i+1) == 111 && s.charAt(i+2) == 115){
                 String subStr = "";
-                for (int j = 0; j < s.length(); j++) {
+                for (int j = i+3; j < s.length(); j++) {
                     subStr += s.charAt(j);
                 }
                 return Math.cos(calcPart(subStr, t, y));
             }
-            else if (s.length() > 2 && s.charAt(i) == 99 && s.charAt(i+1) == 111 && s.charAt(i+2) == 115){
-                return Math.PI;
+            else if (s.charAt(i) == 112 && s.charAt(i+1) == 105 ) {
 
+                return Math.PI;
+            }
 //            else if (s.length() > 2 && s.charAt(i+1) == 115 && s.charAt(i+1) == 105 && s.charAt(i+2) == 115)
 //                return t;
             else
