@@ -122,18 +122,29 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		SI = new SwingInput(); //creating an instance of the GUI used in Method 2 to enter the velocity of the ball
 		SI.createGUI();
 
-		//p = new PhysicsEngine(golfBall,collisionLayer); //creating an instance of the physics engine
+		p = new PhysicsEngine(golfBall,collisionLayer); //creating an instance of the physics engine
+
+        /**
+         * Used for bicubic spline interpolation, but we're using normal splines for now
+         */
+
+        /*
+
+        /*hs =    new double[][]
+                {
+                        {0,0,0,0},
+                        {0,0,0,0},
+                        {0,0,0,0},
+                        {0,0,0,0},
+                };
 
 
-        hs =    new double[][]
-                        {{500,100,200,500},
-                        {500,100,200,500},
-                        {500,100,200,500},
-                        {500,100,200,500}};
 
         interpolator = new BicubicInterpolation(hs);
 
         p = new PhysicsEngine(golfBall,collisionLayer,interpolator);
+
+        */
 
 
         FileInput FI = new FileInput(); //creating an instance of the file reader
@@ -151,10 +162,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         currentSwing = 0;
 
         Win = new WinFrame();
-
-
-
-
 	}
 
 

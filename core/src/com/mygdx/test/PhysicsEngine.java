@@ -42,12 +42,14 @@ public class PhysicsEngine {
 
     FileInput FI;
     String[] mapInfo;
-    double[] splineDerivates;
+    //double[] splineDerivates;
+    double[] splineDerivatesX;
+    double[] splineDerivatesY;
     int nrOfKnots;
     final int courseSizeX = 640;
     final int courseSizeY = 480;
-    //final double splineIntervalSizeX;
-    //final double splineIntervalSizeY;
+    final double splineIntervalSizeX;
+    final double splineIntervalSizeY;
 
     private BicubicInterpolation interpolator;
     private double heightNew;
@@ -60,7 +62,10 @@ public class PhysicsEngine {
     private double yNew;
     private double yOld;
 
-    /*
+    private int SlowForNrOfFrames;
+    private int nrOfFramesSinceShot;
+
+
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer){
         this.golfBall = golfBall;
         this.collisionLayer = collisionLayer;
@@ -71,22 +76,35 @@ public class PhysicsEngine {
         System.out.println(mapInfo[5]);
         mapInfo = FI.readMapInfo();
         nrOfKnots = Integer.parseInt(mapInfo[4]);
-        splineDerivates = new double[nrOfKnots - 1];
-        for(int i = 5; i < mapInfo.length; i++){ //starts reading from i = 5 because the first 5 lines in the file is other map information
-            splineDerivates[i-5] = Double.parseDouble(mapInfo[i]);
+
+        splineDerivatesX = new double[nrOfKnots - 1];
+        for(int i = 5; i < 5+splineDerivatesX.length; i++){ //starts reading from i = 5 because the first 5 lines in the file is other map information
+            splineDerivatesX[i-5] = Double.parseDouble(mapInfo[i]);
             System.out.println(mapInfo[i]);
         }
+
+        splineDerivatesY = new double[nrOfKnots - 1];
+        for(int i = 5+splineDerivatesX.length; i < mapInfo.length; i++){
+            splineDerivatesX[i-(5+splineDerivatesX.length)] = Double.parseDouble(mapInfo[i]);
+            System.out.println(mapInfo[i]);
+        }
+
+
         splineIntervalSizeX = courseSizeX / nrOfKnots;
         splineIntervalSizeY = courseSizeY / nrOfKnots;
     }
-    */
+
+    /**
+     * Used for bicubic spline interpolation, but we're using normal splines for now
+     */
+    /*
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer, BicubicInterpolation interpolator) {
         this.golfBall = golfBall;
         this.collisionLayer = collisionLayer;
         this.interpolator = interpolator;
         //double splineNormalizeXCoeff = courseSizeX
     }
-
+    */
     public void moveBall(double direction, double initialSpeed){
 
         float oldXCoords = golfBall.getXCoords();
@@ -101,16 +119,28 @@ public class PhysicsEngine {
 
         ballStopped = false;
 
+
+        /**
+         * Used for bicubic spline interpolation, but we're using normal splines for now
+         */
+        /*
+
         xOld = xNew;
         yOld = yNew;
         heightOld = heightNew;
 
-        xNormalized = golfBall.x * (4.0/courseSizeX);
-        yNormalized = golfBall.y * (4.0/courseSizeY);
+        xNormalized = golfBall.x * (1.0/courseSizeX);
+        yNormalized = golfBall.y * (1.0/courseSizeY);
+
+        System.out.println("xNorm: " + xNormalized);
+        System.out.println("yNorm: " + yNormalized);
 
         xNew = golfBall.x;
         yNew = golfBall.y;
         heightNew = interpolator.findHeightXandYDimensions(xNormalized,yNormalized);
+        System.out.println("heightNew: " + heightNew);
+
+        */
 
         if(initialCall) {
             startTime = System.nanoTime() / 1000000000.0; //defining the value for which t = 0
@@ -121,9 +151,9 @@ public class PhysicsEngine {
 
 
             golfBall.setVX2((float) (directionCoefficientX*initialSpeed));
-            System.out.println("initial vx2 " + golfBall.getVx2());
+            //System.out.println("initial vx2 " + golfBall.getVx2());
             golfBall.setVY2((float) (directionCoefficientY*initialSpeed));
-            System.out.println("initial vy2 " + golfBall.getVy2());
+            //System.out.println("initial vy2 " + golfBall.getVy2());
 
             lastShotX = golfBall.x;
             lastShotY = golfBall.y;
@@ -155,14 +185,33 @@ public class PhysicsEngine {
         }
 */
 
-        //the ball is stopped if: itw abs. speed is less than 20
+        //stopping condition for the ball: the speed has been below 10 for the last 60 frames
+
+        /*
+        boolean shouldStop = false;
+
+        if (((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10)) && !ballStopped)
+            SlowForNrOfFrames++;
+        else SlowForNrOfFrames = 0;
+
+
+        if(SlowForNrOfFrames > 60)
+            shouldStop = true;
+        */
+
+
+        double elapsedTime = System.nanoTime() / 1000000000.0 - startTime; //defining the value of t for the current call of render()
+
+        //the ball is fully stopped if: its abs. speed is less than 20
         //and either the gravity inflicted on the ball is 0
         //or the ball is blocked in both x and y directions
+        //AND it has been more than 3 seconds since the start of the shot
 
         if(!usingMethod3)
         {
-            if      (((Math.abs(vx1 + (float) findfx()) <= 20) && ((Math.abs(vy1 + (float) findfy())) <= 20)) &&
-                    (((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY)))
+
+            if      ((((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10))
+                || (((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY))) && elapsedTime > 3)
             {
                 ballStopped = true;
                 initialCall = true;
@@ -175,14 +224,12 @@ public class PhysicsEngine {
         System.out.println("ballStopped = " + ballStopped);
 
 
-        double elapsedTime = System.nanoTime() / 1000000000.0 - startTime; //defining the value of t for the current call of render()
+
 
 
         //change in x and y during the elapsed time
          xChange = (float) ((1.0/60.0)*vx1);
          yChange = (float) ((1.0/60.0)*vy1);
-
-
 
         //checking if the ball collides with the squares surrounding it
 
@@ -216,6 +263,7 @@ public class PhysicsEngine {
 
             TiledMapTileLayer.Cell collisionCellTopRight =  collisionLayer.getCell((int) ((golfBall.x + 2*golfBall.radius) / tileWidth), (int) ((golfBall.y + golfBall.radius) / tileHeight));
             collisionX = collisionCellTopRight.getTile().getProperties().containsKey("solid");
+            //if(collisionCellTopRight.getTile() == null) collisionX = true;
 
             //center right
             if(!collisionX) {
@@ -303,8 +351,8 @@ public class PhysicsEngine {
         //    ballStopped = true;
         //    initialCall = true;
         //}
-        System.out.println("speedX " + golfBall.getVx2());
-        System.out.println("speedY : " + golfBall.getVy2());
+        //System.out.println("speedX " + golfBall.getVx2());
+        //System.out.println("speedY : " + golfBall.getVy2());
         System.out.println("balloccX : " + golfBall.x );
         //System.out.println("possssX " +positionX());
         System.out.println("balloccY : " + golfBall.y );
@@ -347,12 +395,12 @@ public class PhysicsEngine {
         fy = G + H;
         return fy;
     }
-    /*
+
     public double dx(){
         double d = 0;
         for(int i = 0; i < nrOfKnots-1; i++){
             if(golfBall.x > i * splineIntervalSizeX && golfBall.x < (i+1) * splineIntervalSizeX){
-                d = splineDerivates[i];
+                d = splineDerivatesX[i];
             }
         }
         return d;
@@ -361,21 +409,31 @@ public class PhysicsEngine {
         double d = 0;
         for(int i = 0; i < nrOfKnots-1; i++){
             if(golfBall.y > i * splineIntervalSizeY && golfBall.y < (i+1) * splineIntervalSizeY){
-                d = splineDerivates[i];
+                d = splineDerivatesY[i];
             }
         }
         return d;
     }
-    */
+
+
+    /**
+     * Used for bicubic spline interpolation, but we're using normal splines for now
+     */
+    /*
     public double dx(){
-        double slopex = (heightNew - heightOld) / (xNew - xOld);
+        double changeInX = xNew - xOld;
+        if(changeInX == 0) changeInX = 0.0001;
+        double slopex = (heightNew - heightOld) / changeInX;
         return slopex;
     }
 
     public double dy(){
-        double slopey = (heightNew - heightOld) / (yNew - yOld);
+        double changeInY = yNew - yOld;
+        if(changeInY == 0) changeInY = 0.0001;
+        double slopey = (heightNew - heightOld) / changeInY;
         return slopey;
     }
+    */
 
     public boolean getBallStopped(){
         return ballStopped;

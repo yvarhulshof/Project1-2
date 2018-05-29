@@ -18,9 +18,12 @@ public class BicubicInterpolation {
     }
 
     public double findHeightYDimension(double[] h_of_xs, double x){
-        return Math.pow(x,3) * (-0.5 * h_of_xs[0] + 1.5 * h_of_xs[1] - 1.5 * h_of_xs[2] + 0.5 * h_of_xs[3])
+        /*return Math.pow(x,3) * (-0.5 * h_of_xs[0] + 1.5 * h_of_xs[1] - 1.5 * h_of_xs[2] + 0.5 * h_of_xs[3])
                 + Math.pow(x,2) * (h_of_xs[0] - 2.5 * h_of_xs[1] + 2 * h_of_xs[2] - 0.5 * h_of_xs[3])
                 + x * (-0.5 * h_of_xs[0] + 0.5*h_of_xs[2]) + h_of_xs[1];
+        */
+
+        return h_of_xs[1] + 0.5 * x*(h_of_xs[2] - h_of_xs[0] + x*(2.0*h_of_xs[0] - 5.0*h_of_xs[1] + 4.0*h_of_xs[2] - h_of_xs[3] + x*(3.0*(h_of_xs[1] - h_of_xs[2]) + h_of_xs[3] - h_of_xs[0])));
     }
 
     public double findHeightXandYDimensions(double x, double y){
