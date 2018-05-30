@@ -23,23 +23,23 @@ public class DifferentiationCalculator {
         double g = t;
         double count = 0.0;
         coefs.add(w);
-        f = "3y+5t";
+        f = "y^2";
         //test
-        //f(f, 5, 6);
+        f(f, 5, 6);
 
 
-        for(int j = 1; j <= 2; j++){
-            count += h;
-            w = c4rk(h, w, count);
-            coefs.add(w);
-
-        }
-
-        while (count < g-h){
-            count += h;
-            w = AB3SandAM3Smethod(t, h);
-            coefs.add(w);
-        }
+//        for(int j = 1; j <= 2; j++){
+//            count += h;
+//            w = c4rk(h, w, count);
+//            coefs.add(w);
+//
+//        }
+//
+//        while (count < g-h){
+//            count += h;
+//            w = AB3SandAM3Smethod(t, h);
+//            coefs.add(w);
+//        }
 
     }
 
@@ -235,7 +235,26 @@ public class DifferentiationCalculator {
 
     public double mult(String s, double t, double y)
     {
+
         double result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '^'){
+                String subStr1 = "";
+                for (int j = 0; j < i; j++) {
+                    subStr1 += s.charAt(j);
+                }
+                String subStr2 = "";
+                for (int j = i+1; j < s.length(); j++) {
+                    subStr2 += s.charAt(j);
+                }
+                result = 1;
+                for (int j = 0; j < calcPart(subStr2,t,y); j++) {
+                    result *= calcPart(subStr1,t,y);
+                }
+                return result;
+            }
+        }
+
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) > 47 && s.charAt(i) < 58){
                 if (i == s.length()-1)
@@ -266,8 +285,6 @@ public class DifferentiationCalculator {
 
                 return Math.PI;
             }
-//            else if (s.length() > 2 && s.charAt(i+1) == 115 && s.charAt(i+1) == 105 && s.charAt(i+2) == 115)
-//                return t;
             else
                 result += 1;
         }
