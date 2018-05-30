@@ -64,6 +64,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private float speedIncrease=0;
 	private boolean aiDone = false;
 	static boolean  aiinputOpen = false;
+	boolean oncePerShot=true;
 
 	private PhysicsEngine p;
 	private TiledMap tiledMap;
@@ -196,21 +197,30 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			if (AI.getCourse1()) {
 				water = new Rectangle(285, 75, 160, 80);
 				goal = new Circle(450, 300, 30);
-				golfBall.x = 40;
-				golfBall.y = 32;
+				if(oncePerShot) {
+					golfBall.x = 40;
+					golfBall.y = 32;
+					oncePerShot=false;
+				}
 			} else if (AI.getCourse2()) {
-				water = new Rectangle(285, 75, 160, 80);
+				water = new Rectangle(200, 200, 160, 80);
 				goal = new Circle(450, 100, 30);
-				golfBall.x = 40;
-				golfBall.y = 350;
+				if(oncePerShot) {
+					golfBall.x = 40;
+					golfBall.y = 350;
+					oncePerShot=false;
+				}
 			} else if (AI.getCourse3()) {
 				water = new Rectangle(285, 75, 160, 80);
-				goal = new Circle(32, 300, 30);
-				golfBall.x = 450;
-				golfBall.y = 32;
+				goal = new Circle(50, 300, 30);
+				if(oncePerShot) {
+					golfBall.x = 450;
+					golfBall.y = 32;
+					oncePerShot=false;
+				}
 			}
 		}
-		if(aiGoing ){aiinputOpen = false;}
+		if(aiGoing){aiinputOpen = false;}
 
 		//Method 1 of moving the ball
 
@@ -330,6 +340,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 				golfBall.y = 80;
 				aiGoing = false;
 				AI.setButtonClicked(false);
+				oncePerShot=true;
+				System.out.println(aiTimer/60);
 			}
 
 		}
@@ -406,6 +418,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			tiledMap.getLayers().get(1).setVisible(!tiledMap.getLayers().get(1).isVisible());
 		return false;
 	}
+
 
 	@Override public boolean keyTyped(char character) {
 

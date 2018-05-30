@@ -43,6 +43,8 @@ public class PhysicsEngine {
     FileInput FI;
     String[] mapInfo;
     double[] splineDerivates;
+    double[] splineDerivatesX;
+    double[] splineDerivatesY;
     int nrOfKnots;
     final int courseSizeX = 640;
     final int courseSizeY = 480;
@@ -50,6 +52,21 @@ public class PhysicsEngine {
     final double splineIntervalSizeY;
 
     public boolean firstAICall = true;
+
+    //splines follow
+   // private BicubicInterpolation interpolator;
+    private double heightNew;
+    private double heightOld;
+    private double xNormalized;
+    private double yNormalized;
+
+    private double xNew;
+    private double xOld;
+    private double yNew;
+    private double yOld;
+
+    private int SlowForNrOfFrames;
+    private int nrOfFramesSinceShot;
 
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer){
         this.golfBall = golfBall;
