@@ -23,7 +23,7 @@ public class DifferentiationCalculator {
         double g = t;
         double count = 0.0;
         coefs.add(w);
-        f = "y^2";
+        f = "y^2";//() still need to be handled
         //test
         f(f, 5, 6);
 
