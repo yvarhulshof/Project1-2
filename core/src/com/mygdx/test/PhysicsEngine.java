@@ -35,6 +35,8 @@ public class PhysicsEngine {
     float lastShotX;
     float lastShotY;
 
+    public boolean firstAICall = true;
+
     private TiledMapTileLayer collisionLayer;
 
     private float collisionCoordsX;
@@ -460,6 +462,32 @@ public class PhysicsEngine {
             return angle;
         else
             return 360-angle;
+    }
+
+    public double aiAngle(float bx,float by,float gx,float gy){
+        firstAICall =false;
+
+        double aiDir=0;
+        if(gx>=bx && gy>=by){
+            System.out.println("top right");
+            aiDir=Math.atan((gy-by)/(gx-bx));
+            aiDir = Math.toDegrees(aiDir) -5;
+        }
+        else if(gx<=bx && gy>=by){
+            aiDir=Math.atan((gy-by)/(bx-gx));
+            aiDir = Math.toDegrees(aiDir) +85;
+        }
+        else if(gx<=bx && gy<=by){
+            aiDir=Math.atan((by-gy)/(bx-gx));
+            aiDir = 175- Math.toDegrees(aiDir);
+        }
+        else{ //gx>=bx && gy<=by
+            aiDir=Math.atan((by-gy)/(gx-bx));
+            aiDir = 355-Math.toDegrees(aiDir);
+        }
+
+        return aiDir;
+
     }
 
     public void setGravitationalForce(double gravitationalForce){
