@@ -89,7 +89,7 @@ public class FileInput {
         FileHandle file = Gdx.files.local("GolfswingInput.txt");
         File convertedFile = file.file();
 
-        ArrayList<String> swingInput = new ArrayList<>();
+        ArrayList<String> swingInput = new ArrayList<String>();
 
         try {
             Scanner lineScanner = new Scanner(convertedFile);
@@ -106,8 +106,8 @@ public class FileInput {
 
     public void parseSwingDirections(ArrayList<String> swingInfo){
 
-        directionValues = new ArrayList<>();
-        speedValues = new ArrayList<>();
+        directionValues = new ArrayList<Double>();
+        speedValues = new ArrayList<Double>();
 
         for(int i = 0; i < swingInfo.size();i++){
             if(i % 3 == 0) directionValues.add(Double.parseDouble(swingInfo.get(i)));
