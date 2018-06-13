@@ -65,6 +65,8 @@ public class PhysicsEngine {
     private int SlowForNrOfFrames;
     private int nrOfFramesSinceShot;
 
+    DifferentiationCalculator DC = new DifferentiationCalculator(mass, frictionConstant, g);
+
 
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer){
         this.golfBall = golfBall;
@@ -123,24 +125,24 @@ public class PhysicsEngine {
         /**
          * Used for bicubic spline interpolation, but we're using normal splines for now
          */
-        /*
-
-        xOld = xNew;
-        yOld = yNew;
-        heightOld = heightNew;
-
-        xNormalized = golfBall.x * (1.0/courseSizeX);
-        yNormalized = golfBall.y * (1.0/courseSizeY);
-
-        System.out.println("xNorm: " + xNormalized);
-        System.out.println("yNorm: " + yNormalized);
-
-        xNew = golfBall.x;
-        yNew = golfBall.y;
-        heightNew = interpolator.findHeightXandYDimensions(xNormalized,yNormalized);
-        System.out.println("heightNew: " + heightNew);
-
-        */
+//        /*
+//
+//        xOld = xNew;
+//        yOld = yNew;
+//        heightOld = heightNew;
+//
+//        xNormalized = golfBall.x * (1.0/courseSizeX);
+//        yNormalized = golfBall.y * (1.0/courseSizeY);
+//
+//        System.out.println("xNorm: " + xNormalized);
+//        System.out.println("yNorm: " + yNormalized);
+//
+//        xNew = golfBall.x;
+//        yNew = golfBall.y;
+//        heightNew = interpolator.findHeightXandYDimensions(xNormalized,yNormalized);
+//        System.out.println("heightNew: " + heightNew);
+//
+//        */
 
         if(initialCall) {
             startTime = System.nanoTime() / 1000000000.0; //defining the value for which t = 0
@@ -164,40 +166,40 @@ public class PhysicsEngine {
 
         vx1 = golfBall.getVx2();
         vy1 = golfBall.getVy2();
-/*
-        if(!usingMethod3)
-        {
-            if      (((Math.abs(vx1 + (float) findfx()) <= 20) &&
-                    (-mass * g * dx() == 0) && (-mass * g * dy() == 0) &&
-                    (Math.abs(vy1 + (float) findfy())) <= 20) ||
-                    (ballBlocked))
-            {
-                //System.out.println("check");
-                golfBall.setVX2(0);
-                golfBall.setVY2(0);
-                ballStopped = true;
-                ballBlocked = false;
-                initialCall = true;
-            } else {
-                golfBall.setVX2(vx1 + (float) findfx());
-                golfBall.setVY2(vy1 + (float) findfy());
-            }
-        }
-*/
+///*
+//        if(!usingMethod3)
+//        {
+//            if      (((Math.abs(vx1 + (float) findfx()) <= 20) &&
+//                    (-mass * g * dx() == 0) && (-mass * g * dy() == 0) &&
+//                    (Math.abs(vy1 + (float) findfy())) <= 20) ||
+//                    (ballBlocked))
+//            {
+//                //System.out.println("check");
+//                golfBall.setVX2(0);
+//                golfBall.setVY2(0);
+//                ballStopped = true;
+//                ballBlocked = false;
+//                initialCall = true;
+//            } else {
+//                golfBall.setVX2(vx1 + (float) findfx());
+//                golfBall.setVY2(vy1 + (float) findfy());
+//            }
+//        }
+//*/
 
         //stopping condition for the ball: the speed has been below 10 for the last 60 frames
 
-        /*
-        boolean shouldStop = false;
-
-        if (((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10)) && !ballStopped)
-            SlowForNrOfFrames++;
-        else SlowForNrOfFrames = 0;
-
-
-        if(SlowForNrOfFrames > 60)
-            shouldStop = true;
-        */
+//        /*
+//        boolean shouldStop = false;
+//
+//        if (((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10)) && !ballStopped)
+//            SlowForNrOfFrames++;
+//        else SlowForNrOfFrames = 0;
+//
+//
+//        if(SlowForNrOfFrames > 60)
+//            shouldStop = true;
+//        */
 
 
         double elapsedTime = System.nanoTime() / 1000000000.0 - startTime; //defining the value of t for the current call of render()
@@ -369,29 +371,23 @@ public class PhysicsEngine {
 
 
     public double findfx(){
-        double G;
-        double H;
-        double fx;
         slopex = dx();
         //if(ballBlockedX) G = 0;
         //else
-        G = -mass * g * slopex;
+        double G = -mass * g * slopex;
 
-        H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
-        fx = G + H;
+        double H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+        double fx = G + H;
         return fx;
     }
     public double findfy(){
-        double G;
-        double H;
-        double fy;
         slopey = dy();
         //if(ballBlockedY) G = 0;
         //else
-        G = -mass * g * slopey;
+        double G = -mass * g * slopey;
 
-        H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
-        fy = G + H;
+        double H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+        double fy = G + H;
         return fy;
     }
 
