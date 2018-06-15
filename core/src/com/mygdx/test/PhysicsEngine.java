@@ -5,7 +5,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
-public class PhysicsEngine {
+public class PhysicsEngine
+{
 
     GolfBall golfBall;
     Circle goal;
@@ -65,7 +66,7 @@ public class PhysicsEngine {
     private int SlowForNrOfFrames;
     private int nrOfFramesSinceShot;
 
-    DifferentiationCalculator DC = new DifferentiationCalculator(mass, frictionConstant, g);
+    DifferentiationCalculator DC = new DifferentiationCalculator(1, mass, frictionConstant, g);
 
 
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer){
@@ -99,14 +100,16 @@ public class PhysicsEngine {
     /**
      * Used for bicubic spline interpolation, but we're using normal splines for now
      */
-    /*
-    public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer, BicubicInterpolation interpolator) {
-        this.golfBall = golfBall;
-        this.collisionLayer = collisionLayer;
-        this.interpolator = interpolator;
-        //double splineNormalizeXCoeff = courseSizeX
-    }
-    */
+
+//    /*
+//    public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer, BicubicInterpolation interpolator) {
+//        this.golfBall = golfBall;
+//        this.collisionLayer = collisionLayer;
+//        this.interpolator = interpolator;
+//        //double splineNormalizeXCoeff = courseSizeX
+//    }
+//    */
+
     public void moveBall(double direction, double initialSpeed){
 
         float oldXCoords = golfBall.getXCoords();
@@ -211,15 +214,20 @@ public class PhysicsEngine {
 
         if(!usingMethod3)
         {
-            if      ((((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10))
-                || (((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY))) && elapsedTime > 3)
+            DC.setParam(vx1, vy1, dx(), dy());
+            double velocityX = vx1 + (float) (1)*DC.calculateDifferentiation('x');
+            double velocityY = vy1 + (float) (1)*DC.calculateDifferentiation('y');
+
+            if      ((((Math.abs(velocityX) <= 10) && ((Math.abs(velocityY)) <= 10))
+                    || (((-mass * g * dx() == 0) && (-mass * g * dy() == 0))
+                    || (ballBlockedX && ballBlockedY))) && elapsedTime > 3)
             {
                 ballStopped = true;
                 initialCall = true;
             }
             else {
-                if(!ballBlockedX) golfBall.setVX2(vx1 + (float) findfx());
-                if(!ballBlockedY) golfBall.setVY2(vy1 + (float) findfy());
+                if(!ballBlockedX) golfBall.setVX2((float) velocityX);
+                if(!ballBlockedY) golfBall.setVY2((float) velocityY);
             }
         }
         System.out.println("ballStopped = " + ballStopped);
@@ -237,7 +245,8 @@ public class PhysicsEngine {
         boolean colRight = false;
         boolean colTop = false;
 
-        if(golfBall.getVx2() < 0){
+        if(golfBall.getVx2() < 0)
+        {
             //top left
 
             TiledMapTileLayer.Cell collisionCellTopLeft =  collisionLayer.getCell((int) (golfBall.x / tileWidth), (int) ((golfBall.y + 2*golfBall.radius) / tileHeight));
@@ -370,26 +379,26 @@ public class PhysicsEngine {
     }
 
 
-    public double findfx(){
-        slopex = dx();
-        //if(ballBlockedX) G = 0;
-        //else
-        double G = -mass * g * slopex;
-
-        double H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
-        double fx = G + H;
-        return fx;
-    }
-    public double findfy(){
-        slopey = dy();
-        //if(ballBlockedY) G = 0;
-        //else
-        double G = -mass * g * slopey;
-
-        double H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
-        double fy = G + H;
-        return fy;
-    }
+//    public double findfx(){
+//        slopex = dx();
+//        //if(ballBlockedX) G = 0;
+//        //else
+//        double G = -mass * g * slopex;
+//
+//        double H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+//        double fx = G + H;
+//        return fx;
+//    }
+//    public double findfy(){
+//        slopey = dy();
+//        //if(ballBlockedY) G = 0;
+//        //else
+//        double G = -mass * g * slopey;
+//
+//        double H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+//        double fy = G + H;
+//        return fy;
+//    }
 
     public double dx(){
         double d = 0;
@@ -414,21 +423,22 @@ public class PhysicsEngine {
     /**
      * Used for bicubic spline interpolation, but we're using normal splines for now
      */
-    /*
-    public double dx(){
-        double changeInX = xNew - xOld;
-        if(changeInX == 0) changeInX = 0.0001;
-        double slopex = (heightNew - heightOld) / changeInX;
-        return slopex;
-    }
 
-    public double dy(){
-        double changeInY = yNew - yOld;
-        if(changeInY == 0) changeInY = 0.0001;
-        double slopey = (heightNew - heightOld) / changeInY;
-        return slopey;
-    }
-    */
+//    /*
+//    public double dx(){
+//        double changeInX = xNew - xOld;
+//        if(changeInX == 0) changeInX = 0.0001;
+//        double slopex = (heightNew - heightOld) / changeInX;
+//        return slopex;
+//    }
+//
+//    public double dy(){
+//        double changeInY = yNew - yOld;
+//        if(changeInY == 0) changeInY = 0.0001;
+//        double slopey = (heightNew - heightOld) / changeInY;
+//        return slopey;
+//    }
+//    */
 
     public boolean getBallStopped(){
         return ballStopped;
@@ -437,14 +447,6 @@ public class PhysicsEngine {
     public boolean getBallBlocked(){
         return ballBlocked;
     }
-
-  /*  public static double[] differentiation(double[] arr) {
-        double[] done = new double[arr.length - 1];
-        for (int i = 0; i < done.length; i++) {
-            done[i] = arr[i]*(arr.length-i-1);
-        }
-        return done;
-    } */
 
     public static double calcAngle(double x, double y){
         y = -y;
