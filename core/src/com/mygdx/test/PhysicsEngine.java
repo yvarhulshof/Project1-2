@@ -65,6 +65,9 @@ public class PhysicsEngine {
     private int SlowForNrOfFrames;
     private int nrOfFramesSinceShot;
 
+    DifferentiationCalculator DC = new DifferentiationCalculator(1, mass, frictionConstant, g);
+
+
 
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer){
         this.golfBall = golfBall;
