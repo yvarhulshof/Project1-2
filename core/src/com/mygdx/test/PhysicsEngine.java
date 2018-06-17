@@ -209,6 +209,8 @@ public class PhysicsEngine {
 
         if(!usingMethod3)
         {
+
+
             if      ((((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10))
                 || (((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY))) && elapsedTime > 3)
             {
