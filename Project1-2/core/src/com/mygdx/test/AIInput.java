@@ -34,7 +34,7 @@ public class AIInput {
 
     public void createGUI() {
 
-       // JTextArea nameArea = new JTextArea(10, 30);
+        JTextArea nameArea = new JTextArea(10, 30);
         //JLabel label = new JLabel("wololoooo");
         //label.setSize(400,100);
         String[] combo1={"invisible","visible"};
