@@ -65,6 +65,9 @@ public class PhysicsEngine {
     private int SlowForNrOfFrames;
     private int nrOfFramesSinceShot;
 
+    DifferentiationCalculator DC = new DifferentiationCalculator(1, mass, frictionConstant, g);
+
+
 
     public PhysicsEngine(GolfBall golfBall, TiledMapTileLayer collisionLayer){
         this.golfBall = golfBall;
@@ -209,15 +212,20 @@ public class PhysicsEngine {
 
         if(!usingMethod3)
         {
-            if      ((((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10))
-                || (((-mass * g * dx() == 0) && (-mass * g * dy() == 0)) || (ballBlockedX && ballBlockedY))) && elapsedTime > 3)
+            DC.setParam(vx1, vy1, dx(), dy());
+            double velocityX = vx1 + (float) (1)*DC.calculateDifferentiation('x');
+            double velocityY = vy1 + (float) (1)*DC.calculateDifferentiation('y');
+
+            if      ((((Math.abs(velocityX) <= 10) && ((Math.abs(velocityY)) <= 10))
+                    || (((-mass * g * dx() == 0) && (-mass * g * dy() == 0))
+                    || (ballBlockedX && ballBlockedY))) && elapsedTime > 3)
             {
                 ballStopped = true;
                 initialCall = true;
             }
             else {
-                if(!ballBlockedX) golfBall.setVX2(vx1 + (float) findfx());
-                if(!ballBlockedY) golfBall.setVY2(vy1 + (float) findfy());
+                if(!ballBlockedX) golfBall.setVX2((float) velocityX);
+                if(!ballBlockedY) golfBall.setVY2((float) velocityY);
             }
         }
         System.out.println("ballStopped = " + ballStopped);
