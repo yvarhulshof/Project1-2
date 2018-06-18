@@ -10,7 +10,7 @@ public class PhysicsEngine {
     GolfBall golfBall;
     Circle goal;
     Rectangle water;
-    boolean ballStopped = true;
+    boolean ballStopped;
     boolean ballBlocked = false;
 
     boolean ballBlockedX = false;
@@ -229,9 +229,6 @@ public class PhysicsEngine {
             }
         }
         System.out.println("ballStopped = " + ballStopped);
-
-
-
 
 
         //change in x and y during the elapsed time
