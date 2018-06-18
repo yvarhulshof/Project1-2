@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class DifferentiationCalculator {
 
-    private String f;
-    private ArrayList<Double> coefs = new ArrayList<Double>();
-    private double t;
-    private double y0;
+//    private String f;
+//    private ArrayList<Double> coefs = new ArrayList<Double>();
+//    private double t;
+//    private double y0;
+//    private double x;
+//    private double y;
     private double h;
-    private double x;
-    private double y;
     private double friction;
     private double g;
     private double mass;

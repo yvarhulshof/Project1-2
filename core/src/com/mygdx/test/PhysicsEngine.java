@@ -373,32 +373,32 @@ public class PhysicsEngine {
     }
 
 
-    public double findfx(){
-        double G;
-        double H;
-        double fx;
-        slopex = dx();
-        //if(ballBlockedX) G = 0;
-        //else
-        G = -mass * g * slopex;
-
-        H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
-        fx = G + H;
-        return fx;
-    }
-    public double findfy(){
-        double G;
-        double H;
-        double fy;
-        slopey = dy();
-        //if(ballBlockedY) G = 0;
-        //else
-        G = -mass * g * slopey;
-
-        H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
-        fy = G + H;
-        return fy;
-    }
+//    public double findfx(){
+//        double G;
+//        double H;
+//        double fx;
+//        slopex = dx();
+//        //if(ballBlockedX) G = 0;
+//        //else
+//        G = -mass * g * slopex;
+//
+//        H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+//        fx = G + H;
+//        return fx;
+//    }
+//    public double findfy(){
+//        double G;
+//        double H;
+//        double fy;
+//        slopey = dy();
+//        //if(ballBlockedY) G = 0;
+//        //else
+//        G = -mass * g * slopey;
+//
+//        H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+//        fy = G + H;
+//        return fy;
+//    }
 
     public double dx(){
         double d = 0;
