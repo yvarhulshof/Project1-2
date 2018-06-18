@@ -116,8 +116,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		water = new Rectangle(285, 175, 160, 80);
         goal = new Circle(450, 330, 30);
 
-//		golfBall = new GolfBall(0,0);
-//      golfBall2 = new GolfBall(0,0);
         collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
 
 		Gdx.input.setInputProcessor(this); //setting the inputProccesor which allows the user to use the mouse and keyboard to control aspects of the program
@@ -216,7 +214,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
         if(released)
 		{
-            p[cpp].moveBall(PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), (mouseY)-(golfBalls[cpp].y + golfBalls[cpp].radius)), eucliDistance);
+            p[cpp].moveBall(PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), mouseY-(golfBalls[cpp].y + golfBalls[cpp].radius)), eucliDistance);
 		}
 
 

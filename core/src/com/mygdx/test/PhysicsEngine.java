@@ -10,7 +10,7 @@ public class PhysicsEngine {
     GolfBall golfBall;
     Circle goal;
     Rectangle water;
-    boolean ballStopped;
+    boolean ballStopped = true;
     boolean ballBlocked = false;
 
     boolean ballBlockedX = false;
