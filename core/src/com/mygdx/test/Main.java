@@ -299,10 +299,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			float red = (float) (eucliDistance/1.5 - 50);
 			float green = (float) (255 - eucliDistance/1.5);
 			sr.setColor(red,green,0,0);
-			//System.out.println("green: " + green + "red : " + red);
+			//ystem.out.println("green: " + green + "red : " + red);
 			sr.line(mouseX, mouseY, golfBalls[cpp].x + golfBalls[cpp].radius, golfBalls[cpp].y + golfBalls[cpp].radius);
 			sr.end();
-			//System.out.println("x = " + (mouseX -(golfBalls[cpp].x + golfBalls[cpp].radius)) + " 	y =" + (mouseY -(golfBalls[cpp].y + golfBalls[cpp].radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), (mouseY)-(golfBalls[cpp].y + golfBalls[cpp].radius)));
+			System.out.println("x = " + (mouseX -(golfBalls[cpp].x + golfBalls[cpp].radius)) + " 	y =" + (mouseY -(golfBalls[cpp].y + golfBalls[cpp].radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), (mouseY)-(golfBalls[cpp].y + golfBalls[cpp].radius)));
 		}
 
 

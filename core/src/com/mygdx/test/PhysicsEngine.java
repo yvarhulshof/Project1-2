@@ -480,12 +480,12 @@ public class PhysicsEngine {
         else if(gx<=bx && gy>=by){
             aiDir=Math.atan((gy-by)/(bx-gx));
             aiDir = Math.toDegrees(aiDir) +85;
-            System.out.println("Angle: " + aiDir);
+
         }
         else if(gx<=bx && gy<=by){
             aiDir=Math.atan((by-gy)/(bx-gx));
             aiDir = 175- Math.toDegrees(aiDir);
-            System.out.println("Angle: " + aiDir);
+
         }
         else{ //gx>=bx && gy<=by
             aiDir=Math.atan((by-gy)/(gx-bx));
