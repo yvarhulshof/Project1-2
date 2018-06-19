@@ -20,6 +20,7 @@ public class PhysicsEngine {
     static boolean initialCall = true;
     static double startTime = 0;
     private boolean usingMethod3 = false;
+    public boolean firstAICall = true;
 
     private double frictionConstant = 0.6;
     private double g = 9.81;
@@ -167,15 +168,15 @@ public class PhysicsEngine {
 
         vx1 = golfBall.getVx2();
         vy1 = golfBall.getVy2();
-/*
-        if(!usingMethod3)
+
+        if(!firstAICall)
         {
             if      (((Math.abs(vx1 + (float) findfx()) <= 20) &&
                     (-mass * g * dx() == 0) && (-mass * g * dy() == 0) &&
                     (Math.abs(vy1 + (float) findfy())) <= 20) ||
                     (ballBlocked))
             {
-                //System.out.println("check");
+              //  System.out.println("check");
                 golfBall.setVX2(0);
                 golfBall.setVY2(0);
                 ballStopped = true;
@@ -186,7 +187,7 @@ public class PhysicsEngine {
                 golfBall.setVY2(vy1 + (float) findfy());
             }
         }
-*/
+
 
         //stopping condition for the ball: the speed has been below 10 for the last 60 frames
 
@@ -210,7 +211,7 @@ public class PhysicsEngine {
         //or the ball is blocked in both x and y directions
         //AND it has been more than 3 seconds since the start of the shot
 
-        if(!usingMethod3)
+        if(!usingMethod3 && firstAICall)
         {
             DC.setParam(vx1, vy1, dx(), dy());
             double velocityX = vx1 + (float) (1)*DC.calculateDifferentiation('x');
@@ -357,9 +358,9 @@ public class PhysicsEngine {
         //}
         //System.out.println("speedX " + golfBall.getVx2());
         //System.out.println("speedY : " + golfBall.getVy2());
-        System.out.println("balloccX : " + golfBall.x );
+      //  System.out.println("balloccX : " + golfBall.x );
         //System.out.println("possssX " +positionX());
-        System.out.println("balloccY : " + golfBall.y );
+       // System.out.println("balloccY : " + golfBall.y );
         //System.out.println("posssY " + positionY());
     }
 
@@ -373,32 +374,32 @@ public class PhysicsEngine {
     }
 
 
-//    public double findfx(){
-//        double G;
-//        double H;
-//        double fx;
-//        slopex = dx();
-//        //if(ballBlockedX) G = 0;
-//        //else
-//        G = -mass * g * slopex;
-//
-//        H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
-//        fx = G + H;
-//        return fx;
-//    }
-//    public double findfy(){
-//        double G;
-//        double H;
-//        double fy;
-//        slopey = dy();
-//        //if(ballBlockedY) G = 0;
-//        //else
-//        G = -mass * g * slopey;
-//
-//        H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
-//        fy = G + H;
-//        return fy;
-//    }
+   public double findfx(){
+        double G;
+        double H;
+        double fx;
+       slopex = dx();
+       if(ballBlockedX) G = 0;
+       else
+        G = -mass * g * slopex;
+
+        H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+        fx = G + H;
+        return fx;
+    }
+    public double findfy(){
+        double G;
+        double H;
+        double fy;
+        slopey = dy();
+       if(ballBlockedY) G = 0;
+        else
+        G = -mass * g * slopey;
+
+       H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+        fy = G + H;
+       return fy;
+    }
 
     public double dx(){
         double d = 0;
@@ -466,6 +467,35 @@ public class PhysicsEngine {
         else
             return 360-angle;
     }
+    public double aiAngle(float bx,float by,float gx,float gy){
+        firstAICall =false;
+
+        double aiDir;
+        if(gx>=bx && gy>=by){
+            System.out.println("top right");
+            aiDir=Math.atan((gy-by)/(gx-bx));
+            aiDir = Math.toDegrees(aiDir) -5;
+            System.out.println("Angle: " + aiDir);
+        }
+        else if(gx<=bx && gy>=by){
+            aiDir=Math.atan((gy-by)/(bx-gx));
+            aiDir = Math.toDegrees(aiDir) +85;
+            System.out.println("Angle: " + aiDir);
+        }
+        else if(gx<=bx && gy<=by){
+            aiDir=Math.atan((by-gy)/(bx-gx));
+            aiDir = 175- Math.toDegrees(aiDir);
+            System.out.println("Angle: " + aiDir);
+        }
+        else{ //gx>=bx && gy<=by
+            aiDir=Math.atan((by-gy)/(gx-bx));
+            aiDir = 355-Math.toDegrees(aiDir);
+            System.out.println("Angle: " + aiDir);
+        }
+
+        return aiDir;
+
+    }
 
     public void setGravitationalForce(double gravitationalForce){
         this.g = gravitationalForce;
@@ -498,4 +528,5 @@ public class PhysicsEngine {
     public void setBallBlockedY(boolean ballBlockedY) {
         this.ballBlockedY = ballBlockedY;
     }
+
 }

@@ -29,7 +29,8 @@ import java.util.ArrayList;
  */
 public class Main extends ApplicationAdapter implements InputProcessor{
 
-    //test
+
+	//test
 
 	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
@@ -42,6 +43,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 
 	//initialisation of the hole
+	//private GolfBall golfBall;
     private SpriteBatch goalBatch;
     private Texture goalImg;
     private static Circle goal;
@@ -51,7 +53,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private Texture waterImg;
     private static Rectangle water;
 
-//    private PhysicsEngine p;
+
 //    private PhysicsEngine p2;
     private PhysicsEngine[] p;
     private TiledMap tiledMap;
@@ -75,12 +77,22 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private ArrayList<Double> directionValues; //the GolfswingInput values
     private ArrayList<Double> speedValues; //the GolfswingInput values
 
-    private BicubicInterpolation interpolator;
+	private BicubicInterpolation interpolator;
     private double[][] hs;
 
-    private int playersNbr = 2;
+    private int playersNbr = 1;
     private int cpp; //current playing player
     int maxDistanceMulti;
+	private AIInput AI;
+	private boolean aiGoing = false;
+	private boolean visible = true;
+	double aiTimer = 0;
+	private double aiDirection;
+	private float angleIncrease=0;
+	private float speedIncrease=0;
+	private boolean aiDone = false;
+	static boolean  aiinputOpen = false;
+	boolean oncePerShot=true;
 
 
 
@@ -113,8 +125,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		tiledMap = new TmxMapLoader().load("map2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
+
 		water = new Rectangle(285, 175, 160, 80);
         goal = new Circle(450, 330, 30);
+		aiinputOpen = true;
 
         collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
 
@@ -123,17 +137,24 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		SI = new SwingInput(); //creating an instance of the GUI used in Method 2 to enter the velocity of the ball
 		SI.createGUI();
 
+		AI = new AIInput(); //creating an instance of the GUI used in Method 2 to enter the velocity of the ball
+		AI.createGUI();
+
+
 		golfBalls = new GolfBall[playersNbr];
 		p = new PhysicsEngine[playersNbr];
 
         cpp = 0;
 
-        for (int i = 0; i < playersNbr; i++) {
-            golfBalls[i] = new GolfBall(0, 0);
-            p[i] = new PhysicsEngine(golfBalls[i], collisionLayer);
-        }
+			for (int i = 0; i < playersNbr; i++) {
+				golfBalls[i] = new GolfBall(0, 0);
+				p[i] = new PhysicsEngine(golfBalls[i], collisionLayer);
+			}
+
 
         maxDistanceMulti = 500;
+
+
 
 
 
@@ -197,19 +218,61 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		goalBatch.end();
 
 		batch.begin();
-        for (int i = 0; i < playersNbr; i++) {
-            batch.draw(golfballImg, golfBalls[i].x,golfBalls[i].y);
-        }
+		if (AI.getVisible()) {
+			for (int i = 0; i < playersNbr; i++) {
+				batch.draw(golfballImg, golfBalls[i].x, golfBalls[i].y); //draws the golfBall image at the location where the golfBall Circle object is at that point in time
+			} //draws the golfBall image at the location where the golfBall Circle object is at that point in time
+		}
+		else {
+			for (int i = 0; i < playersNbr; i++) {
+				batch.draw(golfballImg, golfBalls[i].x, golfBalls[i].y);
+			}
+		}
 
-
+		/*if (AI.getVisible()) {
+			batch.draw(golfballImg, golfBall.x, golfBall.y); //draws the golfBall image at the location where the golfBall Circle object is at that point in time
+		} //draws the golfBall image at the location where the golfBall Circle object is at that point in time
 //		batch.draw(golfballImg, golfBall.x,golfBall.y); //draws the golfBall image at the location where the golfBall Circle object is at that point in time
-//        batch.draw(golfballImg, golfBall2.x,golfBall2.y);
+//        batch.draw(golfballImg, golfBall2.x,golfBall2.y); */
 		batch.end();
 
 		waterBatch.begin();
 		waterBatch.draw(waterImg,water.x,water.y);
 		waterBatch.end();
 
+
+		// selecting the different variation of the map
+		if (aiinputOpen) {
+			if (AI.getCourse1()) {
+				water = new Rectangle(285, 75, 160, 80);
+				goal = new Circle(450, 300, 30);
+				if (oncePerShot) {
+					golfBalls[cpp].x = 40;
+					golfBalls[cpp].y = 32;
+					oncePerShot = false;
+				}
+			} else if (AI.getCourse2()) {
+				water = new Rectangle(200, 200, 160, 80);
+				goal = new Circle(450, 100, 30);
+				if (oncePerShot) {
+					golfBalls[cpp].x = 40;
+					golfBalls[cpp].y = 350;
+					oncePerShot = false;
+				}
+			} else if (AI.getCourse3()) {
+				water = new Rectangle(285, 75, 160, 80);
+				goal = new Circle(50, 300, 30);
+				if (oncePerShot) {
+					golfBalls[cpp].x = 450;
+					golfBalls[cpp].y = 32;
+					oncePerShot = false;
+				}
+			}
+		}
+
+		if (aiGoing) {
+			aiinputOpen = false;
+		}
 		//Method 1 of moving the ball
 
         if(released)
@@ -239,7 +302,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			//System.out.println("green: " + green + "red : " + red);
 			sr.line(mouseX, mouseY, golfBalls[cpp].x + golfBalls[cpp].radius, golfBalls[cpp].y + golfBalls[cpp].radius);
 			sr.end();
-			System.out.println("x = " + (mouseX -(golfBalls[cpp].x + golfBalls[cpp].radius)) + " 	y =" + (mouseY -(golfBalls[cpp].y + golfBalls[cpp].radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), (mouseY)-(golfBalls[cpp].y + golfBalls[cpp].radius)));
+			//System.out.println("x = " + (mouseX -(golfBalls[cpp].x + golfBalls[cpp].radius)) + " 	y =" + (mouseY -(golfBalls[cpp].y + golfBalls[cpp].radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), (mouseY)-(golfBalls[cpp].y + golfBalls[cpp].radius)));
 		}
 
 
@@ -253,6 +316,39 @@ public class Main extends ApplicationAdapter implements InputProcessor{
             firstFrameOfSwing = false;
             p[cpp].moveBall(SI.getDir(), SI.getSpd());
         }
+		if (AI.getButtonClicked() || aiGoing) {
+			aiGoing = true;
+			if (firstFrameOfSwing) {
+				p[cpp].setBallBlockedX(false);
+				p[cpp].setBallBlockedY(false);
+			}
+
+
+			float ballX = golfBalls[cpp].getXCoords();
+			float ballY = golfBalls[cpp].getYCoords();
+			float goalX = goal.x;
+			float goalY = goal.y;
+			if (p[cpp].firstAICall) {
+				aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
+			}
+			p[cpp].moveBall(aiDirection + angleIncrease, speedIncrease);
+			if (p[cpp].golfBall.getVx2() < 30 && p[cpp].golfBall.getVy2() < 30) {
+
+				golfBalls[cpp].x = p[cpp].positionX();
+				golfBalls[cpp].y = p[cpp].positionY();
+				p[cpp].golfBall.setVX2(0);
+				p[cpp].golfBall.setVY2(0);
+
+				speedIncrease += 100;
+
+				if (speedIncrease == 2000) {
+					speedIncrease = 0;
+					angleIncrease += 5;
+				}
+			}
+			aiTimer++;
+			System.out.println("timer:" + aiTimer / 60);
+		}
 
 		//Method 3 of moving the ball, uncomment and comment Method 1 to use
 
@@ -282,12 +378,39 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		}
 
         if(goal.x - golfBalls[cpp].x <= 10 && goal.x - golfBalls[cpp].x >= -80 && goal.y - golfBalls[cpp].y <= 0 && goal.y - golfBalls[cpp].y >= -80){
-			System.out.println("congrats");
-			Win.winGUI();
-			golfBalls[cpp].x =80;
-			golfBalls[cpp].y = 0;
+
+			if (aiGoing && !aiDone) {
+				final double finalDir = aiDirection + angleIncrease;
+				final double finalSpeed = speedIncrease;
+				AI.setVisible();
+				golfBalls[cpp].x = p[cpp].positionX();
+				golfBalls[cpp].y = p[cpp].positionY();
+				p[cpp].golfBall.setVX2(0);
+				p[cpp].golfBall.setVY2(0);
+				p[cpp].moveBall(finalDir, finalSpeed);
+				aiGoing = false;
+				aiDone = true;
+			}
+			else {
+				System.out.println("congrats");
+				Win.winGUI();
+				resetBall();
+				golfBalls[cpp].x =80;
+				golfBalls[cpp].y = 0;
+				aiGoing = false;
+				AI.setButtonClicked(false);
+				oncePerShot = true;
+				System.out.println(aiTimer / 60);
+			}
+
+
 		}
 
+		if (p[cpp].getBallStopped()) {
+			released = false;
+			SI.setButtonClicked(false);
+			firstFrameOfSwing = true;
+		}
 
 
 		/** check collision with the water and make the ball respawn */

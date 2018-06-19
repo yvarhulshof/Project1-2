@@ -56,16 +56,16 @@ public class DifferentiationCalculator {
 
         if (v == 'x'){
 
-            System.out.println("runkax = " + c4rkx(slopex));
-            System.out.print("normalx = " + fx(vx, vy, slopex));
+       //     System.out.println("runkax = " + c4rkx(slopex));
+        //    System.out.print("normalx = " + fx(vx, vy, slopex));
             return c4rkx(slopex);
             //return fx(vx, vy, slopex);
         }
 
         else{
 
-            System.out.println("runkay = " + c4rky(slopey));
-            System.out.print("normaly = " + fy(vx, vy, slopey));
+     //       System.out.println("runkay = " + c4rky(slopey));
+      //      System.out.print("normaly = " + fy(vx, vy, slopey));
             return c4rky(slopey);
             //return  fy(vx, vy, slopey);
 
