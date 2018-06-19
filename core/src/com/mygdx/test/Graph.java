@@ -1,83 +1,85 @@
 package com.mygdx.test;
 
+import java.util.*;
 
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Scanner;
-
-class Neighbor{
-    public int vertexNum;
-    public Neighbor next;
-    public Neighbor(int vnum, Neighbor nbr){
-        this.vertexNum = vnum;
-        next = nbr;
-    }
-}
-class Vertex{
-    String name;
-    Neighbor adjList;
-    Vertex(String name, Neighbor neighbors){
-        this.name = name;
-        this.adjList = neighbors;
-    }
-}
 public class Graph {
+    private List<Vertex> vertexes;
+    private List<Edge> edges;
 
-    Vertex[] adjLists;
-
-    public Graph() throws FileNotFoundException {
-        FileHandle file = Gdx.files.local("GraphInfo.txt");
-        File convertedFile = file.file();
-        Scanner sc = new Scanner(convertedFile);
-        adjLists = new Vertex[sc.nextInt()];
-
-        // read vertices
-        for (int i = 0; i < adjLists.length; i++) {
-            adjLists[i] = new Vertex(sc.next(), null);
-        }
-
-        // read edges
-        while (sc.hasNext()) {
-            // read vertex names and translate to vertex numbers
-            int v1 = indexForName(sc.next());
-            int v2 = indexForName(sc.next());
-
-            // add v2 in front of v1 list and v1 in front of v2's list
-            adjLists[v1].adjList = new Neighbor(v2, adjLists[v1].adjList);
-            adjLists[v2].adjList = new Neighbor(v1, adjLists[v2].adjList);
-        }
-
-
+    public Graph(List<Vertex> vertexes, List<Edge> edges) {
+        this.vertexes = vertexes;
+        this.edges = edges;
     }
 
-
-    int indexForName(String name) {
-        for (int i = 0; i < adjLists.length; i++) {
-            if (adjLists[i].name.equals((name))) {
-                return i;
-            }
-        }
-        return -1;
+    public void setVertexes(List<Vertex> vertexes){
+      this.vertexes = vertexes;
     }
 
-    public void print() {
-        System.out.println();
-        for (int i = 0; i < adjLists.length; i++) {
-            System.out.print(adjLists[i].name);
-            for (Neighbor nbr = adjLists[i].adjList; nbr != null; nbr = nbr.next) {
-                System.out.print("-->" + adjLists[nbr.vertexNum].name);
-            }
-            System.out.println("\n");
-        }
+    public List<Vertex> getVertexes() {
+        return vertexes;
     }
 
-    public static void main(String[] args) throws IOException {
-        Graph graph = new Graph();
-        graph.print();
-        }
+    public List<Edge> getEdges() {
+        return edges;
     }
+
+    public boolean adjacent(String x, String y)	{
+        // Returns true when there’s an edge from x to y
+
+        Vertex vX = null;
+        Vertex vY = null;
+
+        for(int i = 0; i < vertexes.size(); i++)
+        {
+          if(x == vertexes.get(i).getId())
+            vX = vertexes.get(i);
+
+          if(y == vertexes.get(i).getId())
+            vY = vertexes.get(i);
+        }
+        for(int i = 0; i < edges.size(); i++)
+        {
+          if(edges.get(i).getSource() == vX && edges.get(i).getDestination() == vY)
+            return true;
+          if(edges.get(i).getSource() == vY && edges.get(i).getDestination() == vX)
+            return true;
+        }
+        return false;
+    }
+
+    public List<Vertex> getNeighbours(String vertex) {
+        // Returns all neighbours of a given vertex
+
+        Vertex vX = null;
+        List<Edge> connectedEdges = new ArrayList<Edge>();
+        List<Vertex> neighbours = new ArrayList<Vertex>();
+
+        //find vertex belong to the string giving its ID
+        for(int i = 0; i < vertexes.size(); i++)
+        {
+          //System.out.println("checkB");
+          if(vertex.equals(vertexes.get(i).getId())){
+            vX = vertexes.get(i);
+          }
+        }
+
+        for(int i = 0; i < edges.size(); i++)
+        {
+          if(edges.get(i) != null && (edges.get(i).getSource() == vX))
+            //connectedEdges.add(edges.get(i));
+            neighbours.add(edges.get(i).getDestination());
+
+          if(edges.get(i) != null && (edges.get(i).getDestination() == vX))
+            neighbours.add(edges.get(i).getSource());
+        }
+
+        //we also need to find the edges for which vX is the destination
+        /*
+        for(int i = 0; i < connectedEdges.size(); i++)
+        {
+          neighbours.add(connectedEdges.get(i).getDestination());
+        }
+        */
+        return neighbours;
+    }
+}
