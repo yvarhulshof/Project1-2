@@ -229,7 +229,7 @@ public class PhysicsEngine {
                 if(!ballBlockedY) golfBall.setVY2((float) velocityY);
             }
         }
-        System.out.println("ballStopped = " + ballStopped);
+//        System.out.println("ballStopped = " + ballStopped);
 
 
         //change in x and y during the elapsed time

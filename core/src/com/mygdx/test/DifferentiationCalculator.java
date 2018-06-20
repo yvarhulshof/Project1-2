@@ -88,7 +88,6 @@ public class DifferentiationCalculator {
     }
 
     public double c4rkx(double slope){
-        System.out.println("c4rk here");
         double k1 = fx(vx, vy, slope);
         double k2 = fx(vx + 1/2*h, vy + 1/2*k1, slope);
         double k3 = fx(vx + 1/2*h, vy + 1/2*k2, slope);
@@ -100,7 +99,6 @@ public class DifferentiationCalculator {
     }
 
     public double c4rky(double slope){
-        System.out.println("c4rk here");
         double k1 = fy(vx, vy, slope);
         double k2 = fy(vx + 1/2*h, vy + 1/2*k1, slope);
         double k3 = fy(vx + 1/2*h, vy + 1/2*k2, slope);

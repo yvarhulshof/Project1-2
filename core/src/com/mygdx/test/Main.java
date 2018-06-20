@@ -38,8 +38,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private SpriteBatch batch; //a collection of image files
     private Texture golfballImg; //golf ball image file
     private static GolfBall[] golfBalls;
-//	private static GolfBall golfBalls1; //golf ball circle object to which the image file is attached
-//	private static GolfBall golfBall2; //golf ball circle object to which the image file is attached
 
 
 	//initialisation of the hole
@@ -80,9 +78,13 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private BicubicInterpolation interpolator;
     private double[][] hs;
 
-    private int playersNbr = 1;
+    private int playersNbr = 2;
     private int cpp; //current playing player
     int maxDistanceMulti;
+    private int[] scores;
+
+    private boolean elasticBamd = false;
+
 	private AIInput AI;
 	private boolean aiGoing = false;
 	private boolean visible = true;
@@ -143,12 +145,14 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		golfBalls = new GolfBall[playersNbr];
 		p = new PhysicsEngine[playersNbr];
+		scores = new int[playersNbr];
 
         cpp = 0;
 
 			for (int i = 0; i < playersNbr; i++) {
 				golfBalls[i] = new GolfBall(0, 0);
 				p[i] = new PhysicsEngine(golfBalls[i], collisionLayer);
+				scores[i] = 0;
 			}
 
 
@@ -302,7 +306,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			//ystem.out.println("green: " + green + "red : " + red);
 			sr.line(mouseX, mouseY, golfBalls[cpp].x + golfBalls[cpp].radius, golfBalls[cpp].y + golfBalls[cpp].radius);
 			sr.end();
-			System.out.println("x = " + (mouseX -(golfBalls[cpp].x + golfBalls[cpp].radius)) + " 	y =" + (mouseY -(golfBalls[cpp].y + golfBalls[cpp].radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), (mouseY)-(golfBalls[cpp].y + golfBalls[cpp].radius)));
+//			System.out.println("x = " + (mouseX -(golfBalls[cpp].x + golfBalls[cpp].radius)) + " 	y =" + (mouseY -(golfBalls[cpp].y + golfBalls[cpp].radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), (mouseY)-(golfBalls[cpp].y + golfBalls[cpp].radius)));
 		}
 
 
@@ -359,10 +363,17 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         */
 
 
+        for (int i = 0; i < playersNbr; i++)
+            if(Math.sqrt(Math.pow( (double) ((golfBalls[i].x + golfBalls[i].radius) - (golfBalls[cpp].x + golfBalls[cpp].radius)), 2) + Math.pow(
+                    (double) ((golfBalls[i].x + golfBalls[i].radius) -(golfBalls[cpp].y + golfBalls[cpp].radius)), 2)) > maxDistanceMulti && i != cpp )
+                resetBall();
+
 
 		//We update these booleans if the ball is stopped so that we know if we can make another swing
 		if( p[cpp].getBallStopped()){
             if (released){
+                scores[cpp] ++;
+                System.out.println("score of " + cpp + " is " + scores[cpp]);
                 if (cpp == playersNbr - 1){
                     cpp = 0;
                     System.out.println(" i is now 0");
@@ -419,10 +430,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
             resetBall();
 			System.out.println(" u in water. game over");
 		}
-        for (int i = 0; i < playersNbr; i++)
-            if(Math.sqrt(Math.pow( (double) ((golfBalls[i].x + golfBalls[i].radius) - (golfBalls[cpp].x + golfBalls[cpp].radius)), 2) + Math.pow(
-                    (double) ((golfBalls[i].x + golfBalls[i].radius) -(golfBalls[cpp].y + golfBalls[cpp].radius)), 2)) > maxDistanceMulti && i != cpp )
-                resetBall();
+
 
 
 
@@ -434,6 +442,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	}
 
 	private void resetBall(){
+	    System.out.println(" ball reseted : " + cpp);
         golfBalls[cpp].x = p[cpp].positionX();
         golfBalls[cpp].y = p[cpp].positionY();
         p[cpp].golfBall.setVX2(0);
