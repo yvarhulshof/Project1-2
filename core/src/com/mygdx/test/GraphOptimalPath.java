@@ -5,7 +5,8 @@ import java.util.*;
 
 
 public class GraphOptimalPath{
-
+  public String result;
+  public ArrayList<String> vertexPath;
   //private List<Vertex> previousVertices;
   private List<Vertex> unvisitedVertices;
   private List<Edge> edges;
@@ -70,7 +71,7 @@ public class GraphOptimalPath{
       //append strings in the string array and return the resulting string
 
       Vertex currentVertex = destination;
-      ArrayList<String> vertexPath = new ArrayList<>();
+       vertexPath = new ArrayList<>();
 
       while(currentVertex != null)
       {
@@ -78,7 +79,7 @@ public class GraphOptimalPath{
         currentVertex = currentVertex.getPreviousVertex();
       }
 
-      String result = "";
+       result = "";
 
       for(String s : vertexPath){
         result = s + result;

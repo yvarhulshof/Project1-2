@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.mygdx.test.GraphOptimalPath;
 
 public class PhysicsEngine {
 
@@ -467,8 +468,20 @@ public class PhysicsEngine {
         else
             return 360-angle;
     }
-    public double aiAngle(float bx,float by,float gx,float gy){
-        firstAICall =false;
+        GraphOptimalPath gOP = new GraphOptimalPath();
+
+
+    public String[] getEachResult(String result) {
+            result = gOP.result;
+            String[] nodes = new String[result.length()+1];
+            for (int i = 1; i <= result.length(); i++) {
+                nodes[i] = result.substring(i - 1, i);
+            }
+        return nodes;
+    }
+
+    public double aiAngle(float bx, float by, float gx, float gy){
+      //  firstAICall =false;
 
         double aiDir;
         if(gx>=bx && gy>=by){

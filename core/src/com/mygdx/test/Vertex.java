@@ -2,13 +2,13 @@ package com.mygdx.test;
 
 public class Vertex{
     final private String id;
-    final private int xLoc;
-    final private int yLoc;
+    final private float xLoc;
+    final private float yLoc;
     private int distance;
     private Vertex previous;
 
 
-    public Vertex(String id, int xLoc, int yLoc) {
+    public Vertex(String id, float xLoc, float yLoc) {
         this.id = id;
         this.xLoc = xLoc;
         this.yLoc = yLoc;
@@ -18,9 +18,9 @@ public class Vertex{
         return id;
     }
 
-    public int getXLoc(){ return xLoc;}
+    public float getXLoc(){ return xLoc;}
 
-    public int getYLoc(){ return yLoc;}
+    public float getYLoc(){ return yLoc;}
 
 
     @Override
