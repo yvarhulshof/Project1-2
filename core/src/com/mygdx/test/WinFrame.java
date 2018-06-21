@@ -32,11 +32,6 @@ public class WinFrame {
 
 
         }
-        public static void  main(String[] Args){
-            WinFrame j = new WinFrame();
-            j.winGUI();
-        }
-
 }
 
 
