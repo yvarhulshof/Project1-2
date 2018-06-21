@@ -1,6 +1,6 @@
 package com.mygdx.test;
 
-public class Vertex {
+public class Vertex{
     final private String id;
     final private int xLoc;
     final private int yLoc;
@@ -57,3 +57,4 @@ public class Vertex {
     }
 
 }
+

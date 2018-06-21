@@ -74,7 +74,7 @@ public class GraphOptimalPath{
 
       while(currentVertex != null)
       {
-        vertexPath.add(currentVertex.toString());
+        vertexPath.add(currentVertex.getId());
         currentVertex = currentVertex.getPreviousVertex();
       }
 

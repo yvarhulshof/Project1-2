@@ -96,6 +96,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	static boolean  aiinputOpen = false;
 	boolean oncePerShot=true;
 
+	private DijkstraTest DS;
+
 
 
     /**
@@ -200,6 +202,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         currentSwing = 0;
 
         Win = new WinFrame();
+
+        DS = new DijkstraTest();
+        DS.findOptimalPath();
 	}
 
 

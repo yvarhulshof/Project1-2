@@ -12,13 +12,14 @@ public class GraphSetUp {
     List<Edge> edges = new ArrayList<Edge>();
 
 
-    public GraphSetUp(int nrOfNodesX, int nrOfNodesY, int mapXSize, int mapYSize){
+    public GraphSetUp(Graph g, int nrOfNodesX, int nrOfNodesY, int mapXSize, int mapYSize){
         int xLocation;
         int yLocation;
         int xId;
         int yId;
         String name = "";
         Vertex a = null;
+        Vertex dest = null;
         int spacingX = mapXSize / nrOfNodesX; //will round down to pixel, could cause problems
         int spacingY = mapYSize / nrOfNodesY; //will round down to pixel, could cause problems
 
@@ -33,20 +34,27 @@ public class GraphSetUp {
                 name = xId + " " + yId;
                 a = new Vertex(name,xLocation,yLocation);
 
-                if(i > 0)
-                {
-                    Vertex dest = vertices.get(vertices.size() -1); //not sure if right
-                    Edge e = new Edge("", a, dest,1);
-                }
+                vertices.add(a);
+                System.out.println("added node");
 
                 if(j > 0)
                 {
-                    Vertex dest = vertices.get(vertices.size() - nrOfNodesX); //not sure if right
+                    if(vertices.size() != 0)
+                        dest = vertices.get(vertices.size()-1); //not sure if right
                     Edge e = new Edge("", a, dest,1);
+                    edges.add(e);
                 }
 
+                if(i > 0)
+                {
+                    dest = vertices.get(vertices.size() - nrOfNodesX); //not sure if right
+                    Edge e = new Edge("", a, dest,1);
+                    edges.add(e);
+                }
             }
-            vertices.add(a);
+            g.setVertexes(vertices);
+            g.setEdges(edges);
         }
+
     }
 }

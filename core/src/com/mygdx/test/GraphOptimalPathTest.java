@@ -1,3 +1,4 @@
+/*
 package com.mygdx.test;
 
 import java.util.*;
@@ -78,3 +79,4 @@ public class GraphOptimalPathTest{
 
   }
 }
+*/

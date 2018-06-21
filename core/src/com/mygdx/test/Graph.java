@@ -15,6 +15,10 @@ public class Graph {
       this.vertexes = vertexes;
     }
 
+    public void setEdges(List<Edge> edges){
+        this.edges = edges;
+    }
+
     public List<Vertex> getVertexes() {
         return vertexes;
     }
