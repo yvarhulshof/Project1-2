@@ -2,22 +2,26 @@ package com.mygdx.test;
 
 public class Vertex {
     final private String id;
-    final private String name;
+    final private int xLoc;
+    final private int yLoc;
     private int distance;
     private Vertex previous;
 
 
-    public Vertex(String id, String name) {
+    public Vertex(String id, int xLoc, int yLoc) {
         this.id = id;
-        this.name = name;
+        this.xLoc = xLoc;
+        this.yLoc = yLoc;
+
     }
     public String getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
+    public int getXLoc(){ return xLoc;}
+
+    public int getYLoc(){ return yLoc;}
+
 
     @Override
     public boolean equals(Object obj) {
@@ -34,11 +38,6 @@ public class Vertex {
         } else if (!id.equals(other.id))
             return false;
         return true;
-    }
-
-    @Override
-    public String toString() {
-        return name;
     }
 
     public void setDistance(int distance){
