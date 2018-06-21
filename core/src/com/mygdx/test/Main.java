@@ -78,12 +78,12 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private BicubicInterpolation interpolator;
     private double[][] hs;
 
-    private int playersNbr = 2;
+    private int playersNbr = 1;
     private int cpp; //current playing player
     int maxDistanceMulti;
     private int[] scores;
 
-    private boolean elasticBamd = false;
+    private boolean elasticBand = true;
 
 	private AIInput AI;
 	private boolean aiGoing = false;
@@ -156,7 +156,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			}
 
 
-        maxDistanceMulti = 500;
+        maxDistanceMulti = 350;
 
 
 
@@ -282,7 +282,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         if(released)
 		{
             p[cpp].moveBall(PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), mouseY-(golfBalls[cpp].y + golfBalls[cpp].radius)), eucliDistance);
-		}
+            p[1].moveBall(PhysicsEngine.calcAngle(mouseX-(golfBalls[1].x + golfBalls[1].radius), mouseY-(golfBalls[1].y + golfBalls[1].radius)), eucliDistance);
+
+        }
 
 
 		if (touchDragged(0,0,0) && p[cpp].getBallStopped())
@@ -364,9 +366,19 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 
         for (int i = 0; i < playersNbr; i++)
-            if(Math.sqrt(Math.pow( (double) ((golfBalls[i].x + golfBalls[i].radius) - (golfBalls[cpp].x + golfBalls[cpp].radius)), 2) + Math.pow(
-                    (double) ((golfBalls[i].x + golfBalls[i].radius) -(golfBalls[cpp].y + golfBalls[cpp].radius)), 2)) > maxDistanceMulti && i != cpp )
-                resetBall();
+			if(ballEucliDistance(i, cpp) > maxDistanceMulti && i != cpp ){
+                System.out.println("distance now");
+                if (!elasticBand)
+        		    resetBall();
+                else{
+                    golfBalls[cpp].setVX2(golfBalls[cpp].getVx2()/2);
+                    golfBalls[cpp].setVY2(golfBalls[cpp].getVy2()/2);
+//                    p[i].moveBall(PhysicsEngine.calcAngle(- (golfBalls[i].x + golfBalls[i].radius)-(golfBalls[cpp].x + golfBalls[cpp].radius), - (golfBalls[i].y + golfBalls[i].radius)-(golfBalls[cpp].y + golfBalls[cpp].radius)), (ballEucliDistance(i, cpp))/2);
+                }
+			}
+
+
+
 
 
 		//We update these booleans if the ball is stopped so that we know if we can make another swing
@@ -458,6 +470,13 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		}
 		return false;
 	}
+
+	public double ballEucliDistance(int a, int b){
+        return Math.sqrt(Math.pow( (double) ((golfBalls[a].x + golfBalls[a].radius) - (golfBalls[b].x + golfBalls[b].radius)), 2) + Math.pow((double) ((golfBalls[a].y + golfBalls[a].radius) -(golfBalls[b].y + golfBalls[b].radius)), 2));
+    }
+
+
+
 	@Override public boolean touchDragged(int screenX, int screenY, int pointer) {
 		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 			return true;
