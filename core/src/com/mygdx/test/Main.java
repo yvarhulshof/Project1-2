@@ -33,6 +33,7 @@ import java.util.List;
 public class Main extends ApplicationAdapter implements InputProcessor{
 
 
+
 	//test
 
 	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
@@ -105,6 +106,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	Vertex destination;
 	String[] nodes;
 	String result;
+	static float[] wayX;
+	static float[]wayY;
+	int j =0;
+	float goalX;
+	float goalY;
 
 
 
@@ -221,7 +227,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		Vertex v1 = new Vertex("A",golfBalls[cpp].x,golfBalls[cpp].y);
 		Vertex v2 = new Vertex("B",50,60);
 		Vertex v3 = new Vertex("C", 60,100);
-		Vertex v4 = new Vertex("D", 100,32);
+		Vertex v4 = new Vertex("D", 120,100);
 		Vertex v5 = new Vertex("E", 300,250);
 		Vertex v6 = new Vertex("F", 350,200);
 		Vertex v7 = new Vertex("G", 400,40);
@@ -287,7 +293,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		 gOP = new GraphOptimalPath();
 		gOP.updateDistances(g, source);
 		result = gOP.findOptimalPath(g,source,destination);
-		System.out.println("The optimal path is: " + result);
+
+	//	System.out.println("The optimal path is: " + result);
 
 
 	}
@@ -412,12 +419,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
             firstFrameOfSwing = false;
             p[cpp].moveBall(SI.getDir(), SI.getSpd());
         }
-		gOP.updateDistances(g, source);
-		String result = gOP.findOptimalPath(g,source,destination);
-		System.out.println("The optimal path is: " + result);
+
 		nodes = new String[result.length()];
-		float[] wayX = new float[nodes.length];
-		float[]wayY = new float[nodes.length];
+		wayX = new float[nodes.length];
+		wayY = new float[nodes.length];
 		for(int i =1; i <= result.length(); i++) {
 			nodes[i - 1] = result.substring(i - 1, i);
 		}
@@ -444,9 +449,9 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			}
 		}
 		for(int j = 0; j < result.length(); j++){
-			System.out.println( "node: " +nodes[j] + " x " + wayX[j] + " y " + wayY[j]);
+		//	System.out.println( "node: " +nodes[j] + " x " + wayX[j] + " y " + wayY[j]);
 		}
-
+//		TODO: increase area around the nodes to make it easier to reach for the AI
 		if (AI.getButtonClicked() || aiGoing) {
 
 			aiGoing = true;
@@ -459,36 +464,37 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			float ballX = golfBalls[cpp].getXCoords();
 			float ballY = golfBalls[cpp].getYCoords();
 
-			int j =0;
-			float goalX = wayX[j];
-			float goalY = wayY[j];
-			System.out.println(p[cpp].firstAICall);
+
+			goalX = wayX[j];
+			goalY = wayY[j];
+			System.out.println(j);
 			if (p[cpp].firstAICall) {
-				aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
-				System.out.println("destination" + goalX + " " + goalY );
-				p[cpp].firstAICall = false;
-			}
-			p[cpp].moveBall(aiDirection + angleIncrease, speedIncrease);
-			if (p[cpp].golfBall.getVx2() < 30 && p[cpp].golfBall.getVy2() < 30) {
+					aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
+					System.out.println("destination" + goalX + " " + goalY);
+					}
+					p[cpp].moveBall(aiDirection + angleIncrease, speedIncrease);
+					if (p[cpp].golfBall.getVx2() < 30 && p[cpp].golfBall.getVy2() < 30) {
 
-				golfBalls[cpp].x = p[cpp].positionX();
-				golfBalls[cpp].y = p[cpp].positionY();
-				p[cpp].golfBall.setVX2(0);
-				p[cpp].golfBall.setVY2(0);
+						golfBalls[cpp].x = p[cpp].positionX();
+						golfBalls[cpp].y = p[cpp].positionY();
+						p[cpp].golfBall.setVX2(0);
+						p[cpp].golfBall.setVY2(0);
 
-				speedIncrease += 100;
+						speedIncrease += 100;
+					}
+						if (speedIncrease == 2000) {
+							speedIncrease = 0;
+							angleIncrease += 5;
+						}
 
-				if (speedIncrease == 2000) {
-					speedIncrease = 0;
-					angleIncrease += 5;
-				}
+					aiTimer++;
+					if (golfBalls[cpp].x - goalX <= 30 || golfBalls[cpp].x - goalX <= -20 && golfBalls[cpp].y - goalY <= 30 || golfBalls[cpp].y - goalY <= -20) {
+						if(j < nodes.length-1){ j++;}
+
+
+					}
 			}
-			aiTimer++;
-			System.out.println("timer:" + aiTimer / 60);
-			if(golfBalls[cpp].x == goalX &&  golfBalls[cpp].y == goalY ) {
-				j++;
-			}
-		}
+			System.out.println(j);
 
 		//Method 3 of moving the ball, uncomment and comment Method 1 to use
 
