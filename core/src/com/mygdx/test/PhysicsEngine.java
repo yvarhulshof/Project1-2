@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.mygdx.test.GraphOptimalPath;
+import com.mygdx.test.Main;
 
 public class PhysicsEngine {
 
@@ -481,7 +481,8 @@ public class PhysicsEngine {
     }
 
     public double aiAngle(float bx, float by, float gx, float gy){
-      //  firstAICall =false;
+      // firstAICall =false;
+
 
         double aiDir;
         if(gx>=bx && gy>=by){
