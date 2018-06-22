@@ -9,9 +9,10 @@ public class GraphOptimalPath{
   public ArrayList<String> vertexPath;
   //private List<Vertex> previousVertices;
   private List<Vertex> unvisitedVertices;
+  private List<Vertex> cloneVertices;
   private List<Edge> edges;
 
-  public void updateDistances(Graph g, Vertex source){
+  public List<Vertex> updateDistances(Graph g, Vertex source){
 
     //--
     //initialization
@@ -22,6 +23,7 @@ public class GraphOptimalPath{
     int alternativeDistance = Integer.MAX_VALUE;
 
     unvisitedVertices = g.getVertexes();
+    cloneVertices = new ArrayList<Vertex>();
     edges = g.getEdges();
 
     for(Vertex vertex : unvisitedVertices)
@@ -55,13 +57,16 @@ public class GraphOptimalPath{
             {
               vertex.setDistance(alternativeDistance);
               vertex.setPreviousVertex(currentVertex);
+              cloneVertices.add(vertex);
               alternativeDistance = Integer.MAX_VALUE;
             }
           }
         }
       }
+      //cloneVertices.add(unvisitedVertices.get(currentVertexIndex));
       unvisitedVertices.remove(currentVertexIndex);
     }
+    return cloneVertices;
   }
 
     public String findOptimalPath(Graph g, Vertex source, Vertex destination){

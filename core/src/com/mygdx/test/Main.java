@@ -221,6 +221,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
         Win = new WinFrame();
 
+        /*
 		List<Vertex> vertices = new ArrayList<Vertex>();
 		List<Edge> edges = new ArrayList<Edge>();
 
@@ -245,6 +246,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		vertices.add(v8);
 		vertices.add(v9);
 		vertices.add(v10);
+
 
 		vertices2 = new ArrayList<Vertex>();
 		for(int i = 0; i < vertices.size();i++){
@@ -288,15 +290,20 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		edges.addAll(Arrays.asList(e1A,e2A,e3A,e4A,e1B,e2B,e3B,e4B,e5A,e5B,e6A,e6B,e7A,e7B,e8A,e8B,e9A,e9B,e10A,e10B,e11A,e11B));
 		source = v1;
 		destination = v4;
-		 g = new Graph(vertices,edges);
+		*/
+		 //g = new Graph(vertices,edges);
 
-		 gOP = new GraphOptimalPath();
-		gOP.updateDistances(g, source);
-		result = gOP.findOptimalPath(g,source,destination);
+		 //gOP = new GraphOptimalPath();
+		//gOP.updateDistances(g, source);
+		//result = gOP.findOptimalPath(g,source,destination);
 
 	//	System.out.println("The optimal path is: " + result);
 
 
+
+
+		DijkstraTest DS = new DijkstraTest();
+		DS.findOptimalPath();
 	}
 
 
@@ -467,7 +474,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 			goalX = wayX[j];
 			goalY = wayY[j];
-			System.out.println(j);
+			//System.out.println(j);
 			if (p[cpp].firstAICall) {
 					aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
 					System.out.println("destination" + goalX + " " + goalY);
@@ -494,7 +501,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 					}
 			}
-			System.out.println(j);
+			//System.out.println(j);
 
 		//Method 3 of moving the ball, uncomment and comment Method 1 to use
 
