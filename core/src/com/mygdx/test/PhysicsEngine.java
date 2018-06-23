@@ -480,6 +480,13 @@ public class PhysicsEngine {
         return nodes;
     }
 
+    /**
+     * bx = ballX
+     * by = bally
+     * gx = goalX
+     * gy = goalY
+     */
+
     public double aiAngle(float bx, float by, float gx, float gy){
       // firstAICall =false;
 

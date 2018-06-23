@@ -34,23 +34,28 @@ public class GraphSetUp {
                 a = new Vertex(name,xLocation,yLocation);
 
                 vertices.add(a);
-                System.out.println("added node");
-
                 if(j > 0)
                 {
                     if(vertices.size() != 0)
                     {
+                        //int rnd = (int) (100 * Math.random());
                         dest = vertices.get(vertices.size() - 2); //not sure if right
-                        Edge e = new Edge("", a, dest,1);
-                        edges.add(e);
+                        Edge e1 = new Edge("", a, dest,1);
+                        edges.add(e1);
+                        Edge e2 = new Edge("", dest, a,1);
+                        edges.add(e2);
+
                     }
                 }
 
                 if(i > 0)
                 {
+                    //int rnd = (int) (100 * Math.random());
                     dest = vertices.get(vertices.size() - nrOfNodesX - 1); //not sure if right
-                    Edge e = new Edge("", a, dest,1);
-                    edges.add(e);
+                    Edge e1 = new Edge("", a, dest,1);
+                    edges.add(e1);
+                    Edge e2 = new Edge("", dest, a,1);
+                    edges.add(e2);
                 }
             }
         }

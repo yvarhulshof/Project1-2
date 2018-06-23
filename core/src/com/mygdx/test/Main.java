@@ -32,10 +32,6 @@ import java.util.List;
  */
 public class Main extends ApplicationAdapter implements InputProcessor{
 
-
-
-	//test
-
 	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
 	// initialisation of the ball
@@ -99,18 +95,22 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private boolean aiDone = false;
 	static boolean  aiinputOpen = false;
 	boolean oncePerShot=true;
-	GraphOptimalPath gOP;
-	List<Vertex> vertices2;
-	Graph g;
-	Vertex source;
-	Vertex destination;
-	String[] nodes;
-	String result;
-	static float[] wayX;
-	static float[]wayY;
-	int j =0;
-	float goalX;
-	float goalY;
+	private GraphOptimalPath gOP;
+	private List<Vertex> vertices2;
+	private Graph g;
+	private Vertex source;
+	private Vertex destination;
+	private String[] nodes;
+	private String result;
+	//static float[] wayX;
+	//static float[]wayY;
+	private ArrayList<ArrayList<Float>> midpoints;
+
+	private int shotIndex;
+	private int previousShotIndex;
+	private float goalX;
+	private float goalY;
+
 
 
 
@@ -302,8 +302,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 
 
-		DijkstraTest DS = new DijkstraTest();
-		DS.findOptimalPath();
+		DijkstraMain DM = new DijkstraMain();
+		midpoints = DM.findOptimalPath();
 	}
 
 
@@ -409,7 +409,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			float red = (float) (eucliDistance/1.5 - 50);
 			float green = (float) (255 - eucliDistance/1.5);
 			sr.setColor(red,green,0,0);
-			//ystem.out.println("green: " + green + "red : " + red);
+			//System.out.println("green: " + green + "red : " + red);
 			sr.line(mouseX, mouseY, golfBalls[cpp].x + golfBalls[cpp].radius, golfBalls[cpp].y + golfBalls[cpp].radius);
 			sr.end();
 //			System.out.println("x = " + (mouseX -(golfBalls[cpp].x + golfBalls[cpp].radius)) + " 	y =" + (mouseY -(golfBalls[cpp].y + golfBalls[cpp].radius)) + "		euclidistance = " + eucliDistance + "	angle = " + PhysicsEngine.calcAngle(mouseX-(golfBalls[cpp].x + golfBalls[cpp].radius), (mouseY)-(golfBalls[cpp].y + golfBalls[cpp].radius)));
@@ -427,6 +427,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
             p[cpp].moveBall(SI.getDir(), SI.getSpd());
         }
 
+		/*
 		nodes = new String[result.length()];
 		wayX = new float[nodes.length];
 		wayY = new float[nodes.length];
@@ -434,8 +435,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			nodes[i - 1] = result.substring(i - 1, i);
 		}
 
+
 		boolean found = false;
-		int v =0; int i = 0;
+		int v =0;
+		int i = 0;
 		int count = 0;
 		while(!found) {
 			if (nodes[v].equals(vertices2.get(i).getId())) {
@@ -443,7 +446,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 				wayY[v] = vertices2.get(i).getYLoc();
 				v++;
 				count++;
-
 			}
 			else{
 				i++;
@@ -455,51 +457,79 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 				found = true;
 			}
 		}
-		for(int j = 0; j < result.length(); j++){
+		*/
+
+//		for(int j = 0; j < result.length(); j++){
 		//	System.out.println( "node: " +nodes[j] + " x " + wayX[j] + " y " + wayY[j]);
-		}
+//		}
 //		TODO: increase area around the nodes to make it easier to reach for the AI
 		if (AI.getButtonClicked() || aiGoing) {
 
 			aiGoing = true;
+			/*
 			if (firstFrameOfSwing) {
 				p[cpp].setBallBlockedX(false);
 				p[cpp].setBallBlockedY(false);
 			}
+			*/
+
 
 
 			float ballX = golfBalls[cpp].getXCoords();
 			float ballY = golfBalls[cpp].getYCoords();
 
+			goalX = midpoints.get(0).get(shotIndex);
+			goalY = midpoints.get(1).get(shotIndex);
 
-			goalX = wayX[j];
-			goalY = wayY[j];
+			/*
+			if(((golfBalls[cpp].x - goalX <= 30 || golfBalls[cpp].x - goalX <= -20 && golfBalls[cpp].y - goalY <= 30 || golfBalls[cpp].y - goalY <= -20) && firstFrameOfSwing) || j == 0){
+			//if(firstFrameOfSwing){
+				p[cpp].setBallBlockedX(false);
+				p[cpp].setBallBlockedY(false);
+				j++;
+				firstFrameOfSwing = false;
+			}
+			*/
+
+			//goalX = midpoints[0][j];
+			//goalY = midpoints[1][j];
+
+			//goalX = wayX[j];
+			//goalY = wayY[j];
+
 			//System.out.println(j);
 			if (p[cpp].firstAICall) {
-					aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
-					System.out.println("destination" + goalX + " " + goalY);
-					}
+				aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
+
+				}
+
+				if(Math.abs(golfBalls[cpp].x - goalX) < 5)
+
+				if(Math.abs(golfBalls[cpp].x - goalX) < 5 && Math.abs(golfBalls[cpp].x - goalX) < 5 && firstFrameOfSwing){
+					//if(firstFrameOfSwing){
+					System.out.println("shot with goal: " + goalX + " " + goalY);
+					p[cpp].setBallBlockedX(false);
+					p[cpp].setBallBlockedY(false);
+					firstFrameOfSwing = false;
+					shotIndex++;
 					p[cpp].moveBall(aiDirection + angleIncrease, speedIncrease);
-					if (p[cpp].golfBall.getVx2() < 30 && p[cpp].golfBall.getVy2() < 30) {
+				}
 
-						golfBalls[cpp].x = p[cpp].positionX();
-						golfBalls[cpp].y = p[cpp].positionY();
-						p[cpp].golfBall.setVX2(0);
-						p[cpp].golfBall.setVY2(0);
-
-						speedIncrease += 100;
-					}
-						if (speedIncrease == 2000) {
-							speedIncrease = 0;
-							angleIncrease += 5;
-						}
-
-					aiTimer++;
-					if (golfBalls[cpp].x - goalX <= 30 || golfBalls[cpp].x - goalX <= -20 && golfBalls[cpp].y - goalY <= 30 || golfBalls[cpp].y - goalY <= -20) {
-						if(j < nodes.length-1){ j++;}
-
-
-					}
+				if (p[cpp].golfBall.getVx2() < 30 && p[cpp].golfBall.getVy2() < 30) {
+					golfBalls[cpp].x = p[cpp].positionX();
+					golfBalls[cpp].y = p[cpp].positionY();
+					p[cpp].golfBall.setVX2(0);
+					p[cpp].golfBall.setVY2(0);
+					speedIncrease += 100;
+				}
+				if (speedIncrease == 2000) {
+					speedIncrease = 0;
+					angleIncrease += 5;
+				}
+				aiTimer++;
+				//if (golfBalls[cpp].x - goalX <= 30 || golfBalls[cpp].x - goalX <= -20 && golfBalls[cpp].y - goalY <= 30 || golfBalls[cpp].y - goalY <= -20) {
+					//if(j < nodes.length-1){ j++;}
+				//}
 			}
 			//System.out.println(j);
 
@@ -511,7 +541,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         if(currentSwing == numberOfSwings) currentSwing = 0;
         */
 
-
+/*
         for (int z = 0; i < playersNbr; i++)
 			if(ballEucliDistance(z, cpp) > maxDistanceMulti && z != cpp ){
                 System.out.println("distance now");
@@ -523,7 +553,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 //                    p[i].moveBall(PhysicsEngine.calcAngle(- (golfBalls[i].x + golfBalls[i].radius)-(golfBalls[cpp].x + golfBalls[cpp].radius), - (golfBalls[i].y + golfBalls[i].radius)-(golfBalls[cpp].y + golfBalls[cpp].radius)), (ballEucliDistance(i, cpp))/2);
                 }
 			}
-
+*/
 
 
 
