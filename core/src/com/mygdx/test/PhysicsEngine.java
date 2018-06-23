@@ -348,6 +348,7 @@ public class PhysicsEngine {
             golfBall.setVY2(0);
             ballBlockedY = true;
         }
+        System.out.println("x = " + golfBall.x + "y = " + golfBall.y);
 
         /*if(!ballBlockedX)*/ golfBall.x += xChange;
         /*if(!ballBlockedY)*/ golfBall.y += yChange;
@@ -403,21 +404,23 @@ public class PhysicsEngine {
     }
 
     public double dx(){
-        double d = 0;
-        for(int i = 0; i < nrOfKnots-1; i++){
-            if(golfBall.x > i * splineIntervalSizeX && golfBall.x < (i+1) * splineIntervalSizeX){
-                d = splineDerivatesX[i];
-            }
-        }
+        double d = 2*Math.sin(golfBall.x/4);
+//        double d = 0;
+//        for(int i = 0; i < nrOfKnots-1; i++){
+//            if(golfBall.x > i * splineIntervalSizeX && golfBall.x < (i+1) * splineIntervalSizeX){
+//                d = splineDerivatesX[i];
+//            }
+//        }
         return d;
     }
     public double dy(){
-        double d = 0;
-        for(int i = 0; i < nrOfKnots-1; i++){
-            if(golfBall.y > i * splineIntervalSizeY && golfBall.y < (i+1) * splineIntervalSizeY){
-                d = splineDerivatesY[i];
-            }
-        }
+        double d = 2*Math.sin(golfBall.y/4);
+//        double d = 0;
+//        for(int i = 0; i < nrOfKnots-1; i++){
+//            if(golfBall.y > i * splineIntervalSizeY && golfBall.y < (i+1) * splineIntervalSizeY){
+//                d = splineDerivatesY[i];
+//            }
+//        }
         return d;
     }
 
