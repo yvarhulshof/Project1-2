@@ -8,9 +8,10 @@ public class GolfBall extends Circle {
     private float vx2;
     private float vy2;
 
-
     public GolfBall(float vx2, float vy2){
         super(32, 32, 25);
+        //this.x = 50;
+        //this.y = 50;
         this.vx2 = vx2;
         this.vy2 = vy2;
     }
