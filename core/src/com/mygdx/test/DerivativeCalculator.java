@@ -23,7 +23,7 @@ public class DerivativeCalculator {
    // private static String equation = "65cos(x^2)*4x^3";
     public static ArrayList<String> result = new ArrayList<String>();
 
-    public String DerivativeCalculator(String equation) {
+    public  DerivativeCalculator(String equation) {
 
             ArrayList<String> parts = findCoefErasePlus(equation);// cuts in peaces
 
