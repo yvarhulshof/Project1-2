@@ -46,6 +46,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private Texture goalImg;
     private static Circle goal;
 
+
     //initialisation of the water
     private SpriteBatch waterBatch;
     private Texture waterImg;
@@ -95,21 +96,15 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private boolean aiDone = false;
 	static boolean  aiinputOpen = false;
 	boolean oncePerShot=true;
-	private GraphOptimalPath gOP;
-	private List<Vertex> vertices2;
-	private Graph g;
-	private Vertex source;
-	private Vertex destination;
-	private String[] nodes;
-	private String result;
-	//static float[] wayX;
-	//static float[]wayY;
+
+
 	private ArrayList<ArrayList<Float>> midpoints;
 
 	private int shotIndex;
 	private int previousShotIndex;
 	private float goalX;
 	private float goalY;
+	DijkstraMain DM;
 
 
 
@@ -140,6 +135,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		camYTracer = 0;
 
 
+
 		/** load the map */
 		//tiledMap = new TmxMapLoader().load("map.tmx");
 		tiledMap = new TmxMapLoader().load("map2.tmx");
@@ -148,6 +144,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		water = new Rectangle(285, 175, 160, 80);
         goal = new Circle(450, 330, 30);
+
+
 		aiinputOpen = true;
 
         collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
@@ -302,8 +300,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 
 
-		DijkstraMain DM = new DijkstraMain();
+		DM = new DijkstraMain();
 		midpoints = DM.findOptimalPath();
+
+
 	}
 
 
@@ -324,6 +324,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		goalBatch.begin();
 		goalBatch.draw(goalImg,goal.x,goal.y);
 		goalBatch.end();
+
 
 		batch.begin();
 		if (AI.getVisible()) {
@@ -358,6 +359,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 					golfBalls[cpp].x = 40;
 					golfBalls[cpp].y = 32;
 					oncePerShot = false;
+
 				}
 			} else if (AI.getCourse2()) {
 				water = new Rectangle(200, 200, 160, 80);
@@ -366,6 +368,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 					golfBalls[cpp].x = 40;
 					golfBalls[cpp].y = 350;
 					oncePerShot = false;
+					midpoints = DM.findOptimalPath();
 				}
 			} else if (AI.getCourse3()) {
 				water = new Rectangle(285, 75, 160, 80);
@@ -374,9 +377,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 					golfBalls[cpp].x = 450;
 					golfBalls[cpp].y = 32;
 					oncePerShot = false;
+					midpoints = DM.findOptimalPath();
 				}
 			}
 		}
+
 
 		if (aiGoing) {
 			aiinputOpen = false;
@@ -462,7 +467,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 //		for(int j = 0; j < result.length(); j++){
 		//	System.out.println( "node: " +nodes[j] + " x " + wayX[j] + " y " + wayY[j]);
 //		}
-//		TODO: increase area around the nodes to make it easier to reach for the AI
+//
 		if (AI.getButtonClicked() || aiGoing) {
 
 			aiGoing = true;
@@ -500,26 +505,26 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			//System.out.println(j);
 			if (p[cpp].firstAICall) {
 				aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
-
+				System.out.println("shot with goal: " + goalX + " " + goalY);
+				double direction = aiDirection + angleIncrease;
+				p[cpp].moveBall(direction , speedIncrease);
+				System.out.println("position x: " + golfBalls[cpp].x);
+				System.out.println("position y: " + golfBalls[cpp].y);
 				}
 
-				if(Math.abs(golfBalls[cpp].x - goalX) < 5)
+				if(Math.abs(goalX - golfBalls[cpp].x) <= 10 && Math.abs(goalY - golfBalls[cpp].y) <= 10 && firstFrameOfSwing ){
 
-				if(Math.abs(golfBalls[cpp].x - goalX) < 5 && Math.abs(golfBalls[cpp].x - goalX) < 5 && firstFrameOfSwing){
-					//if(firstFrameOfSwing){
-					System.out.println("shot with goal: " + goalX + " " + goalY);
 					p[cpp].setBallBlockedX(false);
 					p[cpp].setBallBlockedY(false);
 					firstFrameOfSwing = false;
 					shotIndex++;
-					p[cpp].moveBall(aiDirection + angleIncrease, speedIncrease);
-				}
 
-				if (p[cpp].golfBall.getVx2() < 30 && p[cpp].golfBall.getVy2() < 30) {
+                    }
+
+
+				if (p[cpp].getBallStopped()) {
 					golfBalls[cpp].x = p[cpp].positionX();
 					golfBalls[cpp].y = p[cpp].positionY();
-					p[cpp].golfBall.setVX2(0);
-					p[cpp].golfBall.setVY2(0);
 					speedIncrease += 100;
 				}
 				if (speedIncrease == 2000) {
@@ -618,6 +623,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		if(water.x - golfBalls[cpp].x <= 33 && water.x - golfBalls[cpp].x >= -110 && water.y - golfBalls[cpp].y <= 33 && water.y - golfBalls[cpp].y >= -70){
             resetBall();
 			System.out.println(" u in water. game over");
+			if(aiGoing){ angleIncrease += 20; }
 		}
 
 

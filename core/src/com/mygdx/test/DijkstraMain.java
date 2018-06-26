@@ -20,7 +20,7 @@ public class DijkstraMain {
     private static ArrayList<Float> wayY;
 
     public ArrayList<ArrayList<Float>> findOptimalPath(){
-        gs = new GraphSetUp(10,10,640,480);
+        gs = new GraphSetUp(10,10,575,415);
 
         vertices = gs.getVertices();
         edges = gs.getEdges();
