@@ -79,12 +79,15 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private BicubicInterpolation interpolator;
     private double[][] hs;
 
-    private int playersNbr = 1;
+    private int playersNbr = 3;
     private int cpp; //current playing player
-    int maxDistanceMulti;
+    private int maxDistanceMulti;
     private int[] scores;
 
-    private boolean elasticBand = true;
+    private boolean[] ballsIn;
+    private int ballsInCount = 0;
+
+    private boolean elasticBand = false;
 
 	private AIInput AI;
 	private boolean aiGoing = false;
@@ -106,7 +109,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private float goalY;
 	DijkstraMain DM;
 
-
+    private boolean ballInDone = false;
 
 
 
@@ -138,7 +141,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		/** load the map */
 		//tiledMap = new TmxMapLoader().load("map.tmx");
-		tiledMap = new TmxMapLoader().load("map2.tmx");
+		//tiledMap = new TmxMapLoader().load("mapMaze1.tmx");
+        tiledMap = new TmxMapLoader().load("map2.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
 
@@ -164,6 +168,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		golfBalls = new GolfBall[playersNbr];
 		p = new PhysicsEngine[playersNbr];
 		scores = new int[playersNbr];
+		ballsIn = new boolean[playersNbr];
 
         cpp = 0;
 
@@ -171,10 +176,11 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 				golfBalls[i] = new GolfBall(0, 0);
 				p[i] = new PhysicsEngine(golfBalls[i], collisionLayer);
 				scores[i] = 0;
+				ballsIn[i] = false;
 			}
 
 
-        maxDistanceMulti = 350;
+        maxDistanceMulti = 600;
 
 
 
@@ -546,8 +552,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         if(currentSwing == numberOfSwings) currentSwing = 0;
         */
 
-/*
-        for (int z = 0; i < playersNbr; i++)
+
+        for (int z = 0; z < playersNbr; z++)
 			if(ballEucliDistance(z, cpp) > maxDistanceMulti && z != cpp ){
                 System.out.println("distance now");
                 if (!elasticBand)
@@ -558,7 +564,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 //                    p[i].moveBall(PhysicsEngine.calcAngle(- (golfBalls[i].x + golfBalls[i].radius)-(golfBalls[cpp].x + golfBalls[cpp].radius), - (golfBalls[i].y + golfBalls[i].radius)-(golfBalls[cpp].y + golfBalls[cpp].radius)), (ballEucliDistance(i, cpp))/2);
                 }
 			}
-*/
+
 
 
 
@@ -566,16 +572,21 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		//We update these booleans if the ball is stopped so that we know if we can make another swing
 		if( p[cpp].getBallStopped()){
             if (released){
+                ballInDone = false;
                 scores[cpp] ++;
                 System.out.println("score of " + cpp + " is " + scores[cpp]);
-                if (cpp == playersNbr - 1){
-                    cpp = 0;
-                    System.out.println(" i is now 0");
-                }
-                else{
-                    cpp++;
-                    System.out.println(" i is now i + 1   or " + cpp );
-                }
+
+                do{
+                    if (cpp == playersNbr - 1){
+                        cpp = 0;
+                        System.out.println(" i is now 0");
+                    }
+                    else{
+                        cpp ++;
+                        System.out.println(" i is now i + 1   or " + cpp );
+                    }
+                }while(ballsIn[cpp] == true);
+
             }
             released = false;
             SI.setShootButtonClicked(false);
@@ -583,6 +594,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		}
 
         if(goal.x - golfBalls[cpp].x <= 10 && goal.x - golfBalls[cpp].x >= -80 && goal.y - golfBalls[cpp].y <= 0 && goal.y - golfBalls[cpp].y >= -80){
+
 
 			if (aiGoing && !aiDone) {
 				final double finalDir = aiDirection + angleIncrease;
@@ -596,6 +608,17 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 				aiGoing = false;
 				aiDone = true;
 			}
+			else if(ballsInCount < playersNbr) {
+                if (!ballInDone){
+                    ballsIn[cpp] = true;
+                    resetBall();
+                    golfBalls[cpp].x = goal.x + goal.radius / 2;
+                    golfBalls[cpp].y = goal.y + goal.radius / 2;
+                    ballsInCount++;
+                    ballInDone = true;
+                }
+			    // needs to have a condition
+            }
 			else {
 				System.out.println("congrats");
 				Win.winGUI();
