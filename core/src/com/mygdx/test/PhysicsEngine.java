@@ -129,22 +129,17 @@ public class PhysicsEngine {
          * Used for bicubic spline interpolation, but we're using normal splines for now
          */
         /*
-
         xOld = xNew;
         yOld = yNew;
         heightOld = heightNew;
-
         xNormalized = golfBall.x * (1.0/courseSizeX);
         yNormalized = golfBall.y * (1.0/courseSizeY);
-
         System.out.println("xNorm: " + xNormalized);
         System.out.println("yNorm: " + yNormalized);
-
         xNew = golfBall.x;
         yNew = golfBall.y;
         heightNew = interpolator.findHeightXandYDimensions(xNormalized,yNormalized);
         System.out.println("heightNew: " + heightNew);
-
         */
 
         if(initialCall) {
@@ -194,12 +189,9 @@ public class PhysicsEngine {
 
         /*
         boolean shouldStop = false;
-
         if (((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10)) && !ballStopped)
             SlowForNrOfFrames++;
         else SlowForNrOfFrames = 0;
-
-
         if(SlowForNrOfFrames > 60)
             shouldStop = true;
         */
@@ -294,8 +286,8 @@ public class PhysicsEngine {
                 golfBall.x = oldXCoords+10;
             }
             //colRight = false;
-            golfBall.setVX2(-vx1/2);
-            //ballBlockedX = true;
+            golfBall.setVX2(0);
+            ballBlockedX = true;
         }
 
 
@@ -345,8 +337,8 @@ public class PhysicsEngine {
             else{
                 golfBall.y = oldYCoords+10;
             }
-            golfBall.setVY2(-vy1/2);
-            //ballBlockedY = true;
+            golfBall.setVY2(0);
+            ballBlockedY = true;
         }
 
         /*if(!ballBlockedX)*/ golfBall.x += xChange;
@@ -432,7 +424,6 @@ public class PhysicsEngine {
         double slopex = (heightNew - heightOld) / changeInX;
         return slopex;
     }
-
     public double dy(){
         double changeInY = yNew - yOld;
         if(changeInY == 0) changeInY = 0.0001;
@@ -488,28 +479,25 @@ public class PhysicsEngine {
      */
 
     public double aiAngle(float bx, float by, float gx, float gy){
-        // firstAICall =false;
-
-
-        double aiDir;
+        double  aiDir;
         if(gx>=bx && gy>=by){
             System.out.println("top right");
-            aiDir=Math.atan((gy-by)/(gx-bx));
+            aiDir=Math.atan2((gy-by),(gx-bx));
             aiDir = Math.toDegrees(aiDir) -5;
             System.out.println("Angle: " + aiDir);
         }
         else if(gx<=bx && gy>=by){
-            aiDir=Math.atan((gy-by)/(bx-gx));
+            aiDir=Math.atan2((gy-by),(bx-gx));
             aiDir = Math.toDegrees(aiDir) +85;
 
         }
         else if(gx<=bx && gy<=by){
-            aiDir=Math.atan((by-gy)/(bx-gx));
+            aiDir=Math.atan2((by-gy),(bx-gx));
             aiDir = 175- Math.toDegrees(aiDir);
 
         }
         else{ //gx>=bx && gy<=by
-            aiDir=Math.atan((by-gy)/(gx-bx));
+            aiDir=Math.atan2((by-gy),(gx-bx));
             aiDir = 355-Math.toDegrees(aiDir);
             System.out.println("Angle: " + aiDir);
         }
