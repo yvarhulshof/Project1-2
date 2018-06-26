@@ -35,7 +35,7 @@ public class DijkstraMain {
         Vertex destination = verticesClone.get(verticesClone.size()-1);
 
         String result = gop.findOptimalPath(g,verticesClone.get(0), destination);
-        System.out.println("The optimal path is: " + result);
+
 
         //TODO allow the AI to use found nodes as midpoints/goals for its shots
 
@@ -63,10 +63,27 @@ public class DijkstraMain {
 
         Collections.reverse(wayX);
         Collections.reverse(wayY);
-
+        int i = 0;
+        while(i < wayX.size()-2){
+            //for(int i = 0; i < wayX.size()-2; i++){
+            if((wayX.get(i).equals(wayX.get(i+1))) && wayX.get(i).equals(wayX.get(i+2))){
+                wayX.remove(i+1);
+                wayY.remove(i+1);
+                i = 0;
+            }
+            else if((wayY.get(i).equals(wayY.get(i+1))) && wayY.get(i).equals(wayY.get(i+2))){
+                wayX.remove(i+1);
+                wayY.remove(i+1);
+                i = 0;
+            }
+            else i++;
+        }
         wayX.remove(0);
         wayY.remove(0);
 
+        System.out.println("The optimal x path is: " + wayX);
+        System.out.println("The optimal y path is: " + wayY);
+        System.out.println("The optimal  path is: " + result);
         /*
         for(int i = 0; i < verticesClone.size(); i++){
             wayX[i] = verticesClone.get(i).getXLoc();

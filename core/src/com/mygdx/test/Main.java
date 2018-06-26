@@ -105,6 +105,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private float goalX;
 	private float goalY;
 	DijkstraMain DM;
+	boolean midpointFound;
 
 
 
@@ -467,7 +468,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 //		for(int j = 0; j < result.length(); j++){
 		//	System.out.println( "node: " +nodes[j] + " x " + wayX[j] + " y " + wayY[j]);
 //		}
-//
+
 		if (AI.getButtonClicked() || aiGoing) {
 
 			aiGoing = true;
@@ -501,8 +502,10 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 			//goalX = wayX[j];
 			//goalY = wayY[j];
-
-			//System.out.println(j);
+			 midpointFound = false;
+			System.out.println(midpointFound);
+			System.out.println("position x: " + golfBalls[cpp].x);
+			System.out.println("position y: " + golfBalls[cpp].y);
 			if (p[cpp].firstAICall) {
 				aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
 				System.out.println("shot with goal: " + goalX + " " + goalY);
@@ -513,30 +516,40 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 				}
 
 				if(Math.abs(goalX - golfBalls[cpp].x) <= 10 && Math.abs(goalY - golfBalls[cpp].y) <= 10 && firstFrameOfSwing ){
-
-					p[cpp].setBallBlockedX(false);
-					p[cpp].setBallBlockedY(false);
+					midpointFound = true;
+					System.out.println(midpointFound);
 					firstFrameOfSwing = false;
-					shotIndex++;
-
+					if(shotIndex < midpoints.size()) {
+						shotIndex++;
+					}
                     }
 
 
-				if (p[cpp].getBallStopped()) {
+				if (p[cpp].getBallStopped() && !midpointFound) {
 					golfBalls[cpp].x = p[cpp].positionX();
 					golfBalls[cpp].y = p[cpp].positionY();
 					speedIncrease += 100;
 				}
-				if (speedIncrease == 2000) {
+
+				if(p[cpp].getBallStopped() && midpointFound){
+				//	midpointFound = false;
+					System.out.println(midpointFound);
+					golfBalls[cpp].x = goalX;
+					golfBalls[cpp].y = goalY;
+					speedIncrease += 100;
+				}
+				if(speedIncrease == 2000) {
 					speedIncrease = 0;
 					angleIncrease += 5;
-				}
-				aiTimer++;
+			}
+
+
 				//if (golfBalls[cpp].x - goalX <= 30 || golfBalls[cpp].x - goalX <= -20 && golfBalls[cpp].y - goalY <= 30 || golfBalls[cpp].y - goalY <= -20) {
 					//if(j < nodes.length-1){ j++;}
 				//}
 			}
-			//System.out.println(j);
+
+
 
 		//Method 3 of moving the ball, uncomment and comment Method 1 to use
 
