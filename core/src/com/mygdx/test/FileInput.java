@@ -35,11 +35,11 @@ public class FileInput {
                 nrOfLines++;
             }
         }
-            catch(IOException exception)
-            {
-                System.out.println("file not found");
-            }
-            return nrOfLines;
+        catch(IOException exception)
+        {
+            System.out.println("file not found");
+        }
+        return nrOfLines;
     }
 
 
@@ -62,7 +62,7 @@ public class FileInput {
             Scanner lineCounter = new Scanner(convertedFile);
             while(lineCounter.hasNextLine()){
                 if(lineCounter.nextLine() == "") break;
-                    nrOfLines++;
+                nrOfLines++;
             }
             fileInfo = new String[nrOfLines];
 
@@ -96,7 +96,7 @@ public class FileInput {
             Scanner lineScanner = new Scanner(convertedFile);
             while(lineScanner.hasNext())
                 swingInput.add(lineScanner.nextLine());
-            }
+        }
         catch(IOException exception)
         {
             System.out.println("file not found");

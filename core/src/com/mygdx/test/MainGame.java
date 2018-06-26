@@ -4,9 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -20,7 +18,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,7 +27,7 @@ import java.util.List;
  * Method 2: Velocity input in GUI, using a small GUI the user can input the direction and speed of each swing
  * Method 3: Reading from a file, using the GolfswingInput.txt file velocity values are read and the ball moves autonomously
  */
-public class Main extends ApplicationAdapter implements InputProcessor{
+public class MainGame extends ApplicationAdapter implements InputProcessor{
 
 	private OrthographicCamera camera; //enables us to have a moveable viewpoint (operated by WASD keys)
 
@@ -46,7 +43,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private Texture goalImg;
     private static Circle goal;
 
-
     //initialisation of the water
     private SpriteBatch waterBatch;
     private Texture waterImg;
@@ -58,7 +54,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
     private static boolean released;
-    private SwingInput SI; //top left GUI in which swing directions and speed can be entered
+//    private SwingInput UI; //top left GUI in which swing directions and speed can be entered
 
     private TiledMapTileLayer collisionLayer;
     private boolean firstFrameOfSwing = true;
@@ -86,7 +82,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
     private boolean elasticBand = true;
 
-	private AIInput AI;
+//	private AIInput AI;
 	private boolean aiGoing = false;
 	private boolean visible = true;
 	double aiTimer = 0;
@@ -96,21 +92,26 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private boolean aiDone = false;
 	static boolean  aiinputOpen = false;
 	boolean oncePerShot=true;
-
-
+	private GraphOptimalPath gOP;
+	private List<Vertex> vertices2;
+	private Graph g;
+	private Vertex source;
+	private Vertex destination;
+	private String[] nodes;
+	private String result;
+	//static float[] wayX;
+	//static float[]wayY;
 	private ArrayList<ArrayList<Float>> midpoints;
 
 	private int shotIndex;
 	private int previousShotIndex;
 	private float goalX;
 	private float goalY;
-	DijkstraMain DM;
-	boolean midpointFound;
 
+    private UserInterface UI;
 
-
-
-
+	private Pixmap pixCircle;
+    private Texture goalTexTest;
 
 	/**
 	 * Method in which we create the initial game state, load the map, create the file readers and set the physics engine and input processor
@@ -118,7 +119,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
     private ShapeRenderer sr;
 	private WinFrame Win;
 
-	@Override
+
+    @Override
 	public void create () {
 		/** create the sprites */
 		batch = new SpriteBatch();
@@ -136,7 +138,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		camYTracer = 0;
 
 
-
 		/** load the map */
 		//tiledMap = new TmxMapLoader().load("map.tmx");
 		tiledMap = new TmxMapLoader().load("map2.tmx");
@@ -145,19 +146,20 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		water = new Rectangle(285, 175, 160, 80);
         goal = new Circle(450, 330, 30);
-
-
 		aiinputOpen = true;
 
         collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
 
 		Gdx.input.setInputProcessor(this); //setting the inputProccesor which allows the user to use the mouse and keyboard to control aspects of the program
 
-		SI = new SwingInput(); //creating an instance of the GUI used in Method 2 to enter the velocity of the ball
-		SI.createGUI();
+        UI = new UserInterface();
+        UI.createGUI();
 
-		AI = new AIInput(); //creating an instance of the GUI used in Method 2 to enter the velocity of the ball
-		AI.createGUI();
+//		UI = new SwingInput(); //creating an instance of the GUI used in Method 2 to enter the velocity of the ball
+//		UI.createGUI();
+
+//		UI = new AIInput(); //creating an instance of the GUI used in Method 2 to enter the velocity of the ball
+//		UI.createGUI();
 
 
 
@@ -219,92 +221,100 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         currentSwing = 0;
 
         Win = new WinFrame();
+//
+//        /*
+//		List<Vertex> vertices = new ArrayList<Vertex>();
+//		List<Edge> edges = new ArrayList<Edge>();
+//
+//		Vertex v1 = new Vertex("A",golfBalls[cpp].x,golfBalls[cpp].y);
+//		Vertex v2 = new Vertex("B",50,60);
+//		Vertex v3 = new Vertex("C", 60,100);
+//		Vertex v4 = new Vertex("D", 120,100);
+//		Vertex v5 = new Vertex("E", 300,250);
+//		Vertex v6 = new Vertex("F", 350,200);
+//		Vertex v7 = new Vertex("G", 400,40);
+//		Vertex v8 = new Vertex("H", 300,120);
+//		Vertex v9 = new Vertex("I", 250,300);
+//		Vertex v10 = new Vertex("J", goal.x,goal.y);
+//
+//		vertices.add(v1);
+//		vertices.add(v2);
+//		vertices.add(v3);
+//		vertices.add(v4);
+//		vertices.add(v5);
+//		vertices.add(v6);
+//		vertices.add(v7);
+//		vertices.add(v8);
+//		vertices.add(v9);
+//		vertices.add(v10);
+//
+//
+//		vertices2 = new ArrayList<Vertex>();
+//		for(int i = 0; i < vertices.size();i++){
+//			vertices2.add(vertices.get(i));
+//		}
+//
+//		//weight for compromised channels is 1, otherwise weight is 0
+//		Edge e1A = new Edge("E01", v1 , v2, 1);
+//		Edge e1B = new Edge("E01", v2 , v1, 1);
+//
+//		Edge e2A = new Edge("E02", v1 , v3, 1);
+//		Edge e2B = new Edge("E02", v3 , v1, 1);
+//
+//		Edge e3A = new Edge("E03", v1 , v4, 0);
+//		Edge e3B = new Edge("E03", v4 , v1, 0);
+//
+//		Edge e4A = new Edge("E04", v2 , v3, 1);
+//		Edge e4B = new Edge("E04", v3 , v2, 1);
+//
+//		Edge e5A = new Edge("E05", v4 , v3, 0);
+//		Edge e5B = new Edge("E05", v3 , v4, 0);
+//
+//		Edge e6A = new Edge("E06", v3 , v6, 1);
+//		Edge e6B = new Edge("E06", v6 , v3, 1);
+//
+//		Edge e7A = new Edge("E07", v3 , v5, 1);
+//		Edge e7B = new Edge("E07", v5 , v3, 1);
+//
+//		Edge e8A = new Edge("E08", v5 , v7, 1);
+//		Edge e8B = new Edge("E08", v7 , v5, 1);
+//
+//		Edge e9A = new Edge("E09", v6 , v8, 0);
+//		Edge e9B = new Edge("E09", v8 , v6, 0);
+//
+//		Edge e10A = new Edge("E10", v7 , v8, 0);
+//		Edge e10B = new Edge("E10", v8 , v7, 0);
+//
+//		Edge e11A = new Edge("E11", v9 , v10, 0);
+//		Edge e11B = new Edge("E11", v10 , v9, 0);
+//
+//		edges.addAll(Arrays.asList(e1A,e2A,e3A,e4A,e1B,e2B,e3B,e4B,e5A,e5B,e6A,e6B,e7A,e7B,e8A,e8B,e9A,e9B,e10A,e10B,e11A,e11B));
+//		source = v1;
+//		destination = v4;
+//		*/
+//		 //g = new Graph(vertices,edges);
+//
+//		 //gOP = new GraphOptimalPath();
+//		//gOP.updateDistances(g, source);
+//		//result = gOP.findOptimalPath(g,source,destination);
+//
+//	//	System.out.println("The optimal path is: " + result);
 
-        /*
-		List<Vertex> vertices = new ArrayList<Vertex>();
-		List<Edge> edges = new ArrayList<Edge>();
-
-		Vertex v1 = new Vertex("A",golfBalls[cpp].x,golfBalls[cpp].y);
-		Vertex v2 = new Vertex("B",50,60);
-		Vertex v3 = new Vertex("C", 60,100);
-		Vertex v4 = new Vertex("D", 120,100);
-		Vertex v5 = new Vertex("E", 300,250);
-		Vertex v6 = new Vertex("F", 350,200);
-		Vertex v7 = new Vertex("G", 400,40);
-		Vertex v8 = new Vertex("H", 300,120);
-		Vertex v9 = new Vertex("I", 250,300);
-		Vertex v10 = new Vertex("J", goal.x,goal.y);
-
-		vertices.add(v1);
-		vertices.add(v2);
-		vertices.add(v3);
-		vertices.add(v4);
-		vertices.add(v5);
-		vertices.add(v6);
-		vertices.add(v7);
-		vertices.add(v8);
-		vertices.add(v9);
-		vertices.add(v10);
-
-
-		vertices2 = new ArrayList<Vertex>();
-		for(int i = 0; i < vertices.size();i++){
-			vertices2.add(vertices.get(i));
-		}
-
-		//weight for compromised channels is 1, otherwise weight is 0
-		Edge e1A = new Edge("E01", v1 , v2, 1);
-		Edge e1B = new Edge("E01", v2 , v1, 1);
-
-		Edge e2A = new Edge("E02", v1 , v3, 1);
-		Edge e2B = new Edge("E02", v3 , v1, 1);
-
-		Edge e3A = new Edge("E03", v1 , v4, 0);
-		Edge e3B = new Edge("E03", v4 , v1, 0);
-
-		Edge e4A = new Edge("E04", v2 , v3, 1);
-		Edge e4B = new Edge("E04", v3 , v2, 1);
-
-		Edge e5A = new Edge("E05", v4 , v3, 0);
-		Edge e5B = new Edge("E05", v3 , v4, 0);
-
-		Edge e6A = new Edge("E06", v3 , v6, 1);
-		Edge e6B = new Edge("E06", v6 , v3, 1);
-
-		Edge e7A = new Edge("E07", v3 , v5, 1);
-		Edge e7B = new Edge("E07", v5 , v3, 1);
-
-		Edge e8A = new Edge("E08", v5 , v7, 1);
-		Edge e8B = new Edge("E08", v7 , v5, 1);
-
-		Edge e9A = new Edge("E09", v6 , v8, 0);
-		Edge e9B = new Edge("E09", v8 , v6, 0);
-
-		Edge e10A = new Edge("E10", v7 , v8, 0);
-		Edge e10B = new Edge("E10", v8 , v7, 0);
-
-		Edge e11A = new Edge("E11", v9 , v10, 0);
-		Edge e11B = new Edge("E11", v10 , v9, 0);
-
-		edges.addAll(Arrays.asList(e1A,e2A,e3A,e4A,e1B,e2B,e3B,e4B,e5A,e5B,e6A,e6B,e7A,e7B,e8A,e8B,e9A,e9B,e10A,e10B,e11A,e11B));
-		source = v1;
-		destination = v4;
-		*/
-		 //g = new Graph(vertices,edges);
-
-		 //gOP = new GraphOptimalPath();
-		//gOP.updateDistances(g, source);
-		//result = gOP.findOptimalPath(g,source,destination);
-
-	//	System.out.println("The optimal path is: " + result);
+        Gdx.gl.glClearColor(0, 0.5f, 0, 0);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
 
 
+//        pixCircle = new Pixmap(50, 50, Pixmap.Format.RGBA8888);
+//        pixCircle.setColor(Color.WHITE);
+//        pixCircle.fillCircle(20, 20, 20);
+//        goalTexTest = new Texture(pixCircle);
 
-		DM = new DijkstraMain();
+
+
+		DijkstraMain DM = new DijkstraMain();
 		midpoints = DM.findOptimalPath();
-
-
 	}
 
 
@@ -314,9 +324,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	 */
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0.5f, 0, 0);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
 		camera.update();
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render();
@@ -326,9 +334,13 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		goalBatch.draw(goalImg,goal.x,goal.y);
 		goalBatch.end();
 
+//        SpriteBatch goalBatch2 = new SpriteBatch();
+//        goalBatch2.begin();
+//        goalBatch2.draw(goalTexTest, goal.x, goal.y);
+//        goalBatch2.end();
 
 		batch.begin();
-		if (AI.getVisible()) {
+		if (UI.getVisible()) {
 			for (int i = 0; i < playersNbr; i++) {
 				batch.draw(golfballImg, golfBalls[i].x, golfBalls[i].y); //draws the golfBall image at the location where the golfBall Circle object is at that point in time
 			} //draws the golfBall image at the location where the golfBall Circle object is at that point in time
@@ -353,36 +365,32 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		// selecting the different variation of the map
 		if (aiinputOpen) {
-			if (AI.getCourse1()) {
+			if (UI.getCourse1()) {
 				water = new Rectangle(285, 75, 160, 80);
 				goal = new Circle(450, 300, 30);
 				if (oncePerShot) {
 					golfBalls[cpp].x = 40;
 					golfBalls[cpp].y = 32;
 					oncePerShot = false;
-
 				}
-			} else if (AI.getCourse2()) {
+			} else if (UI.getCourse2()) {
 				water = new Rectangle(200, 200, 160, 80);
 				goal = new Circle(450, 100, 30);
 				if (oncePerShot) {
 					golfBalls[cpp].x = 40;
 					golfBalls[cpp].y = 350;
 					oncePerShot = false;
-					midpoints = DM.findOptimalPath();
 				}
-			} else if (AI.getCourse3()) {
+			} else if (UI.getCourse3()) {
 				water = new Rectangle(285, 75, 160, 80);
 				goal = new Circle(50, 300, 30);
 				if (oncePerShot) {
 					golfBalls[cpp].x = 450;
 					golfBalls[cpp].y = 32;
 					oncePerShot = false;
-					midpoints = DM.findOptimalPath();
 				}
 			}
 		}
-
 
 		if (aiGoing) {
 			aiinputOpen = false;
@@ -423,53 +431,53 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 
 		//Method 2 of moving the ball
-		if(SI.getShootButtonClicked())
+		if(UI.getShootButtonClicked())
         {
             if(firstFrameOfSwing){
                 p[cpp].setBallBlockedX(false);
                 p[cpp].setBallBlockedY(false);
             }
             firstFrameOfSwing = false;
-            p[cpp].moveBall(SI.getDir(), SI.getSpd());
+            p[cpp].moveBall(UI.getDir(), UI.getSpd());
         }
 
-		/*
-		nodes = new String[result.length()];
-		wayX = new float[nodes.length];
-		wayY = new float[nodes.length];
-		for(int i =1; i <= result.length(); i++) {
-			nodes[i - 1] = result.substring(i - 1, i);
-		}
-
-
-		boolean found = false;
-		int v =0;
-		int i = 0;
-		int count = 0;
-		while(!found) {
-			if (nodes[v].equals(vertices2.get(i).getId())) {
-				wayX[v] = vertices2.get(i).getXLoc();
-				wayY[v] = vertices2.get(i).getYLoc();
-				v++;
-				count++;
-			}
-			else{
-				i++;
-			}
-			if(i == vertices2.size()) {
-				i = 0;
-			}
-			if (count == nodes.length) {
-				found = true;
-			}
-		}
-		*/
-
-//		for(int j = 0; j < result.length(); j++){
-		//	System.out.println( "node: " +nodes[j] + " x " + wayX[j] + " y " + wayY[j]);
+//		/*
+//		nodes = new String[result.length()];
+//		wayX = new float[nodes.length];
+//		wayY = new float[nodes.length];
+//		for(int i =1; i <= result.length(); i++) {
+//			nodes[i - 1] = result.substring(i - 1, i);
 //		}
-
-		if (AI.getButtonClicked() || aiGoing) {
+//
+//
+//		boolean found = false;
+//		int v =0;
+//		int i = 0;
+//		int count = 0;
+//		while(!found) {
+//			if (nodes[v].equals(vertices2.get(i).getId())) {
+//				wayX[v] = vertices2.get(i).getXLoc();
+//				wayY[v] = vertices2.get(i).getYLoc();
+//				v++;
+//				count++;
+//			}
+//			else{
+//				i++;
+//			}
+//			if(i == vertices2.size()) {
+//				i = 0;
+//			}
+//			if (count == nodes.length) {
+//				found = true;
+//			}
+//		}
+//		*/
+//
+////		for(int j = 0; j < result.length(); j++){
+//		//	System.out.println( "node: " +nodes[j] + " x " + wayX[j] + " y " + wayY[j]);
+////		}
+////		TODO: increase area around the nodes to make it easier to reach for the AI
+		if (UI.getAIButtonClicked() || aiGoing) {
 
 			aiGoing = true;
 			/*
@@ -502,54 +510,42 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 			//goalX = wayX[j];
 			//goalY = wayY[j];
-			 midpointFound = false;
-			System.out.println(midpointFound);
-			System.out.println("position x: " + golfBalls[cpp].x);
-			System.out.println("position y: " + golfBalls[cpp].y);
+
+			//System.out.println(j);
 			if (p[cpp].firstAICall) {
 				aiDirection = p[cpp].aiAngle(ballX, ballY, goalX, goalY);
-				System.out.println("shot with goal: " + goalX + " " + goalY);
-				double direction = aiDirection + angleIncrease;
-				p[cpp].moveBall(direction , speedIncrease);
-				System.out.println("position x: " + golfBalls[cpp].x);
-				System.out.println("position y: " + golfBalls[cpp].y);
+
 				}
 
-				if(Math.abs(goalX - golfBalls[cpp].x) <= 10 && Math.abs(goalY - golfBalls[cpp].y) <= 10 && firstFrameOfSwing ){
-					midpointFound = true;
-					System.out.println(midpointFound);
+				if(Math.abs(golfBalls[cpp].x - goalX) < 5)
+
+				if(Math.abs(golfBalls[cpp].x - goalX) < 5 && Math.abs(golfBalls[cpp].x - goalX) < 5 && firstFrameOfSwing){
+					//if(firstFrameOfSwing){
+					System.out.println("shot with goal: " + goalX + " " + goalY);
+					p[cpp].setBallBlockedX(false);
+					p[cpp].setBallBlockedY(false);
 					firstFrameOfSwing = false;
-					if(shotIndex < midpoints.size()) {
-						shotIndex++;
-					}
-                    }
+					shotIndex++;
+					p[cpp].moveBall(aiDirection + angleIncrease, speedIncrease);
+				}
 
-
-				if (p[cpp].getBallStopped() && !midpointFound) {
+				if (p[cpp].golfBall.getVx2() < 30 && p[cpp].golfBall.getVy2() < 30) {
 					golfBalls[cpp].x = p[cpp].positionX();
 					golfBalls[cpp].y = p[cpp].positionY();
+					p[cpp].golfBall.setVX2(0);
+					p[cpp].golfBall.setVY2(0);
 					speedIncrease += 100;
 				}
-
-				if(p[cpp].getBallStopped() && midpointFound){
-				//	midpointFound = false;
-					System.out.println(midpointFound);
-					golfBalls[cpp].x = goalX;
-					golfBalls[cpp].y = goalY;
-					speedIncrease += 100;
-				}
-				if(speedIncrease == 2000) {
+				if (speedIncrease == 2000) {
 					speedIncrease = 0;
 					angleIncrease += 5;
-			}
-
-
+				}
+				aiTimer++;
 				//if (golfBalls[cpp].x - goalX <= 30 || golfBalls[cpp].x - goalX <= -20 && golfBalls[cpp].y - goalY <= 30 || golfBalls[cpp].y - goalY <= -20) {
 					//if(j < nodes.length-1){ j++;}
 				//}
 			}
-
-
+			//System.out.println(j);
 
 		//Method 3 of moving the ball, uncomment and comment Method 1 to use
 
@@ -591,16 +587,18 @@ public class Main extends ApplicationAdapter implements InputProcessor{
                 }
             }
             released = false;
-            SI.setShootButtonClicked(false);
+            UI.setShootButtonClicked(false);
             firstFrameOfSwing = true;
 		}
 
-        if(goal.x - golfBalls[cpp].x <= 10 && goal.x - golfBalls[cpp].x >= -80 && goal.y - golfBalls[cpp].y <= 0 && goal.y - golfBalls[cpp].y >= -80){
+        if(goal.x - golfBalls[cpp].x <= 10 && goal.x - golfBalls[cpp].x >= -80 && goal.y - golfBalls[cpp].y <= 0 && goal.y - golfBalls[cpp].y >= -80)
+          //      (goal.contains(golfBalls[cpp]))
+         {
 
 			if (aiGoing && !aiDone) {
 				final double finalDir = aiDirection + angleIncrease;
 				final double finalSpeed = speedIncrease;
-				AI.setVisible();
+				UI.setVisible();
 				golfBalls[cpp].x = p[cpp].positionX();
 				golfBalls[cpp].y = p[cpp].positionY();
 				p[cpp].golfBall.setVX2(0);
@@ -616,7 +614,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 				golfBalls[cpp].x =80;
 				golfBalls[cpp].y = 0;
 				aiGoing = false;
-				AI.setButtonClicked(false);
+				UI.setAIButtonClicked(false);
 				oncePerShot = true;
 				System.out.println(aiTimer / 60);
 			}
@@ -626,7 +624,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		if (p[cpp].getBallStopped()) {
 			released = false;
-			SI.setShootButtonClicked(false);
+			UI.setShootButtonClicked(false);
 			firstFrameOfSwing = true;
 		}
 
@@ -636,7 +634,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		if(water.x - golfBalls[cpp].x <= 33 && water.x - golfBalls[cpp].x >= -110 && water.y - golfBalls[cpp].y <= 33 && water.y - golfBalls[cpp].y >= -70){
             resetBall();
 			System.out.println(" u in water. game over");
-			if(aiGoing){ angleIncrease += 20; }
 		}
 
 

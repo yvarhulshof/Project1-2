@@ -177,7 +177,7 @@ public class PhysicsEngine {
                     (Math.abs(vy1 + (float) findfy())) <= 20) ||
                     (ballBlocked))
             {
-              //  System.out.println("check");
+                //  System.out.println("check");
                 golfBall.setVX2(0);
                 golfBall.setVY2(0);
                 ballStopped = true;
@@ -234,8 +234,8 @@ public class PhysicsEngine {
 
 
         //change in x and y during the elapsed time
-         xChange = (float) ((1.0/60.0)*vx1);
-         yChange = (float) ((1.0/60.0)*vy1);
+        xChange = (float) ((1.0/60.0)*vx1);
+        yChange = (float) ((1.0/60.0)*vy1);
 
         //checking if the ball collides with the squares surrounding it
 
@@ -294,8 +294,8 @@ public class PhysicsEngine {
                 golfBall.x = oldXCoords+10;
             }
             //colRight = false;
-            golfBall.setVX2(0);
-            ballBlockedX = true;
+            golfBall.setVX2(-vx1/2);
+            //ballBlockedX = true;
         }
 
 
@@ -318,24 +318,24 @@ public class PhysicsEngine {
             }
         }
         else if(golfBall.getVy2() > 0) {
-                //top left
-                colTop = true;
+            //top left
+            colTop = true;
 
-                TiledMapTileLayer.Cell collisionCellTopLeft = collisionLayer.getCell((int) ((golfBall.x) / tileWidth), (int) ((golfBall.y + 2 * golfBall.radius) / tileHeight));
-                collisionY = collisionCellTopLeft.getTile().getProperties().containsKey("solid");
+            TiledMapTileLayer.Cell collisionCellTopLeft = collisionLayer.getCell((int) ((golfBall.x) / tileWidth), (int) ((golfBall.y + 2 * golfBall.radius) / tileHeight));
+            collisionY = collisionCellTopLeft.getTile().getProperties().containsKey("solid");
 
-                //top center
-                if (!collisionY) {
-                    TiledMapTileLayer.Cell collisionCellTopCenter = collisionLayer.getCell((int) ((golfBall.x + golfBall.radius) / tileWidth), (int) ((golfBall.y + 2 * golfBall.radius) / tileHeight));
-                    collisionY = collisionCellTopCenter.getTile().getProperties().containsKey("solid");
-                }
-
-                //top right
-                if (!collisionY) {
-                    TiledMapTileLayer.Cell collisionCellTopRight = collisionLayer.getCell((int) ((golfBall.x + 2 * golfBall.radius) / tileWidth), (int) ((golfBall.y + 2 * golfBall.radius) / tileHeight));
-                    collisionY = collisionCellTopRight.getTile().getProperties().containsKey("solid");
-                }
+            //top center
+            if (!collisionY) {
+                TiledMapTileLayer.Cell collisionCellTopCenter = collisionLayer.getCell((int) ((golfBall.x + golfBall.radius) / tileWidth), (int) ((golfBall.y + 2 * golfBall.radius) / tileHeight));
+                collisionY = collisionCellTopCenter.getTile().getProperties().containsKey("solid");
             }
+
+            //top right
+            if (!collisionY) {
+                TiledMapTileLayer.Cell collisionCellTopRight = collisionLayer.getCell((int) ((golfBall.x + 2 * golfBall.radius) / tileWidth), (int) ((golfBall.y + 2 * golfBall.radius) / tileHeight));
+                collisionY = collisionCellTopRight.getTile().getProperties().containsKey("solid");
+            }
+        }
 
 
         if (collisionY){
@@ -345,13 +345,13 @@ public class PhysicsEngine {
             else{
                 golfBall.y = oldYCoords+10;
             }
-            golfBall.setVY2(0);
-            ballBlockedY = true;
+            golfBall.setVY2(-vy1/2);
+            //ballBlockedY = true;
         }
 
         /*if(!ballBlockedX)*/ golfBall.x += xChange;
         /*if(!ballBlockedY)*/ golfBall.y += yChange;
-            //z = x+y;
+        //z = x+y;
         //}
         //else {
         //    ballStopped = true;
@@ -359,9 +359,9 @@ public class PhysicsEngine {
         //}
         //System.out.println("speedX " + golfBall.getVx2());
         //System.out.println("speedY : " + golfBall.getVy2());
-      //  System.out.println("balloccX : " + golfBall.x );
+        //  System.out.println("balloccX : " + golfBall.x );
         //System.out.println("possssX " +positionX());
-       // System.out.println("balloccY : " + golfBall.y );
+        // System.out.println("balloccY : " + golfBall.y );
         //System.out.println("posssY " + positionY());
     }
 
@@ -375,14 +375,14 @@ public class PhysicsEngine {
     }
 
 
-   public double findfx(){
+    public double findfx(){
         double G;
         double H;
         double fx;
-       slopex = dx();
-       if(ballBlockedX) G = 0;
-       else
-        G = -mass * g * slopex;
+        slopex = dx();
+        if(ballBlockedX) G = 0;
+        else
+            G = -mass * g * slopex;
 
         H = -frictionConstant*mass*g*(vx1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
         fx = G + H;
@@ -393,13 +393,13 @@ public class PhysicsEngine {
         double H;
         double fy;
         slopey = dy();
-       if(ballBlockedY) G = 0;
+        if(ballBlockedY) G = 0;
         else
-        G = -mass * g * slopey;
+            G = -mass * g * slopey;
 
-       H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
+        H = -frictionConstant*mass*g*(vy1/(Math.sqrt((vx1*vx1)+(vy1*vy1) + 0.000001)));
         fy = G + H;
-       return fy;
+        return fy;
     }
 
     public double dx(){
@@ -468,15 +468,15 @@ public class PhysicsEngine {
         else
             return 360-angle;
     }
-        GraphOptimalPath gOP = new GraphOptimalPath();
+    GraphOptimalPath gOP = new GraphOptimalPath();
 
 
     public String[] getEachResult(String result) {
-            result = gOP.result;
-            String[] nodes = new String[result.length()+1];
-            for (int i = 1; i <= result.length(); i++) {
-                nodes[i] = result.substring(i - 1, i);
-            }
+        result = gOP.result;
+        String[] nodes = new String[result.length()+1];
+        for (int i = 1; i <= result.length(); i++) {
+            nodes[i] = result.substring(i - 1, i);
+        }
         return nodes;
     }
 
