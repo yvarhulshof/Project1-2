@@ -24,25 +24,30 @@ public class DerivativeCalculator {
     public static ArrayList<String> result = new ArrayList<String>();
 
     public String DerivativeCalculator(String equation) {
-        ArrayList<String> parts = findCoefErasePlus(equation);// cuts in peaces
 
-        ArrayList<Integer> findcoef = findCoeffOfXorY(equation);
-        ArrayList<String> derPow = powerDerivation(findcoef, equation);
+            ArrayList<String> parts = findCoefErasePlus(equation);// cuts in peaces
 
-        ArrayList<String> trig = trigDerivative(equation);
-        
-        for( String each: trig){
-  result.add(each);
+            ArrayList<Integer> findcoef = findCoeffOfXorY(equation);
+            ArrayList<String> derPow = powerDerivation(findcoef, equation);
+
+            ArrayList<String> trig = trigDerivative(equation);
+
+            for( String each: trig){
+                result.add(each);
+            }
+
+            for( String every: derPow){
+
+                result.add(every);
+            }
+
+
         }
-        
-        for( String every: derPow){
-          
-        result.add(every);
-        }
-        String ourResult=result.toString();
-       return ourResult;
+        public String giveBackResult(){
+            String ourResult=result.toString();
+            return ourResult;
 
-    }
+        }
 //used for testing
     /*public static void main(String[] args) {
 
