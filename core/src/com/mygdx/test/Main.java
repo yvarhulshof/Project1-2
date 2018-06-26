@@ -79,7 +79,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private BicubicInterpolation interpolator;
     private double[][] hs;
 
-    private int playersNbr = 3;
+    private int playersNbr = 2;
     private int cpp; //current playing player
     private int maxDistanceMulti;
     private int[] scores;
@@ -108,6 +108,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 	private float goalX;
 	private float goalY;
 	DijkstraMain DM;
+	boolean midPointFound = false;
 
     private boolean ballInDone = false;
 
@@ -552,8 +553,8 @@ public class Main extends ApplicationAdapter implements InputProcessor{
         if(currentSwing == numberOfSwings) currentSwing = 0;
         */
 
-
-        for (int z = 0; z < playersNbr; z++)
+/*
+        for (int z = 0; i < playersNbr; i++)
 			if(ballEucliDistance(z, cpp) > maxDistanceMulti && z != cpp ){
                 System.out.println("distance now");
                 if (!elasticBand)
@@ -564,7 +565,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 //                    p[i].moveBall(PhysicsEngine.calcAngle(- (golfBalls[i].x + golfBalls[i].radius)-(golfBalls[cpp].x + golfBalls[cpp].radius), - (golfBalls[i].y + golfBalls[i].radius)-(golfBalls[cpp].y + golfBalls[cpp].radius)), (ballEucliDistance(i, cpp))/2);
                 }
 			}
-
+*/
 
 
 
@@ -594,7 +595,6 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 		}
 
         if(goal.x - golfBalls[cpp].x <= 10 && goal.x - golfBalls[cpp].x >= -80 && goal.y - golfBalls[cpp].y <= 0 && goal.y - golfBalls[cpp].y >= -80){
-
 
 			if (aiGoing && !aiDone) {
 				final double finalDir = aiDirection + angleIncrease;

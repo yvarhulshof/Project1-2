@@ -53,8 +53,8 @@ public class DijkstraMain {
         wayY = new ArrayList<Float>();
 
         //for(int i = 0; destination != null; i++)
-            while(destination != null)
-            {
+        while(destination != null)
+        {
             //vertexPath.add(destination.getId());
             wayX.add(destination.getXLoc());
             wayY.add(destination.getYLoc());
@@ -64,8 +64,33 @@ public class DijkstraMain {
         Collections.reverse(wayX);
         Collections.reverse(wayY);
 
+       /* int i = 0;
+        while(i < wayX.size()-2){*/
+       for(int i = 0; i < wayX.size()-1; i++){
+           if((wayX.get(i).equals(wayX.get(i+1)) || wayY.get(i).equals(wayY.get(i+1)))){
+               wayX.remove(i+1);
+               wayY.remove(i+1);
+               i = 0;
+                    }
+                }
+
+         /*   if((wayX.get(i).equals(wayX.get(i+1))) && wayX.get(i).equals(wayX.get(i+2))){
+                wayX.remove(i+1);
+                wayY.remove(i+1);
+                i = 0;
+            }
+            else if((wayY.get(i).equals(wayY.get(i+1))) && wayY.get(i).equals(wayY.get(i+2))){
+                wayX.remove(i+1);
+                wayY.remove(i+1);
+                i = 0;
+            }
+            else i++;*/
+
+
         wayX.remove(0);
         wayY.remove(0);
+        System.out.println("The optimal x path is: " + wayX);
+        System.out.println("The optimal y path is: " + wayY);
 
         /*
         for(int i = 0; i < verticesClone.size(); i++){

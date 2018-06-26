@@ -25,11 +25,11 @@ public class GraphSetUp {
 
         for(int i = 0; i < nrOfNodesX; i++){
             xId = i;
-            xLocation = 32+ i * spacingX;
+            xLocation = 45+ i * spacingX;
 
             for(int j = 0; j < nrOfNodesY; j++){
                 yId = j;
-                yLocation = 32 + j * spacingY;
+                yLocation = 45 + j * spacingY;
                 name = "(" + xId + "," + yId + ")";
                 a = new Vertex(name,xLocation,yLocation);
 
