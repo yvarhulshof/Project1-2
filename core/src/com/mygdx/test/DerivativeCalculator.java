@@ -11,45 +11,55 @@ import java.util.ArrayList;
 
 /**
  *
- * @author sarit
+ * @author sara
  */
 public class DerivativeCalculator {
+
 
     /**
      * This program is designed to derive mostly trigonometric, exponential and polynomial equations.
      * When calling the constructor please write trigonometric part first as the signs are copied at the end.
-     * 
+     *
      */
-   // private static String equation = "65cos(x^2)*4x^3";
-    public static ArrayList<String> result = new ArrayList<String>();
+    // private static String equation = "4x^3+65cos(x^2)";
+    public static StringBuilder result = new StringBuilder();
+
+
+
 
     public  DerivativeCalculator(String equation) {
+        ArrayList<String> parts = findCoefErasePlus(equation);// cuts in peaces
 
-            ArrayList<String> parts = findCoefErasePlus(equation);// cuts in peaces
-
-            ArrayList<Integer> findcoef = findCoeffOfXorY(equation);
-            ArrayList<String> derPow = powerDerivation(findcoef, equation);
-
-            ArrayList<String> trig = trigDerivative(equation);
-
-            for( String each: trig){
-                result.add(each);
-            }
-
-            for( String every: derPow){
-
-                result.add(every);
-            }
-
-
+        ArrayList<Integer> findcoef = findCoeffOfXorY(equation);
+        for (int i : findcoef) {
+            System.out.print(" " + i);
         }
-        public String giveBackResult(){
-            String ourResult=result.toString();
-            return ourResult;
 
+        ArrayList<String> derPow = powerDerivation(findcoef, equation);
+        print(derPow);
+        ArrayList<String> trig;
+        trig = trigDerivative(equation);
+        System.out.printf("trig: %s%n", trig.toString());
+
+
+        result.append(trig.toString());
+
+
+        for( String every: derPow){
+
+            result.append(every);
         }
+
+
+    }
+    public String giveBackResult(){
+        String ourResult=result.toString();
+        return ourResult;
+
+    }
+ /*
 //used for testing
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
 
         ArrayList<String> parts = findCoefErasePlus(equation);
         System.out.println("-------------parts ");
@@ -57,7 +67,7 @@ public class DerivativeCalculator {
         // int findPow = findPow("3x^2+16sinx");
         //System.out.println("power: " + findPow);
         ArrayList<Integer> findcoef = findCoeffOfXorY(equation);
-        System.out.println("-------------allNumbers:");
+        System.out.println("-------------coeficient:");
         for (int i : findcoef) {
             System.out.print(" " + i);
         }
@@ -68,41 +78,43 @@ public class DerivativeCalculator {
         System.out.println("-------------allNumbers:");
         for (int i : allNumbers) {
             System.out.print(" " + i);
-        } 
+        }
 
         System.out.println("");
-         
+
    ArrayList<String> allLetters = findLetters(equation);
         System.out.println("--------------allLetters ");
 
         print(allLetters);
-      
+
 
         System.out.println("");
-         
-        ArrayList<String> derPow = powerDerivation(findcoef);//neeeeeeeeeeeeeeeeeeeeded
+
+        ArrayList<String> derPow = powerDerivation(findcoef, equation );
         System.out.println("-----------------powerDeriv");
         print(derPow);
-        ArrayList<String> trig = trigDerivative(equation);
-
+      ArrayList<String> trig = trigDerivative(equation);
+//*******************************************************************************
+//gives the ultimate result for trigonomerty
         System.out.printf("trig: %s%n", trig.toString());
+        //********************************************************************
 
          ArrayList<String> exp = exponentialDerivation(equation);
         System.out.println("-------------------exp");
         print(exp);
-         
+
     }
-    */
 
+*/
 
-   /* public static void print(ArrayList<String> printed) {
+    public static void print(ArrayList<String> printed) {
         for (String i : printed) {
             System.out.print(" " + i);
         }
 
         System.out.println("                         ");
 
-    }*/
+    }
 
     /**
      * *************************************************************************************************************************************************
@@ -124,9 +136,10 @@ public class DerivativeCalculator {
 
         for (int i = 0; i < substring.length(); i++) {
             if (substring.charAt(i) == 40) {
-                while (substring.charAt(i) == 41) {
+                while (substring.charAt(i) != 41) {
+                    partsOfEquasion.append(substring.charAt(i));
                     i++;
-                }
+                }partsOfEquasion.append(substring.charAt(i));
             }
 
             if (substring.charAt(i) != 45 && substring.charAt(i) != 43) {
@@ -233,9 +246,9 @@ public class DerivativeCalculator {
     //return 1; // working
     public static int toNotDuplicate(String part, int i) {
         ArrayList<Integer> numbersNew = new ArrayList<>();
-        if ((i - 1) > -1) {
+        if ((i - 1) > -1) {// check if in range
 
-            if (part.charAt(i - 1) > 48 && part.charAt(i - 1) < 57) {
+            if (part.charAt(i - 1) > 48 && part.charAt(i - 1) < 57) {// if before x is a number
                 numbersNew = findNumbers(part);
                 return numbersNew.get(0);
             } else {
@@ -382,26 +395,41 @@ public class DerivativeCalculator {
 
                     try {
                         if (parts.get(part).charAt(inndexOfPow - 2) > 48 && parts.get(part).charAt(inndexOfPow - 2) < 57) {
-                            String part1 = parts.get(part).replace(powS, newPow);
-                            String part2 = part1.replace(strCoef, strNewCoef);
-                            powerDerived.add(part2); // derived power
+                            String substringPow= parts.get(part).substring(inndexOfPow, parts.get(part).length());
+                            String substringCoef= parts.get(part).substring(0,inndexOfPow );
+
+                            String part2 = substringPow.replace(powS, newPow);
+                            String part1 = substringCoef.replace(strCoef, strNewCoef);
+                            powerDerived.add(part1+part2); // derived power
                         }
                     } catch (IndexOutOfBoundsException ex) { // add number before y or x
                         char[] inParts = parts.get(part).toCharArray();
                         StringBuilder addOne = new StringBuilder();
                         addOne.append(1);
+
                         for (int i = 1; i < inParts.length + 1; i++) {
                             addOne.append(inParts[i - 1]);
                         }
-                        String newPart = addOne.toString();
-                        String part1 = newPart.replace(powS, newPow);
-                        String part2 = part1.replace("1", strNewCoef);
 
-                        powerDerived.add(part2);
+                        String newPart = addOne.toString();//adding one when no coefficient in front
+                        /* String part1 = newPart.replace(powS, newPow);
+
+                        String part2 = part1.replaceFirst(Character.toString(addOne.charAt(0)), strNewCoef);
+
+
+                        powerDerived.add(part2);*/
+
+                        String substringPow= newPart.substring(inndexOfPow+1, newPart.length());
+                        String substringCoef= newPart.substring(0,inndexOfPow +1);
+
+                        String part2 = substringPow.replace(powS, newPow);
+                        String part1 = substringCoef.replace(strCoef, strNewCoef);
+                        powerDerived.add(part1+part2); // derived power
+
                     }
 
                 }
-            } else {
+            } /*else {
 
                 int indexNegative = indexOfYorX - 1;
                 if (parts.get(part).indexOf((indexNegative)) == -1) {
@@ -410,7 +438,7 @@ public class DerivativeCalculator {
                     powerDerived.add(parts.get(part));
                 }
 
-            }
+            }*/
 
         }
         return powerDerived;
@@ -422,7 +450,7 @@ public class DerivativeCalculator {
      * //Table law: trigonometry
      * ******************************************************************************************************************************
      * @param equation
-     * @param
+     * @param equation
      * @return
      */
     public static ArrayList<String> trigDerivative(String equation) {
@@ -578,7 +606,7 @@ public class DerivativeCalculator {
         if (nomAndDenom.contains("^")) {
             int findOuterCoeff = findOutterCoeffOfXorY(nomAndDenom);
             Integer.toString(findOuterCoeff);
-            
+
 
             ArrayList<java.lang.String> powerDerivation = powerDerivation(Integer.toString(findOuterCoeff));
             powDer = powerDerivation.toString();
@@ -614,7 +642,7 @@ public class DerivativeCalculator {
      */
     static int outsideOfAll;
 
-    public static String insideTrigSolver(String part) {
+ /*   public static String insideTrigSolver(String part) {
         StringBuilder coef = new StringBuilder();
         StringBuilder newBuilder = new StringBuilder();
         char[] array = part.toCharArray();
@@ -629,33 +657,34 @@ public class DerivativeCalculator {
             String inner = part.substring(i + 1, j);
             if (inner.contains("^")) {
                 String coeff;
-                int innerPow = findPow(inner);
+                ArrayList<Integer> findCoefInner= findCoeffOfXorY(inner);
+               int innerPow = findPow(inner);
+               int innerPowerMark= inner.indexOf("^");
 
-                if ((array[0] > 97 && array[0] < 122)) { //if first letter and no number, add number
-                    coef.append("1");
-
-                    coeff = coef.toString();
-                    int newCoef = Integer.parseInt(coeff);
-                    outsideOfAll = innerPow * (newCoef);
+                /* char[] innerArray=inner.toCharArray();
+                if ((innerArray[0] > 97 && innerArray[0] < 122)) { //infront, the first index it's a letter and not a number, add number
+                coef.append("1");
+                coeff = coef.toString();
+                int newCoef = Integer.parseInt(coeff);
+                outsideOfAll = innerPow * (newCoef);//changing the coeficient
                 } else {
-                    for (int index = 0; i < array.length; index++) {
-                        if (array[index] > 48 && array[index] < 57) {
-
-                            coef.append(array[index]);
-                            copyArray.remove(0);
-
-                        } else {
-                            coeff = coef.toString();
-                            int newCoef = Integer.parseInt(coeff);
-                            outsideOfAll = innerPow * (newCoef);
-                            break;
-                        }
-
-                    }
+                for (int index = 0; index < innerPowerMark; index++) {//for all numbers in front of x or y
+                if (innerArray[index] > 48 && innerArray[index] < 57) {
+                coef.append(innerArray[index]); //adding the coefficient by number
+                //copyArray.remove(0);
+                } else {// until it is done and we found x
+                coeff = coef.toString();
+                int newCoef = Integer.parseInt(coeff);
+                outsideOfAll = innerPow * (newCoef);// new coefficient
+                break;
+                }
+                }
                 }
 
-                newBuilder.append(Integer.toString(outsideOfAll));
-                newBuilder.append("*");
+               newBuilder.append(Integer.toString(outsideOfAll));// coefficient saved
+               newBuilder.append(powerDerivation.get(0));
+              newBuilder.append("*");
+                inner.replaceFirst(part, inner);
                 for (int index = 0; index < copyArray.size(); index++) {//for each
 
                     newBuilder.append(copyArray.get(index));
@@ -663,11 +692,77 @@ public class DerivativeCalculator {
                 }
                 return newBuilder.toString();
 
+            }else{ ArrayList<Integer> onlyCoeficient =findCoeffOfXorY(inner);
+            onlyCoeficient.toString();
+            newBuilder.append(onlyCoeficient);
+
             }
 
         }
         return newBuilder.toString();
 
+    }*/
+
+
+    public static String insideTrigSolver(String part) {
+        StringBuilder newBuilder = new StringBuilder();
+        String newPart ="";
+
+        char[] array = part.toCharArray();
+        ArrayList<Character> copyArray = new ArrayList<Character>();
+        for (char each : array) {
+            copyArray.add(each);
+        }
+
+        if (part.contains("(") && part.contains(")")) {
+            int i = part.indexOf("(");
+            int j = part.indexOf(")");
+            String inner = part.substring(i + 1, j);
+
+            ArrayList<String> parts = findCoefErasePlus(inner);
+            if (inner.contains("^")) {
+                String coeff;
+                ArrayList<Integer> findCoefInner= findCoeffOfXorY(inner);
+                int innerPow = findPow(inner);
+                int innerPowerMark= inner.indexOf("^");
+                ArrayList<String> powerDerivation = powerDerivation(findCoefInner, inner);// it should give only one
+
+
+                // newBuilder.append(Integer.toString(outsideOfAll));// coefficient saved
+                newBuilder.append(powerDerivation.get(0));
+
+                //newBuilder.append("*");
+                String replaceFirst = part.replaceFirst(inner, newBuilder.toString());
+
+                return replaceFirst;
+
+            }else{
+                ArrayList<Integer> onlyCoeficient = findCoeffOfXorY(inner);
+
+                String replaceInsides="";
+                for(int k=0;k< onlyCoeficient.size();k++){
+
+                    if(onlyCoeficient.get(k)==1){
+                        replaceInsides += parts.get(k).replaceFirst("x", "1");
+
+
+                    }else
+
+                        replaceInsides += parts.get(k).replaceFirst("x", "");
+
+                }
+                newBuilder.append(replaceInsides);
+
+            }
+
+            newPart = part.replace(inner, newBuilder.toString());//?????????????????????????????????????????? nvm works
+
+        }
+
+        return newPart;
+
     }
+
+
 
 }
