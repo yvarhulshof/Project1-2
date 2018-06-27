@@ -459,7 +459,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 			}
 			else {
 				goalX = midpoints.get(0).get(shotIndex);
-				goalY = midpoints.get(1).get(shotIndex);
+			//	goalY = midpoints.get(1).get(shotIndex);
 			}
 
 			if (p[cpp].firstAICall) {
