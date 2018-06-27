@@ -61,7 +61,6 @@ public class Graph {
         //find vertex belong to the string giving its ID
         for(int i = 0; i < vertexes.size(); i++)
         {
-          //System.out.println("checkB");
           if(vertex.equals(vertexes.get(i).getId())){
             vX = vertexes.get(i);
           }
@@ -70,20 +69,11 @@ public class Graph {
         for(int i = 0; i < edges.size(); i++)
         {
           if(edges.get(i) != null && (edges.get(i).getSource() == vX))
-            //connectedEdges.add(edges.get(i));
-            neighbours.add(edges.get(i).getDestination());
+             neighbours.add(edges.get(i).getDestination());
 
           if(edges.get(i) != null && (edges.get(i).getDestination() == vX))
             neighbours.add(edges.get(i).getSource());
         }
-
-        //we also need to find the edges for which vX is the destination
-        /*
-        for(int i = 0; i < connectedEdges.size(); i++)
-        {
-          neighbours.add(connectedEdges.get(i).getDestination());
-        }
-        */
         return neighbours;
     }
 }
