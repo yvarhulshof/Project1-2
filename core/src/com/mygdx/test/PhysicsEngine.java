@@ -278,18 +278,27 @@ public class PhysicsEngine {
 
         //if we have a collision on X, we set the balls xCoords to those of the previous frame plus or minus 10 depending
         //on which side the ball collided on (to move it "outside" of the wall), and then set its speed in x direction to 0
-        if(collisionX){
-            if(colRight){
-                golfBall.x = oldXCoords-10;
-            }
-            else{
-                golfBall.x = oldXCoords+10;
-            }
-            //colRight = false;
-            golfBall.setVX2(-vx1/2);
-            System.out.println("collisionx");
-            //ballBlockedX = true;
-        }
+       if(!firstAICall) {
+           if (collisionX) {
+               if (colRight) {
+                   golfBall.x = oldXCoords - 10;
+               } else {
+                   golfBall.x = oldXCoords + 10;
+               }
+               golfBall.setVX2(-vx1 / 2);
+           }
+       }
+       else{
+           if(collisionX){
+               if(colRight){
+                   golfBall.x = oldXCoords-10;
+               }
+               else{
+                   golfBall.x = oldXCoords+10;
+               }
+
+           }
+       }
 
 
         if(golfBall.getVy2() < 0) {
@@ -330,17 +339,28 @@ public class PhysicsEngine {
             }
         }
 
+        if(!firstAICall) {
+            if (collisionY) {
+                if (colTop) {
+                    golfBall.y = oldYCoords - 10;
+                } else {
+                    golfBall.y = oldYCoords + 10;
+                }
+                golfBall.setVY2(-vy1 / 2);
+                System.out.println("collisiony");
+                //ballBlockedY = true;
+            }
+        }
+        else{
+            if (collisionY){
+                if(colTop) {
+                    golfBall.y = oldYCoords-10;
+                }
+                else{
+                    golfBall.y = oldYCoords+10;
+                }
 
-        if (collisionY){
-            if(colTop) {
-                golfBall.y = oldYCoords-10;
             }
-            else{
-                golfBall.y = oldYCoords+10;
-            }
-            golfBall.setVY2(-vy1/2);
-            System.out.println("collisiony");
-            //ballBlockedY = true;
         }
 
         /*if(!ballBlockedX)*/ golfBall.x += xChange;

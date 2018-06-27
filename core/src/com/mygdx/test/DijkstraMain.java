@@ -86,13 +86,13 @@ public class DijkstraMain {
             }
             else i++;
         } */
-        for(int i = 0; i < wayX.size()-1; i++){
+     /*   for(int i = 0; i < wayX.size()-1; i++){
             if((wayX.get(i).equals(wayX.get(i+1)) || wayY.get(i).equals(wayY.get(i+1)))){
                 wayX.remove(i+1);
                 wayY.remove(i+1);
                 i = 0;
             }
-        }
+        } */
 
         wayX.remove(0);
         wayY.remove(0);
