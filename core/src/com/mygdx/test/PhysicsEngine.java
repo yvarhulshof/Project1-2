@@ -1,16 +1,12 @@
 package com.mygdx.test;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
-import com.mygdx.test.Main;
 
 public class PhysicsEngine {
 
     GolfBall golfBall;
-    Circle goal;
-    Rectangle water;
     boolean ballStopped = true;
     boolean ballBlocked = false;
 
@@ -44,7 +40,6 @@ public class PhysicsEngine {
 
     FileInput FI;
     String[] mapInfo;
-    //double[] splineDerivates;
     double[] splineDerivatesX;
     double[] splineDerivatesY;
     int nrOfKnots;
@@ -107,7 +102,6 @@ public class PhysicsEngine {
         this.golfBall = golfBall;
         this.collisionLayer = collisionLayer;
         this.interpolator = interpolator;
-        //double splineNormalizeXCoeff = courseSizeX
     }
     */
     public void moveBall(double direction, double initialSpeed){
@@ -120,10 +114,7 @@ public class PhysicsEngine {
 
         boolean collisionX = false;
         boolean collisionY = false;
-
-
         ballStopped = false;
-
 
         /**
          * Used for bicubic spline interpolation, but we're using normal splines for now
@@ -151,9 +142,7 @@ public class PhysicsEngine {
 
 
             golfBall.setVX2((float) (directionCoefficientX*initialSpeed));
-            //System.out.println("initial vx2 " + golfBall.getVx2());
             golfBall.setVY2((float) (directionCoefficientY*initialSpeed));
-            //System.out.println("initial vy2 " + golfBall.getVy2());
 
             lastShotX = golfBall.x;
             lastShotY = golfBall.y;
@@ -172,7 +161,6 @@ public class PhysicsEngine {
                     (Math.abs(vy1 + (float) findfy())) <= 20) ||
                     (ballBlocked))
             {
-                //  System.out.println("check");
                 golfBall.setVX2(0);
                 golfBall.setVY2(0);
                 ballStopped = true;
@@ -183,19 +171,6 @@ public class PhysicsEngine {
                 golfBall.setVY2(vy1 + (float) findfy());
             }
         }
-
-
-        //stopping condition for the ball: the speed has been below 10 for the last 60 frames
-
-        /*
-        boolean shouldStop = false;
-        if (((Math.abs(vx1 + (float) findfx()) <= 10) && ((Math.abs(vy1 + (float) findfy())) <= 10)) && !ballStopped)
-            SlowForNrOfFrames++;
-        else SlowForNrOfFrames = 0;
-        if(SlowForNrOfFrames > 60)
-            shouldStop = true;
-        */
-
 
         double elapsedTime = System.nanoTime() / 1000000000.0 - startTime; //defining the value of t for the current call of render()
 
@@ -222,9 +197,6 @@ public class PhysicsEngine {
                 if(!ballBlockedY) golfBall.setVY2((float) velocityY);
             }
         }
-//        System.out.println("ballStopped = " + ballStopped);
-
-
         //change in x and y during the elapsed time
         xChange = (float) ((1.0/60.0)*vx1);
         yChange = (float) ((1.0/60.0)*vy1);
@@ -278,6 +250,7 @@ public class PhysicsEngine {
 
         //if we have a collision on X, we set the balls xCoords to those of the previous frame plus or minus 10 depending
         //on which side the ball collided on (to move it "outside" of the wall), and then set its speed in x direction to 0
+        // makes the ball bounds on the wall when it collides
        if(!firstAICall) {
            if (collisionX) {
                if (colRight) {
@@ -338,7 +311,7 @@ public class PhysicsEngine {
                 collisionY = collisionCellTopRight.getTile().getProperties().containsKey("solid");
             }
         }
-
+// makes the ball bounce with the wall when it collides
         if(!firstAICall) {
             if (collisionY) {
                 if (colTop) {
@@ -363,20 +336,8 @@ public class PhysicsEngine {
             }
         }
 
-        /*if(!ballBlockedX)*/ golfBall.x += xChange;
-        /*if(!ballBlockedY)*/ golfBall.y += yChange;
-        //z = x+y;
-        //}
-        //else {
-        //    ballStopped = true;
-        //    initialCall = true;
-        //}
-        //System.out.println("speedX " + golfBall.getVx2());
-        //System.out.println("speedY : " + golfBall.getVy2());
-        //  System.out.println("balloccX : " + golfBall.x );
-        //System.out.println("possssX " +positionX());
-        // System.out.println("balloccY : " + golfBall.y );
-        //System.out.println("posssY " + positionY());
+        golfBall.x += xChange;
+        golfBall.y += yChange;
     }
 
     public float positionX(){
@@ -462,14 +423,7 @@ public class PhysicsEngine {
         return ballBlocked;
     }
 
-  /*  public static double[] differentiation(double[] arr) {
-        double[] done = new double[arr.length - 1];
-        for (int i = 0; i < done.length; i++) {
-            done[i] = arr[i]*(arr.length-i-1);
-        }
-        return done;
-    } */
-
+    /** calculate the angle of the ball when it is shot */
     public static double calcAngle(double x, double y){
         y = -y;
         x = -x;
@@ -483,7 +437,7 @@ public class PhysicsEngine {
     }
     GraphOptimalPath gOP = new GraphOptimalPath();
 
-
+/** get each result of the dijkstra algortihm */
     public String[] getEachResult(String result) {
         result = gOP.result;
         String[] nodes = new String[result.length()+1];
@@ -499,7 +453,7 @@ public class PhysicsEngine {
      * gx = goalX
      * gy = goalY
      */
-
+/** calculate the angle difference between the ball and the point where it has to go */
     public double aiAngle(float bx, float by, float gx, float gy){
         double  aiDir;
         if(gx>=bx && gy>=by){
