@@ -142,7 +142,7 @@ public class Main extends ApplicationAdapter implements InputProcessor{
 
 		/** load the map, two different maps available */
 		//tiledMap = new TmxMapLoader().load("map2.tmx");
-		tiledMap = new TmxMapLoader().load("mapMaze1.tmx");
+		//tiledMap = new TmxMapLoader().load("mapMaze1.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap); //creates the background map (visual)
 
 
