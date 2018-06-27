@@ -286,8 +286,9 @@ public class PhysicsEngine {
                 golfBall.x = oldXCoords+10;
             }
             //colRight = false;
-            golfBall.setVX2(0);
-            ballBlockedX = true;
+            golfBall.setVX2(-vx1/2);
+            System.out.println("collisionx");
+            //ballBlockedX = true;
         }
 
 
@@ -337,8 +338,9 @@ public class PhysicsEngine {
             else{
                 golfBall.y = oldYCoords+10;
             }
-            golfBall.setVY2(0);
-            ballBlockedY = true;
+            golfBall.setVY2(-vy1/2);
+            System.out.println("collisiony");
+            //ballBlockedY = true;
         }
 
         /*if(!ballBlockedX)*/ golfBall.x += xChange;
