@@ -286,9 +286,8 @@ public class PhysicsEngine {
                 golfBall.x = oldXCoords+10;
             }
             //colRight = false;
-            golfBall.setVX2(-vx1/2);
-            System.out.println("collisionx");
-            //ballBlockedX = true;
+            golfBall.setVX2(0);
+            ballBlockedX = true;
         }
 
 
@@ -338,9 +337,8 @@ public class PhysicsEngine {
             else{
                 golfBall.y = oldYCoords+10;
             }
-            golfBall.setVY2(-vy1/2);
-            System.out.println("collisiony");
-            //ballBlockedY = true;
+            golfBall.setVY2(0);
+            ballBlockedY = true;
         }
 
         /*if(!ballBlockedX)*/ golfBall.x += xChange;
@@ -483,10 +481,10 @@ public class PhysicsEngine {
     public double aiAngle(float bx, float by, float gx, float gy){
         double  aiDir;
         if(gx>=bx && gy>=by){
-            System.out.println("top right");
+
             aiDir=Math.atan2((gy-by),(gx-bx));
             aiDir = Math.toDegrees(aiDir) -5;
-            System.out.println("Angle: " + aiDir);
+
         }
         else if(gx<=bx && gy>=by){
             aiDir=Math.atan2((gy-by),(bx-gx));
@@ -501,7 +499,7 @@ public class PhysicsEngine {
         else{ //gx>=bx && gy<=by
             aiDir=Math.atan2((by-gy),(gx-bx));
             aiDir = 355-Math.toDegrees(aiDir);
-            System.out.println("Angle: " + aiDir);
+           
         }
 
         return aiDir;
